@@ -1,0 +1,8 @@
+name = "writeboost-proxy"
+main = "src/index.js"
+compatibility_date = "2026-05-07"
+
+kv_namespaces = [
+  { binding = "SYNC_KV", id = "Rid = "fbce55a3421341f3972b04378edeeff0" }
+]
+

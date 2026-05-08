@@ -1939,7 +1939,7 @@
                         <div class="writing-toolbar">
                             <button class="toolbar-btn" onclick="openChallengeModal()">🎲 Challenge</button>
                             <button class="toolbar-btn" onclick="openPowerWordsModal()">💪 Power Words</button>
-                            <button class="btn btn-primary" id="submit-essay-btn" type="button" onclick="submitEssay()">📤 Submit</button>
+                            <button class="btn btn-primary" onclick="submitEssay()">📤 Submit</button>
                         </div>
                     </div>
                     <div class="help-tip" style="padding: 0 1.5rem 0.5rem;">
@@ -2269,10 +2269,8 @@ Remember to:
 
             <div class="card" style="margin-top: 1.5rem;">
                 <div class="card-title">🧠 Online Writing Check (Spelling / Grammar)</div>
-                <p style="color: var(--text-light); margin-bottom: 1.75rem;">
-                    Submission scores already blend in results from the online checker when available.
-                    Powered by <a href="https://languagetool.org" target="_blank" rel="noopener">LanguageTool</a>
-                    (public API — please keep usage light).
+                <p style="color: var(--text-light); margin-bottom: 1rem;">
+                    Uses an online checker to find possible issues and suggested fixes.
                 </p>
                 <button class="btn btn-outline btn-sm" onclick="runOnlineCheck()">🔎 Run Online Check</button>
                 <div id="online-check-status" style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;"></div>
@@ -2631,7 +2629,7 @@ Remember to:
             // Example: 'https://writeboost-proxy.yourname.workers.dev'
             proxyBase: 'https://writeboost-proxy.rabito.workers.dev',
             enabled: true,
-            timeoutMs: 12000,
+            timeoutMs: 7000,
             // Cloud sync (cross-device). Stored via Worker + KV.
             // Set a short "sync code" on both iPad + computer to share the same cloud data.
             syncEnabled: true
@@ -2684,25 +2682,9 @@ Remember to:
             return buckets;
         }
 
-        const LT_MAX_CHUNK_CHARS = 15000;
-
-        function normalizeLanguageToolMatch(m) {
-            return {
-                message: m?.message || 'Issue',
-                shortMessage: m?.shortMessage || '',
-                offset: Number(m?.offset) || 0,
-                length: Number(m?.length) || 0,
-                replacements: (m?.replacements || []).slice(0, 5).map(r => r?.value).filter(Boolean),
-                ruleId: m?.rule?.id || '',
-                category: m?.rule?.category?.name || '',
-                categoryId: m?.rule?.category?.id || '',
-                issueType: m?.rule?.issueType || ''
-            };
-        }
-
-        async function fetchLanguageToolRawOnce(text, language = 'en-US', timeoutMs = ONLINE_CONFIG.timeoutMs) {
+        async function checkTextOnline(text, language = 'en-US') {
             const t = (text || '').trim();
-            if (!t) return { matches: [] };
+            if (!t) return [];
 
             let data;
             if (ONLINE_CONFIG.proxyBase) {
@@ -2711,7 +2693,7 @@ Remember to:
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text: t, language })
-                }, timeoutMs);
+                });
                 if (!res.ok) throw new Error(`Proxy error: ${res.status}`);
                 data = await res.json();
             } else {
@@ -2724,87 +2706,26 @@ Remember to:
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body
-                }, timeoutMs);
+                });
                 if (!res.ok) throw new Error(`LanguageTool error: ${res.status}`);
                 data = await res.json();
             }
-            return data;
-        }
-
-        async function fetchLanguageToolMatches(text, language = 'en-US') {
-            const t = (text || '').trim();
-            if (!t) return [];
-
-            if (t.length <= LT_MAX_CHUNK_CHARS) {
-                const data = await fetchLanguageToolRawOnce(t, language);
-                const matches = Array.isArray(data?.matches) ? data.matches : [];
-                return matches.map(normalizeLanguageToolMatch);
-            }
-
-            const chunks = [];
-            let start = 0;
-            while (start < t.length) {
-                let end = Math.min(start + LT_MAX_CHUNK_CHARS, t.length);
-                if (end < t.length) {
-                    const slice = t.slice(start, end);
-                    let cut = -1;
-                    const breaks = ['\n\n', '\n', '. ', '! ', '? ', ', ', ' '];
-                    for (const br of breaks) {
-                        const idx = slice.lastIndexOf(br);
-                        if (idx > LT_MAX_CHUNK_CHARS * 0.52) cut = Math.max(cut, idx + br.length);
-                    }
-                    if (cut > 0) end = start + cut;
-                }
-                chunks.push(t.slice(start, end));
-                start = end;
-            }
-
-            const out = [];
-            let offsetShift = 0;
-            for (const chunk of chunks) {
-                const data = await fetchLanguageToolRawOnce(chunk, language);
-                const matches = Array.isArray(data?.matches) ? data.matches : [];
-                for (const m of matches) {
-                    const nm = normalizeLanguageToolMatch(m);
-                    nm.offset = (Number(m?.offset) || 0) + offsetShift;
-                    out.push(nm);
-                }
-                offsetShift += chunk.length;
-            }
-            return out;
-        }
-
-        async function checkTextOnline(text, language = 'en-US') {
-            return fetchLanguageToolMatches(text, language);
+            const matches = Array.isArray(data?.matches) ? data.matches : [];
+            return matches.map(m => ({
+                message: m?.message || 'Issue',
+                shortMessage: m?.shortMessage || '',
+                offset: Number(m?.offset) || 0,
+                length: Number(m?.length) || 0,
+                replacements: (m?.replacements || []).slice(0, 5).map(r => r?.value).filter(Boolean),
+                ruleId: m?.rule?.id || '',
+                category: m?.rule?.category?.name || ''
+            }));
         }
 
         function snippetAt(text, offset, length, pad = 20) {
             const start = Math.max(0, offset - pad);
             const end = Math.min(text.length, offset + length + pad);
             return text.slice(start, end).replace(/\s+/g, ' ').trim();
-        }
-
-        function renderOnlineCheckResults(text, matches, totalCount) {
-            const statusEl = document.getElementById('online-check-status');
-            const listEl = document.getElementById('online-issues-list');
-            if (!statusEl || !listEl) return;
-
-            const n = Number.isFinite(Number(totalCount)) ? Number(totalCount) : (matches?.length || 0);
-            if (!matches || !matches.length) {
-                statusEl.textContent = 'No issues found (nice!).';
-                listEl.innerHTML = '<li>✓ No obvious spelling/grammar issues detected.</li>';
-                return;
-            }
-
-            statusEl.textContent = `Found ${n} possible issue${n !== 1 ? 's' : ''}.`;
-            listEl.innerHTML = matches.slice(0, 15).map(m => {
-                const repl = m.replacements && m.replacements.length
-                    ? ` Suggestions: <strong>${m.replacements.join(', ')}</strong>`
-                    : '';
-                const snip = snippetAt(text, m.offset, m.length);
-                const label = [m.category, m.ruleId].filter(Boolean).join(' · ');
-                return `<li>⚠️ <strong>${m.message}</strong>${label ? ` <span style="color: var(--text-muted);">(${label})</span>` : ''}<br><span style="color: var(--text-muted);">"...${snip}..."</span>${repl}</li>`;
-            }).join('') + (n > 15 ? `<li style="color: var(--text-muted);">Showing first 15 issues.</li>` : '');
         }
 
         async function runOnlineCheck(textOverride = null) {
@@ -2829,7 +2750,21 @@ Remember to:
 
             try {
                 const matches = await checkTextOnline(text, 'en-US');
-                renderOnlineCheckResults(text, matches, matches.length);
+                if (!matches.length) {
+                    statusEl.textContent = 'No issues found (nice!).';
+                    listEl.innerHTML = '<li>✓ No obvious spelling/grammar issues detected.</li>';
+                    return;
+                }
+
+                statusEl.textContent = `Found ${matches.length} possible issue${matches.length !== 1 ? 's' : ''}.`;
+                listEl.innerHTML = matches.slice(0, 15).map(m => {
+                    const repl = m.replacements && m.replacements.length
+                        ? ` Suggestions: <strong>${m.replacements.join(', ')}</strong>`
+                        : '';
+                    const snip = snippetAt(text, m.offset, m.length);
+                    const label = [m.category, m.ruleId].filter(Boolean).join(' · ');
+                    return `<li>⚠️ <strong>${m.message}</strong>${label ? ` <span style="color: var(--text-muted);">(${label})</span>` : ''}<br><span style="color: var(--text-muted);">"...${snip}..."</span>${repl}</li>`;
+                }).join('') + (matches.length > 15 ? `<li style="color: var(--text-muted);">Showing first 15 issues.</li>` : '');
             } catch (e) {
                 statusEl.textContent = 'Online check failed (maybe offline or rate-limited).';
                 listEl.innerHTML = '<li style="color: var(--text-muted);">Could not reach the online checker. You can still submit and use the built-in scoring.</li>';
@@ -3926,9 +3861,8 @@ Remember to:
         }
 
         // ============ SCORING & SUBMISSION ============
-        async function submitEssay() {
+        function submitEssay() {
             const text = document.getElementById('essay-input').value.trim();
-            const submitBtn = document.getElementById('submit-essay-btn');
 
             if (text.length < 50) {
                 showToast('Please write at least 50 words before submitting.');
@@ -3937,28 +3871,10 @@ Remember to:
 
             const wordCount = text.split(/\s+/).length;
             const paragraphCount = text.split(/\n\n+/).filter(p => p.trim()).length;
-            const hasDialogue = /"[^"]*"/.test(text) || /\u201C[^\u201D]*\u201D/.test(text);
+            const hasDialogue = /"[^"]*"/.test(text) || /“[^”]*”/.test(text);
 
-            let ltReport = { ok: false, error: 'disabled', matches: [] };
-            if (ONLINE_CONFIG.enabled) {
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = '⏳ Online check…';
-                }
-                try {
-                    const matches = await fetchLanguageToolMatches(text, 'en-US');
-                    ltReport = { ok: true, error: null, matches };
-                } catch (e) {
-                    ltReport = { ok: false, error: String(e?.message || e), matches: [] };
-                    showToast('Online grammar API unavailable — scored with local rules only.');
-                }
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '📤 Submit';
-                }
-            }
-
-            const criteria = calculateCriteria(text, wordCount, paragraphCount, hasDialogue, ltReport);
+            // Calculate scores
+            const criteria = calculateCriteria(text, wordCount, paragraphCount, hasDialogue);
             const totalScore = Math.round(Object.values(criteria).reduce((a, b) => a + b, 0));
 
             // Stop timer
@@ -3993,7 +3909,7 @@ Remember to:
                 state.stats.perfectCriteria++;
             }
 
-            const ltPreview = ltReport.ok ? (ltReport.matches || []).slice(0, 20) : [];
+            // Save essay
             const essay = {
                 text,
                 prompt: state.currentPrompt ? state.currentPrompt.text : 'Free Write',
@@ -4003,10 +3919,7 @@ Remember to:
                 score: totalScore,
                 criteria,
                 date: new Date().toLocaleDateString(),
-                timeSpent: Math.round((Date.now() - state.startTime) / 60000),
-                lt: ltReport.ok
-                    ? { ok: true, matchCount: (ltReport.matches || []).length, preview: ltPreview }
-                    : { ok: false, error: ltReport.error }
+                timeSpent: Math.round((Date.now() - state.startTime) / 60000)
             };
 
             state.essays.push(essay);
@@ -4028,83 +3941,11 @@ Remember to:
             showResults(essay);
         }
 
-        function classifyLtMatch(m) {
-            const it = String(m.issueType || '').toLowerCase();
-            const cid = String(m.categoryId || '').toUpperCase();
-            if (it === 'misspelling' || cid.includes('TYPO')) return 'typo';
-            if (it === 'grammar' || cid === 'GRAMMAR') return 'grammar';
-            if (it === 'style' || cid.includes('STYLE')) return 'style';
-            if (it === 'inconsistency' || cid.includes('REDUNDANCY')) return 'style';
-            return 'other';
-        }
-
-        function applyLanguageToolToRawCriteria(raw, matches, wordCount) {
-            if (!Array.isArray(matches)) return raw;
-            const w = Math.max(wordCount, 1);
-            if (matches.length === 0) {
-                raw.spelling = Math.round(Math.min(100, raw.spelling * 0.35 + 97 * 0.65));
-                return raw;
-            }
-            let typo = 0, grammar = 0, style = 0, other = 0;
-            for (const m of matches) {
-                const c = classifyLtMatch(m);
-                if (c === 'typo') typo++;
-                else if (c === 'grammar') grammar++;
-                else if (c === 'style') style++;
-                else other++;
-            }
-            const ltSpell = Math.max(0, Math.min(100, 100 - typo * 8 - style * 2.2 - other * 2.8));
-            raw.spelling = Math.round(Math.min(100, raw.spelling * 0.28 + ltSpell * 0.72));
-
-            const cohesionDrain = grammar * 5 + style * 2.2 + other * 2.8 + typo * 1.2;
-            raw.cohesion = Math.max(0, Math.round(raw.cohesion - cohesionDrain));
-
-            const sentenceDrain = grammar * 3.5 + style * 1.2 + other * 1.8;
-            raw.sentences = Math.max(0, Math.round(raw.sentences - sentenceDrain));
-
-            const density = (typo + grammar) / w * 100;
-            if (density > 2) {
-                raw.ideas = Math.max(0, Math.round(raw.ideas - Math.min(22, density * 1.1)));
-            }
-            return raw;
-        }
-
-        function calculateCriteria(text, wordCount, paragraphCount, hasDialogue, ltReport = null) {
+        function calculateCriteria(text, wordCount, paragraphCount, hasDialogue) {
             const sentences = text.split(/[.!?]+/).filter(s => s.trim());
             const avgSentenceLength = wordCount / Math.max(sentences.length, 1);
-            const lowerWords = text.toLowerCase().split(/\s+/).filter(Boolean);
-            const uniqueWords = new Set(lowerWords).size;
-            const ttr = uniqueWords / Math.max(wordCount, 1);
-
-            // Heuristic “readable English” ratio — keyboard mash / random tokens often fail vowel
-            // patterns or repeat characters; honest essays mostly pass.
-            const stripToken = (w) => w.replace(/^[^a-z0-9']+|[^a-z0-9']+$/gi, '').toLowerCase();
-            const alphaTokens = lowerWords.map(stripToken).filter(t => t.length > 0 && /[a-z]/.test(t));
-            const looksEnglishish = (w) => {
-                const core = w.replace(/'/g, '');
-                if (core.length <= 2) return true;
-                if (!/^[a-z']+$/i.test(w)) return false;
-                if (/^(.)\1{2,}$/.test(core)) return false;
-                if (core.length >= 4 && !/[aeiouy]/.test(core)) return false;
-                return true;
-            };
-            const englishLikeRatio = alphaTokens.length === 0
-                ? 1
-                : alphaTokens.filter(looksEnglishish).length / alphaTokens.length;
-
-            // Natural prose usually stays well below ~0.95 TTR for longer pieces; ratio near 1.0
-            // with many tokens is typical of unique gibberish “words”, which used to max out scores.
-            const ttrSoftCap = wordCount < 55 ? 0.93 : wordCount < 100 ? 0.86 : 0.78;
-            const ttrExcessNorm = Math.max(0, Math.min(1, (ttr - ttrSoftCap) / Math.max(0.04, 1 - ttrSoftCap)));
-            const lexicalDiversity = Math.max(0, Math.min(1, ttr * (1 - 0.72 * ttrExcessNorm)));
-            const vocabularyScore = Math.min(
-                100,
-                lexicalDiversity * 100 * (0.38 + 0.62 * englishLikeRatio)
-            );
-
-            // Overall credibility: combine unlikely token shapes with unnaturally high TTR.
-            const nonsense = Math.min(1, 0.58 * (1 - englishLikeRatio) + 0.42 * ttrExcessNorm);
-            const integrity = Math.max(0.3, 1 - 0.9 * nonsense);
+            const uniqueWords = new Set(text.toLowerCase().split(/\s+/)).size;
+            const vocabularyScore = (uniqueWords / Math.max(wordCount, 1)) * 100;
 
             // Check for sensory words
             const sensoryWords = ['saw', 'heard', 'smelled', 'tasted', 'felt', 'touched', 'watched', 'noticed', 'glanced'];
@@ -4123,11 +3964,10 @@ Remember to:
             const quotes = (text.match(/[""]/g) || []).length;
 
             // Spelling approximation (check for common errors - simplified)
-            const words = lowerWords;
+            const words = text.toLowerCase().split(/\s+/);
             const spellingIssues = words.filter(w => w.includes('teh') || w.includes('recieve') || w.includes('definately')).length;
-            const spellingBase = Math.max(0, 100 - (spellingIssues * 20));
 
-            const raw = {
+            return {
                 audience: Math.min(100, 70 + (hasDialogue ? 15 : 0) + (sensoryCount * 3)),
                 structure: Math.min(100, 50 + (paragraphCount * 8) + (tensionVariety * 10)),
                 ideas: Math.min(100, 60 + (vocabularyScore * 0.3) + (sensoryCount * 5)),
@@ -4137,18 +3977,8 @@ Remember to:
                 paragraphing: Math.min(100, Math.min(100, paragraphCount * 15)),
                 sentences: Math.min(100, avgSentenceLength > 5 && avgSentenceLength < 25 ? 80 : avgSentenceLength <= 5 ? 60 : 70),
                 punctuation: Math.min(100, 50 + (commas > wordCount * 0.05 ? 30 : 0) + (quotes > 0 ? 10 : 0) + (commas + quotes > 5 ? 10 : 0)),
-                spelling: Math.min(spellingBase, Math.max(0, 100 * (0.25 + 0.75 * englishLikeRatio) - (spellingIssues * 20)))
+                spelling: Math.max(0, 100 - (spellingIssues * 20))
             };
-
-            if (ltReport && ltReport.ok) {
-                applyLanguageToolToRawCriteria(raw, ltReport.matches || [], wordCount);
-            }
-
-            const scaled = {};
-            for (const [key, v] of Object.entries(raw)) {
-                scaled[key] = Math.round(Math.min(100, v * integrity));
-            }
-            return scaled;
         }
 
         // Need to define sensoryCount for the results function
@@ -4246,18 +4076,11 @@ Remember to:
                 launchConfetti();
             }
 
-            // Online check: reuse LanguageTool results from submit when present (same API data as score).
-            const statusEl = document.getElementById('online-check-status');
-            const listEl = document.getElementById('online-issues-list');
-            if (essay.lt && essay.lt.ok && Array.isArray(essay.lt.preview)) {
-                if (statusEl) statusEl.textContent = `Submission used online check (${essay.lt.matchCount || essay.lt.preview.length} issue${(essay.lt.matchCount || 0) !== 1 ? 's' : ''}).`;
-                renderOnlineCheckResults(text, essay.lt.preview, essay.lt.matchCount);
-            } else if (essay.lt && !essay.lt.ok && statusEl && listEl) {
-                statusEl.textContent = 'Submitted while offline check failed — tap “Run Online Check” to retry.';
-                listEl.innerHTML = '<li style="color: var(--text-muted);">No cached online results. Use the button below to run a fresh check.</li>';
-            } else {
-                setTimeout(() => runOnlineCheck(text), 50);
-            }
+            // Trigger online check in background (non-blocking)
+            // If offline/rate-limited, it will fail gracefully.
+            setTimeout(() => {
+                runOnlineCheck(text);
+            }, 50);
         }
 
         function generateStoryOutline(text) {

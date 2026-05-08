@@ -1,0 +1,18 @@
+{
+  "name": "2026-05-07-task-1",
+  "version": "2.3.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "smoke": "node ./smoke-test.js",
+    "regress:dom": "node ./dom-regression.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "linkedom": "^0.18.12",
+    "playwright": "^1.59.1"
+  }
+}
