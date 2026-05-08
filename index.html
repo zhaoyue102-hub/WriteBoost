@@ -1,0 +1,4527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WriteBoost">
+    <meta name="theme-color" content="#4F46E5">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234F46E5'/%3E%3Cstop offset='1' stop-color='%233730A3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url(%23g)'/%3E%3Ctext x='64' y='82' font-size='64' text-anchor='middle'%3E%E2%9C%8D%EF%B8%8F%3C/text%3E%3C/svg%3E">
+    <title>WriteBoost v2.2.0 - Narrative Writing Trainer</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --accent: #F59E0B;
+            --accent-light: #FCD34D;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #F1F5F9;
+            --text: #1E293B;
+            --text-light: #64748B;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            padding-left: max(2rem, env(safe-area-inset-left));
+            padding-right: max(2rem, env(safe-area-inset-right));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .version-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .help-tip {
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .help-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .help-item {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-sidebar);
+        }
+
+        .help-item strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            color: var(--primary);
+            background: var(--bg-sidebar);
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        .stats-card.essays { border-top-color: var(--primary); }
+        .stats-card.words { border-top-color: var(--success); }
+        .stats-card.streak { border-top-color: var(--accent); }
+        .stats-card.score { border-top-color: #EC4899; }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .stats-sub {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Daily Seed Card */
+        .daily-seed-card {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .seed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .seed-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+        }
+
+        .seed-date {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .seed-content {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .seed-part {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .seed-part-label {
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: var(--bg-sidebar);
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Prompts Grid */
+        .prompts-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .prompt-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .prompt-card.easy { border-left-color: #10B981; }
+        .prompt-card.medium { border-left-color: #F59E0B; }
+        .prompt-card.hard { border-left-color: #EF4444; }
+
+        .prompt-difficulty {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .prompt-difficulty.easy { background: #D1FAE5; color: #065F46; }
+        .prompt-difficulty.medium { background: #FEF3C7; color: #92400E; }
+        .prompt-difficulty.hard { background: #FEE2E2; color: #991B1B; }
+
+        .prompt-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .prompt-meta {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Practice Page Layout */
+        .practice-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .practice-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Sidebar */
+        .sidebar-left {
+            position: sticky;
+            top: 100px;
+        }
+
+        .guide-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .guide-step:last-child {
+            border-bottom: none;
+        }
+
+        .guide-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .guide-content h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .guide-content p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Timer */
+        .timer-card {
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-options {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .timer-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .timer-btn:hover, .timer-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Writing Area */
+        .writing-area {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .writing-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .writing-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .writing-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .writing-stats {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-sidebar);
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .writing-stats span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .writing-content {
+            padding: 1.5rem;
+        }
+
+        #essay-input {
+            width: 100%;
+            min-height: 400px;
+            border: none;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.8;
+            outline: none;
+        }
+
+        #essay-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Story Coaster */
+        .story-coaster {
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+            background: var(--bg-sidebar);
+        }
+
+        .coaster-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .coaster-svg {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+        }
+
+        .coaster-warning {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #FEF3C7;
+            border-radius: var(--radius-sm);
+            color: #92400E;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .challenge-count {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            position: sticky;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Character Card */
+        .character-card {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+        }
+
+        .character-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .character-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .form-group select option {
+            color: var(--text);
+            background: white;
+        }
+
+        .name-input-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .name-input-row input {
+            flex: 1;
+        }
+
+        .random-name-btn {
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .character-info {
+            background: rgba(255,255,255,0.15);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-top: 0.5rem;
+        }
+
+        .character-info p {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Sensory Palette */
+        .sensory-card {
+            background: var(--bg-card);
+        }
+
+        .flat-words-found {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-bottom: 1rem;
+        }
+
+        .flat-word {
+            padding: 0.25rem 0.5rem;
+            background: #FEE2E2;
+            color: #991B1B;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .flat-word:hover {
+            background: #FECACA;
+        }
+
+        .flat-word.replaced {
+            background: #D1FAE5;
+            color: #065F46;
+            text-decoration: line-through;
+        }
+
+        .sense-buttons {
+            display: flex;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .sense-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .sense-btn:hover, .sense-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .sensory-progress {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-sidebar);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-sidebar);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Challenge Card */
+        .challenge-card-display {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .challenge-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .challenge-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Power Words Modal */
+        .power-word-input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .power-word-input-group input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+        }
+
+        .power-word-input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .power-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .power-level {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .power-level:hover {
+            border-color: var(--primary);
+            background: var(--bg-sidebar);
+        }
+
+        .power-level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .power-level-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .power-level-1 .power-level-badge { background: #D1FAE5; color: #065F46; }
+        .power-level-2 .power-level-badge { background: #DBEAFE; color: #1E40AF; }
+        .power-level-3 .power-level-badge { background: #FEF3C7; color: #92400E; }
+        .power-level-4 .power-level-badge { background: #FEE2E2; color: #991B1B; }
+        .power-level-5 .power-level-badge { background: #F3E8FF; color: #6B21A8; }
+
+        .power-words-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .power-word-item {
+            padding: 0.35rem 0.75rem;
+            background: var(--bg-sidebar);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .power-word-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Suggestions Popup */
+        .suggestion-popup {
+            position: fixed;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            max-width: 300px;
+            z-index: 1001;
+            border: 2px solid var(--primary);
+        }
+
+        .suggestion-popup h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .suggestion-popup p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .suggestion-popup::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 16px;
+            height: 16px;
+            background: var(--bg-card);
+            border-left: 2px solid var(--primary);
+            border-top: 2px solid var(--primary);
+            transform: rotate(45deg);
+        }
+
+        /* Achievements Page */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.6;
+        }
+
+        .achievement-card.locked .achievement-icon {
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.unlocked {
+            border: 2px solid var(--accent);
+        }
+
+        .achievement-card.unlocked::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(245,158,11,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .achievement-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .achievement-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        /* Results Page */
+        .results-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .results-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .score-circle-container {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .score-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: var(--bg-sidebar);
+            stroke-width: 12;
+        }
+
+        .score-circle-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .score-label {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .score-message {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Criteria Breakdown */
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .criteria-name {
+            width: 120px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .criteria-bar {
+            flex: 1;
+            height: 12px;
+            background: var(--bg-sidebar);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .criteria-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+        }
+
+        .criteria-fill.excellent { background: var(--success); }
+        .criteria-fill.good { background: var(--primary); }
+        .criteria-fill.average { background: var(--accent); }
+        .criteria-fill.poor { background: var(--danger); }
+
+        .criteria-score {
+            width: 40px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 2rem;
+        }
+
+        .feedback-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback-list {
+            list-style: none;
+        }
+
+        .feedback-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .feedback-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Story Outline */
+        .outline-card {
+            margin-top: 2rem;
+        }
+
+        .outline-item {
+            padding: 1rem;
+            border-left: 3px solid var(--border);
+            margin-bottom: 1rem;
+            background: var(--bg-sidebar);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .outline-item.climax {
+            border-left-color: var(--danger);
+            background: #FEF2F2;
+        }
+
+        .outline-item.resolution {
+            border-left-color: var(--success);
+            background: #F0FDF4;
+        }
+
+        .outline-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .outline-sentence {
+            font-size: 0.95rem;
+        }
+
+        .outline-suggestion {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #FEF3C7;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+
+        /* Skills Page */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+        }
+
+        .skill-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .skill-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-example {
+            background: var(--bg-sidebar);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+
+        .skill-example-bad {
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-example-good {
+            color: var(--success);
+        }
+
+        /* History Page */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-item {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            transform: translateX(4px);
+        }
+
+        .history-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .history-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .history-score {
+            text-align: center;
+        }
+
+        .history-score-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .history-score-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* iPad Portrait (768px - 1024px) */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .header {
+                padding: 0.75rem 1.25rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .logo-icon {
+                font-size: 1.5rem;
+            }
+
+            .header-stats {
+                gap: 1.25rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            .nav {
+                padding: 0 1rem;
+            }
+
+            .nav-btn {
+                padding: 0.85rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .main {
+                padding: 1.25rem;
+            }
+
+            .practice-layout {
+                grid-template-columns: 1fr 300px;
+            }
+
+            .sidebar-left {
+                display: none;
+            }
+
+            .sidebar-right {
+                position: sticky;
+                top: 90px;
+            }
+
+            .writing-header {
+                padding: 0.75rem 1rem;
+            }
+
+            .writing-stats {
+                padding: 0.5rem 1rem;
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .writing-content {
+                padding: 1rem;
+            }
+
+            #essay-input {
+                min-height: 350px;
+                font-size: 1rem;
+                -webkit-appearance: none;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .daily-seed-card {
+                grid-column: span 2;
+            }
+
+            .prompts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .results-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .btn {
+                padding: 0.65rem 1.1rem;
+                font-size: 0.95rem;
+            }
+
+            .toolbar-btn {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* iPad Landscape (1025px - 1200px) */
+        @media (min-width: 1025px) and (max-width: 1200px) {
+            .practice-layout {
+                grid-template-columns: 1fr 280px;
+            }
+
+            .sidebar-left {
+                display: none;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .nav-btn {
+                min-height: 48px;
+                min-width: 48px;
+            }
+
+            .btn {
+                min-height: 44px;
+            }
+
+            .timer-btn {
+                min-height: 44px;
+                min-width: 52px;
+            }
+
+            .toolbar-btn {
+                min-height: 44px;
+            }
+
+            .sense-btn {
+                min-height: 44px;
+            }
+
+            .guide-step {
+                padding: 1rem 0;
+            }
+
+            .prompt-card {
+                min-height: 100px;
+            }
+
+            .criteria-item {
+                padding: 0.5rem 0;
+            }
+
+            .achievement-card {
+                min-height: 160px;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .logo-icon {
+                font-size: 1.6rem;
+            }
+
+            .version-badge {
+                font-size: 0.7rem;
+            }
+
+            .header-stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav {
+                justify-content: flex-start;
+            }
+
+            .main {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-seed-card {
+                grid-column: span 1;
+            }
+
+            .practice-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left, .sidebar-right {
+                position: static;
+            }
+
+            .results-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .writing-toolbar {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #essay-input {
+                -webkit-appearance: none;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Mobile: writing guide collapsible */
+            .sidebar-left {
+                order: 1;
+            }
+
+            .writing-area {
+                order: 0;
+            }
+
+            .sidebar-right {
+                order: 2;
+            }
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Floating Guide Toggle (for iPad where sidebar-left is hidden) */
+        .guide-toggle-fab {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            z-index: 200;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .guide-toggle-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+        }
+
+        @media (min-width: 768px) and (max-width: 1200px) {
+            .guide-toggle-fab {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                bottom: max(1.5rem, env(safe-area-inset-bottom));
+                left: max(1.5rem, env(safe-area-inset-left));
+            }
+        }
+
+        /* Guide overlay panel for iPad */
+        .guide-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100%;
+            background: var(--bg-card);
+            z-index: 300;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            overflow-y: auto;
+            padding: 1.5rem;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .guide-overlay.open {
+            transform: translateX(0);
+        }
+
+        .guide-overlay-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 290;
+        }
+
+        .guide-overlay-backdrop.open {
+            display: block;
+        }
+
+        .guide-overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .guide-overlay-header h3 {
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .guide-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 0.25rem;
+        }
+
+        /* Data Management Bar */
+        .data-bar {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .data-bar-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">✍️</span>
+            <span>WriteBoost</span>
+            <span class="version-badge" id="app-version">v2.2.0</span>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-essays">0</div>
+                <div class="stat-label">Essays</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-words">0</div>
+                <div class="stat-label">Words</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="current-streak">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="avg-score">--</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="openHelpModal()" title="How to use" style="flex-shrink:0; margin-left: 0.5rem; font-size: 0.8rem; padding: 0.4rem 0.8rem;">❓</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportData()" title="Export data backup" style="flex-shrink:0; margin-left: 0.5rem; font-size: 0.8rem; padding: 0.4rem 0.8rem;">💾</button>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+        <button class="nav-btn" data-page="practice">✏️ Practice</button>
+        <button class="nav-btn" data-page="power-words">💪 Power Words</button>
+        <button class="nav-btn" data-page="achievements">🏆 Achievements</button>
+        <button class="nav-btn" data-page="skills">📚 Skills</button>
+        <button class="nav-btn" data-page="history">📜 History</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="dashboard-grid">
+                <div class="card stats-card essays">
+                    <div class="stats-icon">📝</div>
+                    <div class="stats-number" id="dash-essays">0</div>
+                    <div class="stats-sub">Essays Written</div>
+                </div>
+                <div class="card stats-card words">
+                    <div class="stats-icon">🔤</div>
+                    <div class="stats-number" id="dash-words">0</div>
+                    <div class="stats-sub">Total Words</div>
+                </div>
+                <div class="card stats-card streak">
+                    <div class="stats-icon">🔥</div>
+                    <div class="stats-number" id="dash-streak">0</div>
+                    <div class="stats-sub">Day Streak</div>
+                </div>
+                <div class="card stats-card score">
+                    <div class="stats-icon">⭐</div>
+                    <div class="stats-number" id="dash-score">--</div>
+                    <div class="stats-sub">Best Score</div>
+                </div>
+                <div class="card daily-seed-card">
+                    <div class="seed-header">
+                        <div>
+                            <div class="seed-label">🌱 Daily Story Seed</div>
+                        </div>
+                        <div class="seed-date" id="seed-date"></div>
+                    </div>
+                    <div class="seed-content" id="seed-content">
+                        <!-- Generated daily -->
+                    </div>
+                    <button class="btn btn-secondary" onclick="plantSeed()">🌱 Plant this seed</button>
+                    <div class="help-tip">Tip: this makes today’s seed your writing prompt.</div>
+                </div>
+            </div>
+
+            <div class="prompts-section">
+                <h2>📝 Choose a Writing Prompt</h2>
+                <p class="help-tip">Shows 6 unused prompts. After you submit an essay, that prompt gets replaced.</p>
+                <div class="prompts-grid" id="prompts-grid">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Page -->
+        <div id="practice" class="page">
+            <div class="practice-layout">
+                <!-- Left Sidebar -->
+                <div class="sidebar-left">
+                    <div class="card guide-card">
+                        <div class="card-title">📋 7-Step Writing Guide</div>
+                        <div class="guide-step">
+                            <div class="guide-number">1</div>
+                            <div class="guide-content">
+                                <h4>Plan</h4>
+                                <p>Think about your main character and what happens to them</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">2</div>
+                            <div class="guide-content">
+                                <h4>Hook</h4>
+                                <p>Start with something interesting to grab attention</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">3</div>
+                            <div class="guide-content">
+                                <h4>Build Up</h4>
+                                <p>Introduce your characters and setting</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">4</div>
+                            <div class="guide-content">
+                                <h4>Problem</h4>
+                                <p>What's the challenge or conflict?</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">5</div>
+                            <div class="guide-content">
+                                <h4>Climax</h4>
+                                <p>The most exciting or tense moment</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">6</div>
+                            <div class="guide-content">
+                                <h4>Resolution</h4>
+                                <p>How does the story end?</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="guide-number">7</div>
+                            <div class="guide-content">
+                                <h4>Review</h4>
+                                <p>Check your spelling and punctuation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card timer-card">
+                        <div class="card-title">⏱️ Timer</div>
+                        <div class="timer-display" id="timer-display">00:00</div>
+                        <div class="timer-options">
+                            <button class="timer-btn" data-minutes="15">15m</button>
+                            <button class="timer-btn active" data-minutes="25">25m</button>
+                            <button class="timer-btn" data-minutes="40">40m</button>
+                            <button class="timer-btn" data-minutes="50">50m</button>
+                        </div>
+                        <div class="timer-controls">
+                            <button class="btn btn-primary btn-sm" id="timer-start" onclick="toggleTimer()">▶ Start</button>
+                            <button class="btn btn-ghost btn-sm" onclick="resetTimer()">↺ Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Writing Area -->
+                <div class="writing-area">
+                    <div class="writing-header">
+                        <div class="writing-title" id="current-prompt-title">Start Writing</div>
+                        <div class="writing-toolbar">
+                            <button class="toolbar-btn" onclick="openChallengeModal()">🎲 Challenge</button>
+                            <button class="toolbar-btn" onclick="openPowerWordsModal()">💪 Power Words</button>
+                            <button class="btn btn-primary" id="submit-essay-btn" type="button" onclick="submitEssay()">📤 Submit</button>
+                        </div>
+                    </div>
+                    <div class="help-tip" style="padding: 0 1.5rem 0.5rem;">
+                        Flow: pick a prompt → write → add a challenge twist if stuck → submit for feedback.
+                    </div>
+                    <div class="writing-stats">
+                        <span>📝 <span id="word-count">0</span> words</span>
+                        <span>📄 <span id="paragraph-count">0</span> paragraphs</span>
+                        <span>⏱️ <span id="time-spent">0</span> min</span>
+                    </div>
+                    <div class="writing-content">
+                        <textarea id="essay-input" placeholder="Start your story here...
+
+Remember to:
+• Use your senses (what you see, hear, smell, feel, taste)
+• Show emotions through actions, not just words
+• Build tension with your words
+• Make your characters come alive"></textarea>
+                    </div>
+
+                    <!-- Story Coaster -->
+                    <div class="story-coaster">
+                        <div class="coaster-title">🎢 Story Coaster - Tension Graph</div>
+                        <svg class="coaster-svg" id="story-coaster" viewBox="0 0 600 180">
+                            <!-- Will be drawn by JS -->
+                        </svg>
+                        <div class="challenge-count" id="challenge-count">Challenge cards used: 0</div>
+                        <div class="coaster-warning" id="coaster-warning" style="display: none;">
+                            ⚡ Your story needs more twists! Try adding a challenge or conflict.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="sidebar-right">
+                    <!-- Character Card -->
+                    <div class="card character-card">
+                        <h3>🎭 Character</h3>
+                        <div class="character-form" id="character-form">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <div class="name-input-row">
+                                    <input type="text" id="char-name" placeholder="Character name...">
+                                    <button class="random-name-btn" onclick="randomName()">🎲</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="text" id="char-age" placeholder="e.g., 12">
+                            </div>
+                            <div class="form-group">
+                                <label>Personality</label>
+                                <select id="char-personality">
+                                    <option value="">Choose...</option>
+                                    <option value="Brave">Brave</option>
+                                    <option value="Shy">Shy</option>
+                                    <option value="Funny">Funny</option>
+                                    <option value="Mysterious">Mysterious</option>
+                                    <option value="Kind">Kind</option>
+                                    <option value="Stubborn">Stubborn</option>
+                                    <option value="Clever">Clever</option>
+                                    <option value="Rebellious">Rebellious</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Special Quirk</label>
+                                <input type="text" id="char-quirk" placeholder="e.g., Always loses things">
+                            </div>
+                            <div class="form-group">
+                                <label>Best Friend</label>
+                                <input type="text" id="char-friend" placeholder="Best friend's name">
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="saveCharacter()">Save Character</button>
+                        </div>
+                        <div class="character-info" id="character-info" style="display: none;">
+                            <!-- Shown when character is saved -->
+                        </div>
+                    </div>
+
+                    <!-- Sensory Palette -->
+                    <div class="card sensory-card">
+                        <div class="card-title">🎨 Sensory Palette</div>
+                        <div id="flat-words-found" class="flat-words-found">
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">Type to detect flat words...</span>
+                        </div>
+                        <div class="sense-buttons">
+                            <button class="sense-btn" data-sense="sight">👁 Sight</button>
+                            <button class="sense-btn" data-sense="sound">👂 Sound</button>
+                            <button class="sense-btn" data-sense="smell">👃 Smell</button>
+                            <button class="sense-btn" data-sense="taste">👅 Taste</button>
+                            <button class="sense-btn" data-sense="touch">✋ Touch</button>
+                        </div>
+                        <div class="sensory-progress">
+                            <span id="sensory-progress-text">Replace 0 flat words</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="sensory-progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Guide Button (iPad) -->
+        <button class="guide-toggle-fab" id="guide-toggle-fab" onclick="toggleGuideOverlay()">📋</button>
+
+        <!-- Guide Overlay Panel (iPad) -->
+        <div class="guide-overlay-backdrop" id="guide-overlay-backdrop" onclick="toggleGuideOverlay()"></div>
+        <div class="guide-overlay" id="guide-overlay">
+            <div class="guide-overlay-header">
+                <h3>📋 7-Step Writing Guide</h3>
+                <button class="guide-close-btn" onclick="toggleGuideOverlay()">&times;</button>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">1</div>
+                <div class="guide-content">
+                    <h4>Plan</h4>
+                    <p>Think about your main character and what happens to them</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">2</div>
+                <div class="guide-content">
+                    <h4>Hook</h4>
+                    <p>Start with something interesting to grab attention</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">3</div>
+                <div class="guide-content">
+                    <h4>Build Up</h4>
+                    <p>Introduce your characters and setting</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">4</div>
+                <div class="guide-content">
+                    <h4>Problem</h4>
+                    <p>What's the challenge or conflict?</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">5</div>
+                <div class="guide-content">
+                    <h4>Climax</h4>
+                    <p>The most exciting or tense moment</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">6</div>
+                <div class="guide-content">
+                    <h4>Resolution</h4>
+                    <p>How does the story end?</p>
+                </div>
+            </div>
+            <div class="guide-step">
+                <div class="guide-number">7</div>
+                <div class="guide-content">
+                    <h4>Review</h4>
+                    <p>Check your spelling and punctuation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Words Page -->
+        <div id="power-words" class="page">
+            <h1 style="margin-bottom: 2rem;">💪 Vocabulary Power-Up</h1>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">Type any word below to find stronger alternatives at different levels!</p>
+
+            <div class="card" style="max-width: 600px;">
+                <div class="power-word-input-group">
+                    <input type="text" id="power-word-search" placeholder="Type a word (e.g., walk, run, said, happy)...">
+                    <button class="btn btn-primary" onclick="searchPowerWord()">Search</button>
+                </div>
+                <div id="power-word-results" class="power-levels">
+                    <p style="color: var(--text-muted); text-align: center;">Enter a word to see power word alternatives</p>
+                </div>
+            </div>
+
+            <h2 style="margin: 2rem 0 1rem;">📚 Common Words to Upgrade</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('walk')">walk</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('run')">run</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('said')">said</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('look')">look</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('think')">think</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('good')">good</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('bad')">bad</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('big')">big</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('small')">small</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('fast')">fast</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('slow')">slow</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('eat')">eat</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('see')">see</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('happy')">happy</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('sad')">sad</button>
+            </div>
+        </div>
+
+        <!-- Achievements Page -->
+        <div id="achievements" class="page">
+            <h1 style="margin-bottom: 2rem;">🏆 Achievements</h1>
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- Skills Page -->
+        <div id="skills" class="page">
+            <h1 style="margin-bottom: 2rem;">📚 Writing Skills</h1>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">👁️</span>
+                        <span class="skill-title">Show, Don't Tell</span>
+                    </div>
+                    <p class="skill-desc">Instead of saying "She was scared," show it: "Her hands trembled as she backed toward the door."</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ He was angry.</div>
+                        <div class="skill-example-good">✓ His face turned red, and he slammed his fist on the table.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">🎢</span>
+                        <span class="skill-title">Build Tension</span>
+                    </div>
+                    <p class="skill-desc">Use short sentences and sensory details to create suspense and keep readers engaged.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ Then the door opened.</div>
+                        <div class="skill-example-good">✓ The door handle turned. Slowly. She held her breath.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">💬</span>
+                        <span class="skill-title">Dialogue</span>
+                    </div>
+                    <p class="skill-desc">Use quotes for speaking characters. Add action beats to show who's speaking.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ He said he was leaving and went.</div>
+                        <div class="skill-example-good">✓ "I'm leaving," he said, grabbing his coat from the chair.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">🌟</span>
+                        <span class="skill-title">Strong Verbs</span>
+                    </div>
+                    <p class="skill-desc">Replace weak verbs with powerful ones. "Walked" becomes "stomped," "crept," or "marched."</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ She walked into the room.</div>
+                        <div class="skill-example-good">✓ She stormed into the room, her eyes blazing.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">🔗</span>
+                        <span class="skill-title">Transition Words</span>
+                    </div>
+                    <p class="skill-desc">Use words like "however," "meanwhile," "suddenly" to connect ideas smoothly.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ The sun set. The stars appeared.</div>
+                        <div class="skill-example-good">✓ As the sun set, the stars began to appear one by one.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">📍</span>
+                        <span class="skill-title">Sensory Details</span>
+                    </div>
+                    <p class="skill-desc">Engage all 5 senses: sight, sound, smell, taste, and touch to bring scenes to life.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad">❌ The kitchen smelled.</div>
+                        <div class="skill-example-good">✓ The kitchen smelled of fresh bread and brewing coffee.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Page -->
+        <div id="history" class="page">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                <h1 style="margin: 0;">📜 Essay History</h1>
+                <div class="data-bar">
+                    <span class="data-bar-label">💾 Data:</span>
+                    <span class="data-bar-label">☁️ Sync:</span>
+                    <input id="sync-code-input" type="text" inputmode="numeric" placeholder="Sync code (e.g. 123456)"
+                           style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); width: 180px;">
+                    <button class="btn btn-outline btn-sm" onclick="saveSyncCode()">Save</button>
+                    <button class="btn btn-ghost btn-sm" onclick="syncNow()">Sync Now</button>
+                    <button class="btn btn-primary btn-sm" onclick="exportData()">📥 Export Backup</button>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-file').click()">📤 Import Backup</button>
+                    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+                    <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color: var(--danger);">🗑 Clear All</button>
+                </div>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- Results Page (hidden by default, shown after submission) -->
+        <div id="results" class="page">
+            <h1 style="margin-bottom: 2rem;">📊 Your Results</h1>
+            <div class="results-layout">
+                <div class="card score-circle-container">
+                    <div class="score-circle">
+                        <svg width="200" height="200" viewBox="0 0 200 200">
+                            <circle class="score-circle-bg" cx="100" cy="100" r="85"/>
+                            <circle class="score-circle-fill" id="score-circle-fill" cx="100" cy="100" r="85"
+                                stroke-dasharray="534" stroke-dashoffset="534"/>
+                        </svg>
+                        <div class="score-value" id="final-score">0</div>
+                    </div>
+                    <div class="score-label">points</div>
+                    <div class="score-message" id="score-message">Great work!</div>
+                    <button class="btn btn-primary" onclick="showPage('practice')">✏️ Write Another</button>
+                </div>
+                <div class="card">
+                    <div class="card-title">📋 Criteria Breakdown</div>
+                    <div class="criteria-list" id="criteria-list">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-title">🧠 Online Writing Check (Spelling / Grammar)</div>
+                <p style="color: var(--text-light); margin-bottom: 1.75rem;">
+                    Submission scores already blend in results from the online checker when available.
+                    Powered by <a href="https://languagetool.org" target="_blank" rel="noopener">LanguageTool</a>
+                    (public API — please keep usage light).
+                </p>
+                <button class="btn btn-outline btn-sm" onclick="runOnlineCheck()">🔎 Run Online Check</button>
+                <div id="online-check-status" style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;"></div>
+                <ul class="feedback-list" id="online-issues-list" style="margin-top: 0.75rem;">
+                    <li style="color: var(--text-muted);">No check run yet.</li>
+                </ul>
+            </div>
+
+            <div class="feedback-section">
+                <div class="feedback-card">
+                    <div class="feedback-title">✨ What's Working Well</div>
+                    <ul class="feedback-list" id="strengths-list">
+                        <!-- Generated by JS -->
+                    </ul>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-title">📝 Areas to Improve</div>
+                    <ul class="feedback-list" id="improvements-list">
+                        <!-- Generated by JS -->
+                    </ul>
+                </div>
+                <div class="card outline-card">
+                    <div class="card-title">📋 Story Outline</div>
+                    <div id="story-outline">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Challenge Card Modal -->
+    <div class="modal-overlay" id="challenge-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🎲 Challenge Card</div>
+                <button class="modal-close" onclick="closeChallengeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="challenge-card-display" id="challenge-display">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="skipChallenge()">Skip</button>
+                <button class="btn btn-primary" onclick="addChallengeToStory()">Add to Story</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Power Words Modal (for in-editor use) -->
+    <div class="modal-overlay" id="power-words-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">💪 Power Words</div>
+                <button class="modal-close" onclick="closePowerWordsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="power-word-input-group">
+                    <input type="text" id="modal-power-word" placeholder="Type a word...">
+                    <button class="btn btn-primary" onclick="searchModalPowerWord()">Go</button>
+                </div>
+                <div id="modal-power-results" class="power-levels">
+                    <!-- Generated by JS -->
+                </div>
+                <div class="help-tip">Tap a word to copy it, then paste into your story.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">❓ Quick Start</div>
+                <button class="modal-close" onclick="closeHelpModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-list">
+                    <div class="help-item">
+                        <strong>1) Pick a prompt (Dashboard)</strong>
+                        Choose one of the 6 prompts, or use the Daily Story Seed and press “Plant this seed”.
+                    </div>
+                    <div class="help-item">
+                        <strong>2) Write (Practice)</strong>
+                        Use the Timer if you want. Aim for at least 50 words, then press “Submit”.
+                    </div>
+                    <div class="help-item">
+                        <strong>3) Get unstuck</strong>
+                        Press “Challenge” to add a twist card into your story, or open “Power Words” to upgrade vocabulary.
+                    </div>
+                    <div class="help-item">
+                        <strong>4) Read feedback (Results)</strong>
+                        You’ll see a score breakdown, strengths, improvements, a story outline, and an online grammar/spelling check.
+                    </div>
+                    <div class="help-item">
+                        <strong>5) See your past essays (History)</strong>
+                        Essays are saved automatically. If you use Cloud Sync, enter the same Sync code on iPad + computer.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeHelpModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggestion Popup -->
+    <div class="suggestion-popup" id="suggestion-popup" style="display: none;">
+        <h4 id="suggestion-header">💡 Try instead...</h4>
+        <p id="suggestion-text"></p>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Confetti Container -->
+    <div class="confetti" id="confetti"></div>
+
+    <script>
+        const APP_VERSION = 'v2.2.0';
+
+        // ============ DATA ============
+        const WRITING_PROMPTS = [
+            { text: "Write about a time when you discovered something unexpected in your backyard.", difficulty: "easy" },
+            { text: "A mysterious letter arrives with no return address. What does it say?", difficulty: "easy" },
+            { text: "You wake up to find that everyone in your town has forgotten who you are.", difficulty: "medium" },
+            { text: "The old house at the end of the street has been empty for years. Tonight, the lights turn on.", difficulty: "medium" },
+            { text: "You find a door in your classroom that wasn't there yesterday.", difficulty: "easy" },
+            { text: "Your pet starts talking. What do they say?", difficulty: "easy" },
+            { text: "Write about losing something important and finding it in an unexpected place.", difficulty: "easy" },
+            { text: "A storm traps you and your friends somewhere unexpected. How do you escape?", difficulty: "medium" },
+            { text: "You discover your grandparent has a secret life no one knew about.", difficulty: "hard" },
+            { text: "Write about a character who can hear other people's thoughts but only in one specific place.", difficulty: "hard" },
+            { text: "The power goes out during a family gathering. What happens in the darkness?", difficulty: "medium" },
+            { text: "You receive a gift that changes something about you permanently.", difficulty: "hard" }
+        ];
+
+        const CHALLENGE_CARDS = [
+            { emoji: "⚡", title: "Power Outage!", desc: "The power just went out!" },
+            { emoji: "💀", title: "Hidden Letter!", desc: "A character discovers a hidden letter!" },
+            { emoji: "🌧️", title: "Rain Check!", desc: "It starts raining unexpectedly!" },
+            { emoji: "🔑", title: "Lost and Found!", desc: "The main character loses something important!" },
+            { emoji: "🐭", title: "Critter Alert!", desc: "An unexpected animal appears!" },
+            { emoji: "📞", title: "Mysterious Call!", desc: "Someone receives a mysterious phone call!" },
+            { emoji: "🌀", title: "Time Twist!", desc: "Everything starts moving in reverse!" },
+            { emoji: "🎭", title: "Secret Identity!", desc: "Someone is not who they claim to be!" },
+            { emoji: "📦", title: "Locked Mystery!", desc: "They find a locked box with no key!" },
+            { emoji: "🌙", title: "Solar Surprises!", desc: "The sun suddenly sets at noon!" },
+            { emoji: "🚪", title: "Door Dilemma!", desc: "A door appears that wasn't there before!" },
+            { emoji: "👻", title: "Ghostly Encounter!", desc: "A ghostly figure makes an appearance!" },
+            { emoji: "🏃", title: "Chase Scene!", desc: "Someone starts running and won't stop!" },
+            { emoji: "🤫", title: "Secret Spotted!", desc: "Someone overhears a secret conversation!" },
+            { emoji: "🎁", title: "Unexpected Gift!", desc: "An anonymous gift arrives!" },
+            { emoji: "⏰", title: "Time Freeze!", desc: "Time suddenly stops!" },
+            { emoji: "🔥", title: "Fire Alarm!", desc: "A fire alarm goes off!" },
+            { emoji: "🌈", title: "Color Change!", desc: "Everything turns black and white!" },
+            { emoji: "🗣️", title: "Voices!", desc: "A character starts speaking in a different voice!" },
+            { emoji: "💭", title: "Mind Reading!", desc: "Someone can read minds for an hour!" },
+            { emoji: "🕵️", title: "Mystery Clue!", desc: "A crucial clue falls out of a pocket!" },
+            { emoji: "🎢", title: "Ride Gone Wrong!", desc: "Something breaks on a ride or vehicle!" },
+            { emoji: "🌋", title: "Volcano Eruption!", desc: "Something erupts unexpectedly!" },
+            { emoji: "❄️", title: "Frozen!", desc: "Everything gets covered in ice!" },
+            { emoji: "🎪", title: "Circus Chaos!", desc: "The circus arrives in town!" },
+            { emoji: "🤖", title: "Robot Awakening!", desc: "A machine suddenly comes to life!" },
+            { emoji: "🧙", title: "Magic Spell!", desc: "Someone casts an accidental spell!" },
+            { emoji: "🌊", title: "Wave Rider!", desc: "A giant wave approaches!" },
+            { emoji: "🦋", title: "Butterfly Effect!", desc: "A small change causes big results!" },
+            { emoji: "💎", title: "Jewel Heist!", desc: "Something precious goes missing!" }
+        ];
+
+        const RANDOM_NAMES = [
+            "Emma", "Liam", "Olivia", "Noah", "Ava", "Ethan", "Sophia", "Mason",
+            "Isabella", "William", "Mia", "James", "Charlotte", "Benjamin", "Amelia",
+            "Lucas", "Harper", "Henry", "Evelyn", "Alexander", "Luna", "Sebastian",
+            "Camila", "Jack", "Aria", "Daniel", "Scarlett", "Michael", "Penelope",
+            "Owen", "Layla", "Elijah", "Chloe", "Aiden", "Victoria", "Samuel"
+        ];
+
+        const STORY_SEEDS = {
+            characters: [
+                "A curious astronaut", "A shy inventor", "A brave messenger", "A mischievous detective",
+                "A kind dragon", "A lonely robot", "A magical cat", "A daring explorer",
+                "A worried chef", "A clever ghost", "A fearless pirate", "A gentle giant",
+                "A sneaky spy", "A wise old owl", "A playful monkey", "A quiet artist",
+                "A strong builder", "A singing mermaid", "A dancing elf", "A dreaming astronaut"
+            ],
+            settings: [
+                "in an underwater city", "on a floating island", "in a library made of clouds",
+                "inside a giant treehouse", "beneath the ocean waves", "in a town where time flows backward",
+                "inside a magical wardrobe", "on a train that never stops", "in a garden of giants",
+                "at the edge of a rainbow", "inside a snow globe world", "on a street made of chocolate",
+                "in a museum that comes alive", "beneath a bridge of stars", "in a castle of mirrors",
+                "at a secret underground station", "inside a giant's pocket", "on an island of floating rocks",
+                "in a city in the clouds", "at the bottom of a wishing well"
+            ],
+            conflicts: [
+                "discovers a door that shouldn't exist", "finds a map to a hidden world",
+                "must solve a mystery before sunset", "accidentally unleashes something magical",
+                "makes a discovery that changes everything", "gets trapped and must find a way out",
+                "hears a voice calling from far away", "spots something impossible in the sky",
+                "witnesses something no one else believes", "receives a message from the future",
+                "loses the only thing that matters", "meets someone from their dreams",
+                "stumbles upon a secret passage", "finds themselves in the wrong time period",
+                "must save someone before it's too late", "discovers their greatest fear is real",
+                "realizes nothing is as it seems", "unlocks a power they never knew they had",
+                "must choose between two impossible options", "discovers a hidden talent just in time"
+            ]
+        };
+
+        const POWER_WORDS = {
+            walk: {
+                1: ["stroll", "step", "wander"],
+                2: ["march", "pace", "stride"],
+                3: ["trudge", "shuffle", "limp"],
+                4: ["saunter", "amble", "slink"],
+                5: ["lumber", "meander", "prowl"]
+            },
+            run: {
+                1: ["jog", "dash", "sprint"],
+                2: ["race", "rush", "hurry"],
+                3: ["charge", "bolt", "dart"],
+                4: ["scurry", "sprint", "flee"],
+                5: ["tear", "gallop", "streak"]
+            },
+            said: {
+                1: ["asked", "replied", "answered"],
+                2: ["whispered", "shouted", "declared"],
+                3: ["exclaimed", "muttered", "breathed"],
+                4: ["grumbled", "snapped", "croaked"],
+                5: ["hissed", "bellowed", "drawled"]
+            },
+            look: {
+                1: ["see", "watch", "view"],
+                2: ["stare", "glance", "observe"],
+                3: ["gaze", "peer", "examine"],
+                4: ["scrutinize", "scan", "study"],
+                5: ["behold", "contemplate", "peer"]
+            },
+            think: {
+                1: ["believe", "feel", "guess"],
+                2: ["wonder", "realize", "consider"],
+                3: ["ponder", "muse", "reflect"],
+                4: ["speculate", "meditate", "deliberate"],
+                5: ["contemplate", "ruminate", "philosophize"]
+            },
+            good: {
+                1: ["nice", "fine", "great"],
+                2: ["wonderful", "excellent", "lovely"],
+                3: ["fantastic", "amazing", "superb"],
+                4: ["outstanding", "remarkable", "brilliant"],
+                5: ["magnificent", "extraordinary", "phenomenal"]
+            },
+            bad: {
+                1: ["awful", "terrible", "poor"],
+                2: ["horrible", "dreadful", "nasty"],
+                3: ["frightful", "atrocious", "abysmal"],
+                4: ["dreadful", "horrifying", "appalling"],
+                5: ["atrocious", "abominable", "monstrous"]
+            },
+            big: {
+                1: ["large", "huge", "giant"],
+                2: ["enormous", "massive", "vast"],
+                3: ["immense", "gigantic", "colossal"],
+                4: ["mammoth", "towering", "gargantuan"],
+                5: ["astronomical", "gargantuan", "monumental"]
+            },
+            small: {
+                1: ["tiny", "little", "mini"],
+                2: ["miniature", "petite", "compact"],
+                3: ["diminutive", "minute", "slight"],
+                4: ["tiny", "wee", "pint-sized"],
+                5: ["microscopic", "infinitesimal", "minuscule"]
+            },
+            fast: {
+                1: ["quick", "rapid", "swift"],
+                2: ["speedy", "hasty", "brisk"],
+                3: ["fleet", "nimble", "agile"],
+                4: ["blazing", "lightning", "meteoric"],
+                5: ["breakneck", "turbine-powered", "warp-speed"]
+            },
+            slow: {
+                1: ["unhurried", "gentle", "easy"],
+                2: ["steady", "leisurely", "relaxed"],
+                3: ["gradual", "sluggish", "plodding"],
+                4: ["meandering", "drifting", "crawling"],
+                5: ["snail-paced", "glacial", "etched in stone"]
+            },
+            eat: {
+                1: ["dine", "consume", "nibble"],
+                2: ["devour", "gobble", "chew"],
+                3: ["feast", "gorge", "wolf down"],
+                4: ["savor", "grazed", "snacked"],
+                5: [" banquet", "feasted", "gorged"]
+            },
+            see: {
+                1: ["spot", "notice", "view"],
+                2: ["observe", "watch", "glimpse"],
+                3: ["witness", "behold", "perceive"],
+                4: ["discern", "detect", "make out"],
+                5: ["contemplate", "witness", "envision"]
+            },
+            happy: {
+                1: ["glad", "cheerful", "pleased"],
+                2: ["joyful", "delighted", "content"],
+                3: ["elated", "thrilled", "overjoyed"],
+                4: ["ecstatic", "euphoric", "jubilant"],
+                5: ["blissful", "radiant", "on cloud nine"]
+            },
+            sad: {
+                1: ["unhappy", "down", "blue"],
+                2: ["upset", "disappointed", "gloomy"],
+                3: ["heartbroken", "melancholy", "sorrowful"],
+                4: ["devastated", "crestfallen", "mournful"],
+                5: ["desolate", "anguished", "inconsolable"]
+            },
+            old: {
+                1: ["aged", "elderly", "mature"],
+                2: ["ancient", "vintage", "historic"],
+                3: ["antique", "timeworn", "weathered"],
+                4: ["archaic", "primordial", "venerable"],
+                5: ["antiquated", "prehistoric", "primordial"]
+            },
+            make: {
+                1: ["create", "build", "form"],
+                2: ["construct", "design", "fashion"],
+                3: ["craft", "manufacture", "fabricate"],
+                4: ["assemble", "engineer", "whip up"],
+                5: ["concoct", "rig up", "hatch"]
+            },
+            nice: {
+                1: ["pleasant", "agreeable", "enjoyable"],
+                2: ["kind", "thoughtful", " considerate"],
+                3: ["generous", "gracious", "delightful"],
+                4: ["charming", "delightful", "exquisite"],
+                5: ["magnanimous", "benevolent", "angelic"]
+            },
+            scary: {
+                1: ["frightening", "alarming", "unnerving"],
+                2: ["terrifying", "horrifying", "eerie"],
+                3: ["chilling", "spine-tingling", "bloodcurdling"],
+                4: ["hair-raising", "spine-chilling", "petrifying"],
+                5: ["horrific", "nightmarish", "macabre"]
+            }
+        };
+
+        // ============ ONLINE (OPTIONAL) ============
+        const ONLINE_CONFIG = {
+            // Datamuse is a free word-finding API that supports CORS and does not require keys.
+            // Docs: https://www.datamuse.com/api/
+            datamuse: 'https://api.datamuse.com/words',
+            // LanguageTool public endpoint (may rate-limit). If CORS blocks in some environments,
+            // you can later switch to a tiny proxy server.
+            languageTool: 'https://api.languagetool.org/v2/check',
+            // Recommended: set this to your Cloudflare Worker URL to avoid CORS/rate-limit issues.
+            // Example: 'https://writeboost-proxy.yourname.workers.dev'
+            proxyBase: 'https://writeboost-proxy.rabito.workers.dev',
+            enabled: true,
+            timeoutMs: 12000,
+            // Cloud sync (cross-device). Stored via Worker + KV.
+            // Set a short "sync code" on both iPad + computer to share the same cloud data.
+            syncEnabled: true
+        };
+
+        function fetchWithTimeout(url, options = {}, timeoutMs = ONLINE_CONFIG.timeoutMs) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+            return fetch(url, { ...options, signal: controller.signal })
+                .finally(() => clearTimeout(id));
+        }
+
+        async function getOnlinePowerWords(word) {
+            const q = (word || '').toLowerCase().trim();
+            if (!q) return null;
+
+            let data;
+            if (ONLINE_CONFIG.proxyBase) {
+                const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/power?word=${encodeURIComponent(q)}`;
+                const res = await fetchWithTimeout(url, { method: 'GET' });
+                if (!res.ok) throw new Error(`Proxy error: ${res.status}`);
+                const payload = await res.json();
+                const levels = payload?.levels;
+                if (levels && typeof levels === 'object') return levels;
+                data = payload?.raw || [];
+            } else {
+                // Prefer “means like” (ml) synonyms/related words.
+                const url = `${ONLINE_CONFIG.datamuse}?ml=${encodeURIComponent(q)}&max=30`;
+                const res = await fetchWithTimeout(url, { method: 'GET' });
+                if (!res.ok) throw new Error(`Datamuse error: ${res.status}`);
+                data = await res.json();
+            }
+            const items = (Array.isArray(data) ? data : [])
+                .filter(x => x && typeof x.word === 'string')
+                .map(x => ({ word: x.word, score: Number(x.score) || 0 }))
+                .filter(x => x.word.toLowerCase() !== q);
+
+            if (items.length === 0) return null;
+
+            // Bucket into 5 “levels” by score ranking.
+            items.sort((a, b) => b.score - a.score);
+            const words = items.map(x => x.word);
+            const buckets = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+            const chunk = Math.ceil(words.length / 5);
+            for (let i = 0; i < words.length; i++) {
+                const level = Math.min(5, Math.floor(i / chunk) + 1);
+                buckets[level].push(words[i]);
+            }
+
+            return buckets;
+        }
+
+        const LT_MAX_CHUNK_CHARS = 15000;
+
+        function normalizeLanguageToolMatch(m) {
+            return {
+                message: m?.message || 'Issue',
+                shortMessage: m?.shortMessage || '',
+                offset: Number(m?.offset) || 0,
+                length: Number(m?.length) || 0,
+                replacements: (m?.replacements || []).slice(0, 5).map(r => r?.value).filter(Boolean),
+                ruleId: m?.rule?.id || '',
+                category: m?.rule?.category?.name || '',
+                categoryId: m?.rule?.category?.id || '',
+                issueType: m?.rule?.issueType || ''
+            };
+        }
+
+        async function fetchLanguageToolRawOnce(text, language = 'en-US', timeoutMs = ONLINE_CONFIG.timeoutMs) {
+            const t = (text || '').trim();
+            if (!t) return { matches: [] };
+
+            let data;
+            if (ONLINE_CONFIG.proxyBase) {
+                const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/check`;
+                const res = await fetchWithTimeout(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: t, language })
+                }, timeoutMs);
+                if (!res.ok) throw new Error(`Proxy error: ${res.status}`);
+                data = await res.json();
+            } else {
+                const body = new URLSearchParams();
+                body.set('text', t);
+                body.set('language', language);
+                body.set('enabledOnly', 'false');
+
+                const res = await fetchWithTimeout(ONLINE_CONFIG.languageTool, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body
+                }, timeoutMs);
+                if (!res.ok) throw new Error(`LanguageTool error: ${res.status}`);
+                data = await res.json();
+            }
+            return data;
+        }
+
+        async function fetchLanguageToolMatches(text, language = 'en-US') {
+            const t = (text || '').trim();
+            if (!t) return [];
+
+            if (t.length <= LT_MAX_CHUNK_CHARS) {
+                const data = await fetchLanguageToolRawOnce(t, language);
+                const matches = Array.isArray(data?.matches) ? data.matches : [];
+                return matches.map(normalizeLanguageToolMatch);
+            }
+
+            const chunks = [];
+            let start = 0;
+            while (start < t.length) {
+                let end = Math.min(start + LT_MAX_CHUNK_CHARS, t.length);
+                if (end < t.length) {
+                    const slice = t.slice(start, end);
+                    let cut = -1;
+                    const breaks = ['\n\n', '\n', '. ', '! ', '? ', ', ', ' '];
+                    for (const br of breaks) {
+                        const idx = slice.lastIndexOf(br);
+                        if (idx > LT_MAX_CHUNK_CHARS * 0.52) cut = Math.max(cut, idx + br.length);
+                    }
+                    if (cut > 0) end = start + cut;
+                }
+                chunks.push(t.slice(start, end));
+                start = end;
+            }
+
+            const out = [];
+            let offsetShift = 0;
+            for (const chunk of chunks) {
+                const data = await fetchLanguageToolRawOnce(chunk, language);
+                const matches = Array.isArray(data?.matches) ? data.matches : [];
+                for (const m of matches) {
+                    const nm = normalizeLanguageToolMatch(m);
+                    nm.offset = (Number(m?.offset) || 0) + offsetShift;
+                    out.push(nm);
+                }
+                offsetShift += chunk.length;
+            }
+            return out;
+        }
+
+        async function checkTextOnline(text, language = 'en-US') {
+            return fetchLanguageToolMatches(text, language);
+        }
+
+        function snippetAt(text, offset, length, pad = 20) {
+            const start = Math.max(0, offset - pad);
+            const end = Math.min(text.length, offset + length + pad);
+            return text.slice(start, end).replace(/\s+/g, ' ').trim();
+        }
+
+        function renderOnlineCheckResults(text, matches, totalCount) {
+            const statusEl = document.getElementById('online-check-status');
+            const listEl = document.getElementById('online-issues-list');
+            if (!statusEl || !listEl) return;
+
+            const n = Number.isFinite(Number(totalCount)) ? Number(totalCount) : (matches?.length || 0);
+            if (!matches || !matches.length) {
+                statusEl.textContent = 'No issues found (nice!).';
+                listEl.innerHTML = '<li>✓ No obvious spelling/grammar issues detected.</li>';
+                return;
+            }
+
+            statusEl.textContent = `Found ${n} possible issue${n !== 1 ? 's' : ''}.`;
+            listEl.innerHTML = matches.slice(0, 15).map(m => {
+                const repl = m.replacements && m.replacements.length
+                    ? ` Suggestions: <strong>${m.replacements.join(', ')}</strong>`
+                    : '';
+                const snip = snippetAt(text, m.offset, m.length);
+                const label = [m.category, m.ruleId].filter(Boolean).join(' · ');
+                return `<li>⚠️ <strong>${m.message}</strong>${label ? ` <span style="color: var(--text-muted);">(${label})</span>` : ''}<br><span style="color: var(--text-muted);">"...${snip}..."</span>${repl}</li>`;
+            }).join('') + (n > 15 ? `<li style="color: var(--text-muted);">Showing first 15 issues.</li>` : '');
+        }
+
+        async function runOnlineCheck(textOverride = null) {
+            const statusEl = document.getElementById('online-check-status');
+            const listEl = document.getElementById('online-issues-list');
+            if (!statusEl || !listEl) return;
+
+            if (!ONLINE_CONFIG.enabled) {
+                statusEl.textContent = 'Online check is disabled.';
+                return;
+            }
+
+            const text = (textOverride ?? document.getElementById('essay-input')?.value ?? '').trim();
+            if (text.length < 20) {
+                statusEl.textContent = 'Write a bit more text to check.';
+                listEl.innerHTML = '<li style="color: var(--text-muted);">Nothing to check yet.</li>';
+                return;
+            }
+
+            statusEl.textContent = 'Checking online...';
+            listEl.innerHTML = '<li style="color: var(--text-muted);">Working...</li>';
+
+            try {
+                const matches = await checkTextOnline(text, 'en-US');
+                renderOnlineCheckResults(text, matches, matches.length);
+            } catch (e) {
+                statusEl.textContent = 'Online check failed (maybe offline or rate-limited).';
+                listEl.innerHTML = '<li style="color: var(--text-muted);">Could not reach the online checker. You can still submit and use the built-in scoring.</li>';
+            }
+        }
+
+        const FLAT_WORDS = [
+            "happy", "sad", "angry", "scared", "beautiful", "ugly", "cold", "hot",
+            "loud", "quiet", "big", "small", "good", "bad", "nice", "mean",
+            "fast", "slow", "tired", "excited", "nervous", "surprised", "bored", "brave"
+        ];
+
+        const SENSORY_SUGGESTIONS = {
+            angry: {
+                sight: "Did his face turn red? Did his fists clench? Did veins pop out on his neck?",
+                sound: "Did he slam doors? Shout? Snap at someone?",
+                touch: "Did his hands shake? Was his face hot to touch?",
+                smell: "Could he smell smoke from his own burning anger?",
+                taste: "Did bitterness fill his mouth? Did his throat go dry?"
+            },
+            sad: {
+                sight: "Did tears roll down his cheek? Did his eyes become red and puffy?",
+                sound: "Did sobs shake his body? Did his voice crack?",
+                touch: "Did a tear roll down his cheek? Was there a lump in his throat?",
+                smell: "Did the room smell of tears and loneliness?",
+                taste: "Did salt from tears touch his lips? Did food taste like cardboard?"
+            },
+            scared: {
+                sight: "Did his eyes widen? Did his face turn pale? Did shadows seem to jump?",
+                sound: "Did his heart pound? Did his voice tremble? Did teeth chatter?",
+                touch: "Did goosebumps cover his arms? Were his palms sweaty?",
+                smell: "Did fear have a smell - metallic or sour?",
+                taste: "Did his mouth go dry? Did his tongue stick to the roof of his mouth?"
+            },
+            happy: {
+                sight: "Did a smile spread across his face? Did his eyes crinkle at the corners?",
+                sound: "Did laughter bubble up? Did his voice sing with joy?",
+                touch: "Did warmth spread through his chest? Did he feel light on his feet?",
+                smell: "Did everything smell sweeter? Like flowers or fresh baking?",
+                taste: "Did the world taste sweeter? Like victory or mom's cookies?"
+            },
+            cold: {
+                sight: "Did breath fog the air? Were there icicles on the window? Did skin turn blue?",
+                sound: "Did teeth chatter? Did the wind howl? Did the furnace click on?",
+                touch: "Did skin prickle? Did fingers stiffen? Was there frost on eyelashes?",
+                smell: "Did the air smell crisp and clean? Like snow?",
+                taste: "Did lips crack? Did breath feel like tiny knives?"
+            },
+            hot: {
+                sight: "Did sweat drip down foreheads? Did the road shimmer? Did skin turn red?",
+                sound: "Did cicadas scream? Did air conditioning hum?",
+                touch: "Did skin burn to touch? Did sweat soak through clothes?",
+                smell: "Did the air smell like sizzling pavement? Like hot asphalt?",
+                taste: "Did lips crack? Did the tongue feel swollen from thirst?"
+            },
+            loud: {
+                sight: "Did people cover their ears? Did windows shake? Did things vibrate?",
+                sound: "Was it deafening? Did it echo? Did it make your ears ring?",
+                touch: "Did your chest vibrate? Could you feel it in your bones?",
+                smell: "Did the loud noise have a smell - like electricity or burning?",
+                taste: "Did the loudness have a taste - metallic or sharp?"
+            },
+            quiet: {
+                sight: "Could you hear a pin drop? Did everything seem frozen?",
+                sound: "Was it so silent you could hear your own heartbeat? Breathing?",
+                touch: "Did the quiet feel thick? Like a blanket?",
+                smell: "Did silence have a smell - dusty, old, waiting?",
+                taste: "Did the air taste still? Like waiting for something?"
+            },
+            big: {
+                sight: "Did it tower above? Did it block out the sun? Fill the whole room?",
+                sound: "Did it make the ground shake? Rumble? Echo?",
+                touch: "Was it hard to wrap arms around? Did it cast a huge shadow?",
+                smell: "Did it smell powerful? Ancient? Like the outdoors?",
+                taste: "Did looking at it make you feel small?"
+            },
+            small: {
+                sight: "Could you cup it in your hands? Did it look tiny against your palm?",
+                sound: "Did it squeak? Was its voice high and tiny?",
+                touch: "Did it tickle? Feel delicate? Fragile as a feather?",
+                smell: "Did it smell sweet? Like something that needed protecting?",
+                taste: "Not applicable - small things are usually not tasted!"
+            },
+            tired: {
+                sight: "Did eyelids droop? Did the world go blurry? Did everything seem dim?",
+                sound: "Did words start to blur together? Did snoring begin?",
+                touch: "Did limbs feel heavy? Like they were made of lead?",
+                smell: "Did the bed smell extra inviting? Like soft pillows?",
+                taste: "Did eyes burn? Did a yawn feel stuck in the throat?"
+            },
+            excited: {
+                sight: "Did eyes sparkle? Did bouncing replace walking? Did time fly?",
+                sound: "Did squeals escape? Did voice pitch go up? Did words tumble out?",
+                touch: "Did butterflies dance in stomach? Did hands flutter like birds?",
+                smell: "Did anticipation smell sweet? Like birthday candles or fresh snow?",
+                taste: "Did excitement taste fizzy? Like soda bubbles in the chest?"
+            },
+            nervous: {
+                sight: "Did knees wobble? Did hands fidget? Did mouth go dry?",
+                sound: "Did voice shake? Did stomach growl loudly?",
+                touch: "Did palms sweat? Did heart race? Did face flush?",
+                smell: "Did fear-sweat smell sharp? Did breath quicken?",
+                taste: "Did mouth taste metallic? Like swallowing a penny?"
+            },
+            surprised: {
+                sight: "Did jaw drop? Did eyes pop out? Did eyebrows shoot up?",
+                sound: "Did gasps escape? Did someone squeal? Shriek?",
+                touch: "Did hand fly to mouth? Did whole body jump?",
+                smell: "Did surprise smell like electricity - sharp and sudden?",
+                taste: "Was there a sharp taste - like lemon or shock?"
+            },
+            brave: {
+                sight: "Did chin lift up? Did shoulders square? Did eyes stay steady?",
+                sound: "Did voice stay strong? Did breathing stay even?",
+                touch: "Did hands stay calm? Did heart pound but not race?",
+                smell: "Did courage smell like iron - strong and sure?",
+                taste: "Did brave taste like steel - hard and determined?"
+            }
+        };
+
+        const TENSION_WORDS = {
+            calm: ["quietly", "peacefully", "smiled", "warm", "soft", "gentle", "relaxed", "calmly", "serene", "tranquil", "slowly", "breathed", "watched", "waited", "sat", "rested", "comfortable", "content", "comfortably"],
+            rising: ["noticed", "strange", "seemed", "began", "felt something", "uneasy", "curious", "wondered", "glanced", "paused", "hesitated", "wondering", "slowly", "quieter", "darker", "smaller", "closer", "suspicious"],
+            high: ["suddenly", "screamed", "ran", "crashed", "exploded", "heart pounding", "froze", "grabbed", "terror", "panic", "desperate", "slammed", "banged", "shook", "trembled", "gasped", "shouted", "burst", "smashed", "ripped", "tore"],
+            resolution: ["finally", "smiled", "relief", "safe", "learned", "realized", "understood", "hugged", "laughed", "celebrated", "cheered", "bright", "warmth", "hope", "home", "together", "peace", "ended", "completed"]
+        };
+
+        const ACHIEVEMENTS = [
+            { id: "first-draft", emoji: "✏️", name: "First Draft", condition: "Write your first essay", check: (s) => s.totalEssays >= 1 },
+            { id: "streak-3", emoji: "🔥", name: "Streak 3", condition: "Practice 3 days in a row", check: (s) => s.streak >= 3 },
+            { id: "streak-7", emoji: "🔥", name: "Streak 7", condition: "Practice 7 days in a row", check: (s) => s.streak >= 7 },
+            { id: "score-400", emoji: "🎯", name: "Score 400+", condition: "Reach 400 points", check: (s) => s.bestScore >= 400 },
+            { id: "score-450", emoji: "🎯", name: "Score 450+", condition: "Reach 450 points", check: (s) => s.bestScore >= 450 },
+            { id: "score-500", emoji: "🎯", name: "Score 500+", condition: "Reach 500 points", check: (s) => s.bestScore >= 500 },
+            { id: "bookworm", emoji: "📖", name: "Bookworm", condition: "Write 500+ words in one essay", check: (s) => s.longestEssay >= 500 },
+            { id: "drama-queen", emoji: "🎭", name: "Drama Queen", condition: "Use dialogue in 5 essays", check: (s) => s.dialogueEssays >= 5 },
+            { id: "twist-master", emoji: "🌊", name: "Twist Master", condition: "Use 3 challenge cards in one essay", check: (s) => s.maxChallenges >= 3 },
+            { id: "sensor", emoji: "🎨", name: "Sensor", condition: "Replace 5 flat words with sensory details", check: (s) => s.totalReplacements >= 5 },
+            { id: "ten-essays", emoji: "📚", name: "10 Essays", condition: "Complete 10 essays", check: (s) => s.totalEssays >= 10 },
+            { id: "perfectionist", emoji: "💎", name: "Perfectionist", condition: "Get 6/6 on any criterion", check: (s) => s.perfectCriteria >= 1 }
+        ];
+
+        // ============ STATE ============
+        let state = {
+            currentPage: 'dashboard',
+            currentPrompt: null,
+            currentPromptIndex: null,
+            timerMinutes: 25,
+            timerSeconds: 0,
+            timerRunning: false,
+            timerInterval: null,
+            startTime: null,
+            essays: [],
+            stats: {
+                totalEssays: 0,
+                totalWords: 0,
+                totalScore: 0,
+                streak: 0,
+                lastPractice: null,
+                bestScore: 0,
+                longestEssay: 0,
+                dialogueEssays: 0,
+                maxChallenges: 0,
+                totalReplacements: 0,
+                perfectCriteria: 0,
+                unlockedAchievements: [],
+                promptCycleSeed: null,
+                usedPromptIndices: []
+            },
+            character: {
+                name: '',
+                age: '',
+                personality: '',
+                quirk: '',
+                friend: ''
+            },
+            currentChallenge: null,
+            challengesUsed: 0,
+            flatWordsFound: [],
+            flatWordsReplaced: 0,
+            selectedFlatWord: null,
+            selectedSense: null
+        };
+
+        // ============ INITIALIZATION ============
+        function init() {
+            loadState();
+            updateStats();
+            renderPrompts();
+            renderAchievements();
+            renderHistory();
+            generateDailySeed();
+            loadCharacter();
+            setupEventListeners();
+            setupTextareaListener();
+            drawStoryCoaster();
+
+            const versionEl = document.getElementById('app-version');
+            if (versionEl) versionEl.textContent = APP_VERSION;
+
+            // Sync code UI
+            const syncInput = document.getElementById('sync-code-input');
+            if (syncInput) syncInput.value = getSyncCode();
+
+            // Best-effort background sync on startup
+            setTimeout(() => {
+                syncNow();
+            }, 300);
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('writeboost-v2');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.stats = { ...state.stats, ...parsed.stats };
+                state.essays = parsed.essays || [];
+                state.character = { ...state.character, ...parsed.character };
+            }
+            // Backfill derived stats for older saves
+            if (!Number.isFinite(state.stats.totalScore) || state.stats.totalScore <= 0) {
+                const sum = (state.essays || []).reduce((acc, e) => acc + (Number(e?.score) || 0), 0);
+                state.stats.totalScore = sum;
+            }
+
+            // Prompt rotation defaults
+            if (!Number.isFinite(Number(state.stats.promptCycleSeed))) {
+                state.stats.promptCycleSeed = getDailySeedInt();
+            }
+            if (!Array.isArray(state.stats.usedPromptIndices)) {
+                state.stats.usedPromptIndices = [];
+            }
+            checkStreak();
+        }
+
+        function saveState() {
+            localStorage.setItem('writeboost-v2', JSON.stringify({
+                stats: state.stats,
+                essays: state.essays,
+                character: state.character
+            }));
+        }
+
+        // ============ CLOUD SYNC (KV via Worker) ============
+        function getSyncCode() {
+            return (localStorage.getItem('writeboost-sync-code') || '').trim();
+        }
+
+        function setSyncCode(code) {
+            const cleaned = String(code || '').trim();
+            if (cleaned) localStorage.setItem('writeboost-sync-code', cleaned);
+            else localStorage.removeItem('writeboost-sync-code');
+        }
+
+        function normalizeStateForSync() {
+            return {
+                stats: state.stats,
+                essays: state.essays,
+                character: state.character
+            };
+        }
+
+        function mergeState(localData, remoteData) {
+            const merged = { ...(localData || {}) };
+
+            // stats: prefer "better" numbers when possible
+            merged.stats = { ...(localData?.stats || {}), ...(remoteData?.stats || {}) };
+
+            // prompt rotation: union used indices, and keep the newer cycle seed (max)
+            const lu = Array.isArray(localData?.stats?.usedPromptIndices) ? localData.stats.usedPromptIndices : [];
+            const ru = Array.isArray(remoteData?.stats?.usedPromptIndices) ? remoteData.stats.usedPromptIndices : [];
+            merged.stats.usedPromptIndices = Array.from(new Set(lu.concat(ru))).filter(n => Number.isFinite(Number(n))).map(n => Number(n));
+            const ls = Number(localData?.stats?.promptCycleSeed);
+            const rs = Number(remoteData?.stats?.promptCycleSeed);
+            merged.stats.promptCycleSeed = Number.isFinite(rs) && Number.isFinite(ls) ? Math.max(ls, rs) : (Number.isFinite(rs) ? rs : (Number.isFinite(ls) ? ls : getDailySeedInt()));
+
+            // essays: append unique
+            const essayKey = (e) => {
+                const d = e?.date || '';
+                const p = e?.prompt || e?.promptTitle || '';
+                const w = e?.wordCount || '';
+                const s = e?.score || '';
+                const t = (e?.text || '').slice(0, 40);
+                return [d, p, w, s, t].join('|');
+            };
+            const localEssays = Array.isArray(localData?.essays) ? localData.essays : [];
+            const remoteEssays = Array.isArray(remoteData?.essays) ? remoteData.essays : [];
+            const seen = new Set(localEssays.map(essayKey));
+            const appended = remoteEssays.filter(e => {
+                const k = essayKey(e);
+                if (seen.has(k)) return false;
+                seen.add(k);
+                return true;
+            });
+            merged.essays = localEssays.concat(appended);
+
+            // character: keep whichever has more filled fields (simple heuristic)
+            const lc = localData?.character || {};
+            const rc = remoteData?.character || {};
+            const scoreChar = (c) => ['name','age','personality','quirk','friend'].reduce((a,k)=>a+(c?.[k]?1:0),0);
+            merged.character = scoreChar(rc) > scoreChar(lc) ? { ...lc, ...rc } : { ...rc, ...lc };
+
+            // Backfill totalScore if missing
+            if (merged.stats && (!Number.isFinite(merged.stats.totalScore) || merged.stats.totalScore <= 0)) {
+                const sum = (merged.essays || []).reduce((acc, e) => acc + (Number(e?.score) || 0), 0);
+                merged.stats.totalScore = sum;
+            }
+
+            return merged;
+        }
+
+        async function pullCloudState() {
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.proxyBase || !ONLINE_CONFIG.syncEnabled) return null;
+            const code = getSyncCode();
+            if (!code) return null;
+
+            const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/state?code=${encodeURIComponent(code)}`;
+            const res = await fetchWithTimeout(url, { method: 'GET' });
+            if (!res.ok) throw new Error(`Sync pull failed: ${res.status}`);
+            const data = await res.json();
+            return (data && typeof data === 'object') ? data : null;
+        }
+
+        async function pushCloudState() {
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.proxyBase || !ONLINE_CONFIG.syncEnabled) return;
+            const code = getSyncCode();
+            if (!code) return;
+
+            const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/state?code=${encodeURIComponent(code)}`;
+            const payload = normalizeStateForSync();
+            const res = await fetchWithTimeout(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`Sync push failed: ${res.status}`);
+        }
+
+        async function syncNow() {
+            try {
+                showToast('Syncing...');
+                const localData = normalizeStateForSync();
+                const remoteData = await pullCloudState();
+                if (remoteData) {
+                    const merged = mergeState(localData, remoteData);
+                    state.stats = { ...state.stats, ...(merged.stats || {}) };
+                    state.essays = merged.essays || [];
+                    state.character = { ...state.character, ...(merged.character || {}) };
+                    saveState();
+                    updateStats();
+                    renderHistory();
+                    renderAchievements();
+                    loadCharacter();
+                }
+                await pushCloudState();
+                showToast('Sync complete!');
+            } catch (e) {
+                showToast('Sync failed (try again later).');
+            }
+        }
+
+        function saveSyncCode() {
+            const input = document.getElementById('sync-code-input');
+            if (!input) return;
+            setSyncCode(input.value);
+            showToast(getSyncCode() ? 'Sync code saved' : 'Sync code cleared');
+            // Try a sync right away
+            syncNow();
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            const lastPractice = state.stats.lastPractice;
+
+            if (lastPractice) {
+                const lastDate = new Date(lastPractice);
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                if (lastDate.toDateString() === yesterday.toDateString()) {
+                    // Continue streak
+                } else if (lastDate.toDateString() === today) {
+                    // Already practiced today
+                } else {
+                    // Streak broken
+                    state.stats.streak = 0;
+                }
+            }
+        }
+
+        // ============ NAVIGATION ============
+        function setupEventListeners() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    showPage(page);
+                });
+            });
+
+            document.querySelectorAll('.timer-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.timerMinutes = parseInt(btn.dataset.minutes);
+                    state.timerSeconds = 0;
+                    updateTimerDisplay();
+                });
+            });
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            const pageEl = document.getElementById(pageId);
+            if (!pageEl) {
+                console.warn('[WriteBoost] Missing page element:', pageId);
+                return;
+            }
+            pageEl.classList.add('active');
+
+            const navEl = document.querySelector(`[data-page="${pageId}"]`);
+            if (navEl) navEl.classList.add('active');
+
+            state.currentPage = pageId;
+        }
+
+        // ============ STATS ============
+        function updateStats() {
+            document.getElementById('total-essays').textContent = state.stats.totalEssays;
+            document.getElementById('total-words').textContent = state.stats.totalWords;
+            document.getElementById('current-streak').textContent = state.stats.streak;
+            document.getElementById('avg-score').textContent = state.stats.totalEssays > 0
+                ? Math.round((state.stats.totalScore || 0) / state.stats.totalEssays) || '--'
+                : '--';
+
+            document.getElementById('dash-essays').textContent = state.stats.totalEssays;
+            document.getElementById('dash-words').textContent = state.stats.totalWords;
+            document.getElementById('dash-streak').textContent = state.stats.streak;
+            document.getElementById('dash-score').textContent = state.stats.bestScore || '--';
+
+            checkAchievements();
+        }
+
+        // ============ PROMPTS ============
+        function getDailySeedInt() {
+            const d = new Date();
+            return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+        }
+
+        function mulberry32(seed) {
+            let t = seed >>> 0;
+            return function() {
+                t += 0x6D2B79F5;
+                let r = Math.imul(t ^ (t >>> 15), 1 | t);
+                r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+                return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function shuffleWithSeed(arr, seed) {
+            const a = arr.slice();
+            const rand = mulberry32(seed);
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function renderPrompts() {
+            const grid = document.getElementById('prompts-grid');
+            const used = new Set((state.stats.usedPromptIndices || []).map(Number));
+            const cycleSeed = Number.isFinite(Number(state.stats.promptCycleSeed)) ? Number(state.stats.promptCycleSeed) : getDailySeedInt();
+
+            const order = shuffleWithSeed(
+                WRITING_PROMPTS.map((p, i) => ({ ...p, _idx: i })),
+                cycleSeed
+            );
+
+            let candidates = order.filter(p => !used.has(p._idx));
+
+            // If we ran out, start a new cycle with a new seed and reset used list.
+            if (candidates.length < 6) {
+                state.stats.usedPromptIndices = [];
+                state.stats.promptCycleSeed = cycleSeed + 1;
+                saveState();
+                const newOrder = shuffleWithSeed(
+                    WRITING_PROMPTS.map((p, i) => ({ ...p, _idx: i })),
+                    state.stats.promptCycleSeed
+                );
+                candidates = newOrder;
+            }
+
+            const shown = candidates.slice(0, 6);
+
+            grid.innerHTML = shown.map((prompt) => `
+                <div class="prompt-card ${prompt.difficulty}" onclick="selectPrompt(${prompt._idx})">
+                    <span class="prompt-difficulty ${prompt.difficulty}">${prompt.difficulty.toUpperCase()}</span>
+                    <p class="prompt-text">${prompt.text}</p>
+                    <p class="prompt-meta">Click to start writing</p>
+                </div>
+            `).join('');
+        }
+
+        function selectPrompt(index) {
+            state.currentPrompt = WRITING_PROMPTS[index];
+            state.currentPromptIndex = index;
+            document.getElementById('current-prompt-title').textContent = state.currentPrompt.text;
+            document.getElementById('essay-input').value = '';
+            document.getElementById('essay-input').focus();
+            showPage('practice');
+            resetTimer();
+            state.challengesUsed = 0;
+            state.flatWordsFound = [];
+            state.flatWordsReplaced = 0;
+            state.startTime = Date.now();
+            updateChallengeCount();
+        }
+
+        // ============ TIMER ============
+        function toggleTimer() {
+            if (state.timerRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            state.timerRunning = true;
+            document.getElementById('timer-start').textContent = '⏸ Pause';
+
+            state.timerInterval = setInterval(() => {
+                if (state.timerSeconds === 0) {
+                    if (state.timerMinutes === 0) {
+                        stopTimer();
+                        showToast('⏰ Time is up! Great work!');
+                        return;
+                    }
+                    state.timerMinutes--;
+                    state.timerSeconds = 59;
+                } else {
+                    state.timerSeconds--;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            state.timerRunning = false;
+            document.getElementById('timer-start').textContent = '▶ Start';
+            clearInterval(state.timerInterval);
+        }
+
+        function resetTimer() {
+            stopTimer();
+            state.timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = String(state.timerMinutes).padStart(2, '0');
+            const secs = String(state.timerSeconds).padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+        }
+
+        // ============ TEXTAREA & ANALYSIS ============
+        function setupTextareaListener() {
+            const textarea = document.getElementById('essay-input');
+            textarea.addEventListener('input', () => {
+                updateWordCount();
+                analyzeFlatWords();
+                drawStoryCoaster();
+            });
+        }
+
+        function updateWordCount() {
+            if (!state.startTime) state.startTime = Date.now();
+            const text = document.getElementById('essay-input').value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const paragraphs = text ? text.split(/\n\n+/).filter(p => p.trim()).length : 0;
+            const minutes = Math.round((Date.now() - state.startTime) / 60000) || 0;
+
+            document.getElementById('word-count').textContent = words;
+            document.getElementById('paragraph-count').textContent = paragraphs;
+            document.getElementById('time-spent').textContent = minutes;
+        }
+
+        // ============ STORY COASTER ============
+        function analyzeTension(text) {
+            const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+            if (paragraphs.length === 0) return [];
+
+            return paragraphs.map(para => {
+                const words = para.toLowerCase().split(/\s+/);
+                let tension = 5; // Start at medium
+
+                words.forEach(word => {
+                    if (TENSION_WORDS.calm.some(w => word.includes(w))) tension -= 1.5;
+                    if (TENSION_WORDS.rising.some(w => word.includes(w))) tension += 0.5;
+                    if (TENSION_WORDS.high.some(w => word.includes(w))) tension += 2;
+                    if (TENSION_WORDS.resolution.some(w => word.includes(w))) tension -= 1;
+                });
+
+                return Math.max(0, Math.min(10, tension));
+            });
+        }
+
+        function drawStoryCoaster() {
+            const text = document.getElementById('essay-input').value;
+            const tensions = analyzeTension(text);
+            const svg = document.getElementById('story-coaster');
+
+            if (tensions.length === 0) {
+                svg.innerHTML = `
+                    <text x="300" y="90" text-anchor="middle" fill="#94A3B8" font-size="14">Start writing to see your story's tension curve</text>
+                `;
+                document.getElementById('coaster-warning').style.display = 'none';
+                return;
+            }
+
+            const width = 600;
+            const height = 180;
+            const padding = 30;
+            const graphWidth = width - padding * 2;
+            const graphHeight = height - padding * 2;
+
+            let pathD = '';
+            let points = [];
+
+            tensions.forEach((tension, i) => {
+                const x = padding + (i / Math.max(tensions.length - 1, 1)) * graphWidth;
+                const y = padding + graphHeight - (tension / 10) * graphHeight;
+                points.push({ x, y, tension });
+
+                if (i === 0) {
+                    pathD = `M ${x} ${y}`;
+                } else {
+                    const prev = points[i - 1];
+                    const cpX = (prev.x + x) / 2;
+                    pathD += ` Q ${cpX} ${prev.y} ${x} ${y}`;
+                }
+            });
+
+            // Check for flat story
+            const avgTension = tensions.reduce((a, b) => a + b, 0) / tensions.length;
+            const isFlat = tensions.every(t => Math.abs(t - avgTension) < 1);
+
+            document.getElementById('coaster-warning').style.display = isFlat && tensions.length > 1 ? 'flex' : 'none';
+
+            // Labels
+            const labels = [];
+            if (tensions.length >= 1) labels.push({ x: padding, label: 'Calm Start', anchor: 'start' });
+            if (tensions.length >= 2) labels.push({ x: padding + graphWidth * 0.35, label: 'Building...', anchor: 'middle' });
+            if (tensions.length >= 3) {
+                const climaxIdx = tensions.indexOf(Math.max(...tensions));
+                if (climaxIdx > 0 && climaxIdx < tensions.length - 1) {
+                    labels.push({ x: points[climaxIdx].x, label: 'CLIMAX!', anchor: 'middle' });
+                }
+            }
+            if (tensions.length >= 2) labels.push({ x: width - padding, label: 'Resolution', anchor: 'end' });
+
+            svg.innerHTML = `
+                <defs>
+                    <linearGradient id="coasterGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#10B981"/>
+                        <stop offset="50%" style="stop-color:#F59E0B"/>
+                        <stop offset="100%" style="stop-color:#EF4444"/>
+                    </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#E2E8F0" stroke-width="1"/>
+                <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#E2E8F0" stroke-width="1"/>
+                <!-- Y axis labels -->
+                <text x="${padding - 5}" y="${padding + 5}" text-anchor="end" fill="#94A3B8" font-size="10">10</text>
+                <text x="${padding - 5}" y="${height - padding}" text-anchor="end" fill="#94A3B8" font-size="10">0</text>
+                <!-- Tension curve -->
+                <path d="${pathD}" fill="none" stroke="url(#coasterGradient)" stroke-width="4" stroke-linecap="round"/>
+                <!-- Points -->
+                ${points.map(p => `
+                    <circle cx="${p.x}" cy="${p.y}" r="6" fill="var(--primary)" stroke="white" stroke-width="2"/>
+                `).join('')}
+                <!-- Labels -->
+                ${labels.map(l => `
+                    <text x="${l.x}" y="${height - 8}" text-anchor="${l.anchor}" fill="#64748B" font-size="11" font-weight="600">${l.label}</text>
+                `).join('')}
+            `;
+        }
+
+        // ============ SENSORY PALETTE ============
+        function analyzeFlatWords() {
+            const text = document.getElementById('essay-input').value.toLowerCase();
+            const found = FLAT_WORDS.filter(word => {
+                const regex = new RegExp(`\\b${word}\\b`, 'i');
+                return regex.test(text);
+            });
+
+            state.flatWordsFound = found;
+            renderFlatWords();
+        }
+
+        function renderFlatWords() {
+            const container = document.getElementById('flat-words-found');
+
+            if (state.flatWordsFound.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No flat words detected. Keep writing!</span>';
+            } else {
+                container.innerHTML = state.flatWordsFound.map(word => `
+                    <span class="flat-word" onclick="selectFlatWord('${word}')" title="Click to see suggestions">${word}</span>
+                `).join('');
+            }
+
+            const progress = Math.min(100, (state.flatWordsReplaced / 5) * 100);
+            document.getElementById('sensory-progress-fill').style.width = progress + '%';
+            document.getElementById('sensory-progress-text').textContent =
+                `Replace ${state.flatWordsReplaced} flat word${state.flatWordsReplaced !== 1 ? 's' : ''} (5 to earn badge)`;
+        }
+
+        function selectFlatWord(word) {
+            state.selectedFlatWord = word;
+            document.querySelectorAll('.flat-word').forEach(el => {
+                el.style.border = el.textContent === word ? '2px solid var(--primary)' : 'none';
+            });
+
+            // Activate sense buttons
+            document.querySelectorAll('.sense-btn').forEach(btn => {
+                btn.classList.add('active');
+                btn.onclick = () => {
+                    state.selectedSense = btn.dataset.sense;
+                    showSuggestion();
+                };
+            });
+        }
+
+        function showSuggestion() {
+            const popup = document.getElementById('suggestion-popup');
+            const word = state.selectedFlatWord;
+            const sense = state.selectedSense;
+
+            if (!word || !sense || !SENSORY_SUGGESTIONS[word]) {
+                popup.style.display = 'none';
+                return;
+            }
+
+            const suggestion = SENSORY_SUGGESTIONS[word][sense] || SENSORY_SUGGESTIONS[word].sight;
+
+            document.getElementById('suggestion-header').innerHTML = `${sense.charAt(0).toUpperCase() + sense.slice(1)} suggestion for "${word}":`;
+            document.getElementById('suggestion-text').textContent = suggestion;
+
+            // Position near the clicked word
+            const wordEl = document.querySelector(`.flat-word[onclick*="${word}"]`);
+            if (wordEl) {
+                const rect = wordEl.getBoundingClientRect();
+                popup.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+                popup.style.left = Math.min(rect.left, window.innerWidth - 320) + 'px';
+            }
+
+            popup.style.display = 'block';
+
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 8000);
+        }
+
+        // ============ CHALLENGE CARDS ============
+        function openChallengeModal() {
+            const modal = document.getElementById('challenge-modal');
+            modal.classList.add('active');
+            showRandomChallenge();
+        }
+
+        function closeChallengeModal() {
+            document.getElementById('challenge-modal').classList.remove('active');
+        }
+
+        function showRandomChallenge() {
+            const challenge = CHALLENGE_CARDS[Math.floor(Math.random() * CHALLENGE_CARDS.length)];
+            state.currentChallenge = challenge;
+
+            document.getElementById('challenge-display').innerHTML = `
+                <div class="challenge-emoji">${challenge.emoji}</div>
+                <div class="challenge-title">${challenge.title}</div>
+                <div class="challenge-description">${challenge.desc}</div>
+            `;
+        }
+
+        function skipChallenge() {
+            showRandomChallenge();
+        }
+
+        function addChallengeToStory() {
+            state.challengesUsed++;
+            updateChallengeCount();
+
+            const textarea = document.getElementById('essay-input');
+            const insertion = `\n\n[${state.currentChallenge.emoji} ${state.currentChallenge.title}: ${state.currentChallenge.desc}]\n`;
+
+            textarea.value += insertion;
+            textarea.focus();
+            updateWordCount();
+
+            closeChallengeModal();
+            showToast('Challenge added to your story!');
+        }
+
+        function updateChallengeCount() {
+            document.getElementById('challenge-count').textContent =
+                `Challenge cards used: ${state.challengesUsed}`;
+        }
+
+        // ============ POWER WORDS ============
+        function openPowerWordsModal() {
+            document.getElementById('power-words-modal').classList.add('active');
+            document.getElementById('modal-power-word').value = '';
+            document.getElementById('modal-power-results').innerHTML =
+                '<p style="color: var(--text-muted); text-align: center;">Enter a word to see alternatives</p>';
+        }
+
+        function closePowerWordsModal() {
+            document.getElementById('power-words-modal').classList.remove('active');
+        }
+
+        function openHelpModal() {
+            const modal = document.getElementById('help-modal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeHelpModal() {
+            const modal = document.getElementById('help-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function searchModalPowerWord() {
+            const word = document.getElementById('modal-power-word').value.toLowerCase().trim();
+            displayPowerWordResults(word, 'modal-power-results');
+        }
+
+        function searchPowerWord() {
+            const word = document.getElementById('power-word-search').value.toLowerCase().trim();
+            displayPowerWordResults(word, 'power-word-results');
+        }
+
+        function quickPowerWord(word) {
+            document.getElementById('power-word-search').value = word;
+            searchPowerWord();
+        }
+
+        async function displayPowerWordResults(word, containerId) {
+            const container = document.getElementById(containerId);
+
+            if (!word) {
+                container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">
+                    Enter a word to see power word alternatives
+                </p>`;
+                return;
+            }
+
+            container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">
+                Searching for alternatives for "${word}"...
+            </p>`;
+
+            let levels = POWER_WORDS[word];
+            let source = 'offline';
+
+            if (!levels && ONLINE_CONFIG.enabled) {
+                try {
+                    levels = await getOnlinePowerWords(word);
+                    if (levels) source = 'online';
+                } catch (e) {
+                    // fall back silently to offline message
+                    levels = null;
+                }
+            }
+
+            if (!levels) {
+                container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">
+                    No alternatives found for "${word}".<br>
+                    Tip: try a simpler base word, or check your spelling.
+                </p>`;
+                return;
+            }
+
+            const levelNames = ['', 'Basic Upgrade', 'Stronger', 'Powerful', 'Expert', 'Master'];
+
+            container.innerHTML = `
+                <p style="color: var(--text-muted); text-align: center; margin-bottom: 0.75rem;">
+                    Source: <strong>${source === 'online' ? 'Online dictionary' : 'Built-in list'}</strong>
+                </p>
+            ` + Object.entries(levels).map(([level, words]) => `
+                <div class="power-level power-level-${level}">
+                    <div class="power-level-header">
+                        <strong>${levelNames[level]}</strong>
+                        <span class="power-level-badge">Level ${level}</span>
+                    </div>
+                    <div class="power-words-list">
+                        ${words.map(w => `<span class="power-word-item" onclick="copyWord('${w}')">${w}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyWord(word) {
+            const fallbackCopy = () => {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = word;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-1000px';
+                    ta.style.left = '-1000px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast(`"${word}" copied to clipboard!`);
+                } catch (e) {
+                    showToast('Copy failed. Please select and copy manually.');
+                }
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(word).then(() => {
+                    showToast(`"${word}" copied to clipboard!`);
+                }).catch(() => fallbackCopy());
+            } else {
+                fallbackCopy();
+            }
+        }
+
+        // ============ CHARACTER ============
+        function randomName() {
+            const name = RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
+            document.getElementById('char-name').value = name;
+        }
+
+        function saveCharacter() {
+            state.character = {
+                name: document.getElementById('char-name').value,
+                age: document.getElementById('char-age').value,
+                personality: document.getElementById('char-personality').value,
+                quirk: document.getElementById('char-quirk').value,
+                friend: document.getElementById('char-friend').value
+            };
+
+            saveState();
+            // best-effort cloud sync
+            setTimeout(() => pushCloudState(), 0);
+            showCharacterInfo();
+            showToast('Character saved!');
+        }
+
+        function loadCharacter() {
+            if (state.character.name) {
+                document.getElementById('char-name').value = state.character.name;
+                document.getElementById('char-age').value = state.character.age;
+                document.getElementById('char-personality').value = state.character.personality;
+                document.getElementById('char-quirk').value = state.character.quirk;
+                document.getElementById('char-friend').value = state.character.friend;
+                showCharacterInfo();
+            }
+        }
+
+        function showCharacterInfo() {
+            const info = document.getElementById('character-info');
+            const form = document.getElementById('character-form');
+
+            if (state.character.name) {
+                info.style.display = 'block';
+                form.style.display = 'none';
+
+                info.innerHTML = `
+                    <p><strong>${state.character.name}</strong>${state.character.age ? `, ${state.character.age}` : ''}</p>
+                    ${state.character.personality ? `<p>${state.character.personality}</p>` : ''}
+                    ${state.character.quirk ? `<p style="font-style: italic; font-size: 0.8rem;">${state.character.quirk}</p>` : ''}
+                    ${state.character.friend ? `<p style="font-size: 0.8rem;">Friend: ${state.character.friend}</p>` : ''}
+                    <button class="btn btn-secondary btn-sm" onclick="editCharacter()" style="margin-top: 0.5rem;">Edit</button>
+                `;
+            }
+        }
+
+        function editCharacter() {
+            document.getElementById('character-info').style.display = 'none';
+            document.getElementById('character-form').style.display = 'flex';
+        }
+
+        // ============ ACHIEVEMENTS ============
+        function renderAchievements() {
+            const grid = document.getElementById('achievements-grid');
+
+            grid.innerHTML = ACHIEVEMENTS.map(ach => {
+                const unlocked = state.stats.unlockedAchievements.includes(ach.id);
+                return `
+                    <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}">
+                        <div class="achievement-badge">${unlocked ? '🏅' : '🔒'}</div>
+                        <div class="achievement-icon">${ach.emoji}</div>
+                        <div class="achievement-name">${ach.name}</div>
+                        <div class="achievement-desc">${ach.condition}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function checkAchievements() {
+            ACHIEVEMENTS.forEach(ach => {
+                if (!state.stats.unlockedAchievements.includes(ach.id) && ach.check(state.stats)) {
+                    state.stats.unlockedAchievements.push(ach.id);
+                    showToast(`🏆 Achievement Unlocked: ${ach.name}!`);
+                }
+            });
+
+            saveState();
+            renderAchievements();
+        }
+
+        // ============ DAILY SEED ============
+        function generateDailySeed() {
+            const today = new Date();
+            const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+            const charIndex = seed % STORY_SEEDS.characters.length;
+            const settingIndex = (seed * 7) % STORY_SEEDS.settings.length;
+            const conflictIndex = (seed * 13) % STORY_SEEDS.conflicts.length;
+
+            document.getElementById('seed-date').textContent = today.toLocaleDateString('en-US', {
+                weekday: 'long', month: 'long', day: 'numeric'
+            });
+
+            document.getElementById('seed-content').innerHTML = `
+                <span class="seed-part"><span class="seed-part-label">Character:</span> ${STORY_SEEDS.characters[charIndex]}</span>
+                <span class="seed-part"><span class="seed-part-label">Setting:</span> ${STORY_SEEDS.settings[settingIndex]}</span>
+                <span class="seed-part"><span class="seed-part-label">Conflict:</span> ${STORY_SEEDS.conflicts[conflictIndex]}</span>
+            `;
+
+            state.currentSeed = {
+                character: STORY_SEEDS.characters[charIndex],
+                setting: STORY_SEEDS.settings[settingIndex],
+                conflict: STORY_SEEDS.conflicts[conflictIndex]
+            };
+        }
+
+        function plantSeed() {
+            if (state.currentSeed) {
+                state.currentPrompt = {
+                    text: `${state.currentSeed.character} ${state.currentSeed.setting} ${state.currentSeed.conflict}.`,
+                    difficulty: 'medium'
+                };
+                document.getElementById('current-prompt-title').textContent = state.currentPrompt.text;
+                document.getElementById('essay-input').value = '';
+                document.getElementById('essay-input').focus();
+                showPage('practice');
+                resetTimer();
+                state.startTime = Date.now();
+                showToast('Story seed planted! Start writing...');
+            }
+        }
+
+        // ============ HISTORY ============
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+
+            if (state.essays.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No essays yet</h3>
+                        <p>Start writing to see your history here!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.essays.slice().reverse().map((essay, i) => `
+                <div class="history-item" onclick="viewEssay(${state.essays.length - 1 - i})">
+                    <div class="history-info">
+                        <h4>${essay.prompt ? essay.prompt.substring(0, 50) + '...' : 'Free Write'}</h4>
+                        <div class="history-meta">
+                            ${essay.wordCount} words | ${essay.date} | Score: ${essay.score}
+                        </div>
+                    </div>
+                    <div class="history-score">
+                        <div class="history-score-value">${essay.score}</div>
+                        <div class="history-score-label">points</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewEssay(index) {
+            const essay = state.essays[index];
+            document.getElementById('essay-input').value = essay.text;
+            showPage('practice');
+            showToast('Essay loaded from history');
+        }
+
+        // ============ SCORING & SUBMISSION ============
+        async function submitEssay() {
+            const text = document.getElementById('essay-input').value.trim();
+            const submitBtn = document.getElementById('submit-essay-btn');
+
+            if (text.length < 50) {
+                showToast('Please write at least 50 words before submitting.');
+                return;
+            }
+
+            const wordCount = text.split(/\s+/).length;
+            const paragraphCount = text.split(/\n\n+/).filter(p => p.trim()).length;
+            const hasDialogue = /"[^"]*"/.test(text) || /\u201C[^\u201D]*\u201D/.test(text);
+
+            let ltReport = { ok: false, error: 'disabled', matches: [] };
+            if (ONLINE_CONFIG.enabled) {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '⏳ Online check…';
+                }
+                try {
+                    const matches = await fetchLanguageToolMatches(text, 'en-US');
+                    ltReport = { ok: true, error: null, matches };
+                } catch (e) {
+                    ltReport = { ok: false, error: String(e?.message || e), matches: [] };
+                    showToast('Online grammar API unavailable — scored with local rules only.');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '📤 Submit';
+                }
+            }
+
+            const criteria = calculateCriteria(text, wordCount, paragraphCount, hasDialogue, ltReport);
+            const totalScore = Math.round(Object.values(criteria).reduce((a, b) => a + b, 0));
+
+            // Stop timer
+            stopTimer();
+
+            // Update stats
+            const todayKey = new Date().toDateString();
+            const lastKey = state.stats.lastPractice ? new Date(state.stats.lastPractice).toDateString() : null;
+
+            state.stats.totalEssays++;
+            state.stats.totalWords += wordCount;
+            state.stats.totalScore = (state.stats.totalScore || 0) + totalScore;
+            state.stats.lastPractice = new Date().toISOString();
+            if (!lastKey) {
+                state.stats.streak = 1;
+            } else if (lastKey === todayKey) {
+                // already counted today; keep streak as-is
+            } else {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yKey = yesterday.toDateString();
+                state.stats.streak = (lastKey === yKey) ? (state.stats.streak + 1) : 1;
+            }
+            state.stats.bestScore = Math.max(state.stats.bestScore, totalScore);
+            state.stats.longestEssay = Math.max(state.stats.longestEssay, wordCount);
+
+            if (hasDialogue) state.stats.dialogueEssays++;
+            state.stats.maxChallenges = Math.max(state.stats.maxChallenges, state.challengesUsed);
+
+            // Check for perfect criteria
+            if (Object.values(criteria).some(s => s >= 90)) {
+                state.stats.perfectCriteria++;
+            }
+
+            const ltPreview = ltReport.ok ? (ltReport.matches || []).slice(0, 20) : [];
+            const essay = {
+                text,
+                prompt: state.currentPrompt ? state.currentPrompt.text : 'Free Write',
+                promptIndex: Number.isFinite(Number(state.currentPromptIndex)) ? Number(state.currentPromptIndex) : null,
+                wordCount,
+                paragraphCount,
+                score: totalScore,
+                criteria,
+                date: new Date().toLocaleDateString(),
+                timeSpent: Math.round((Date.now() - state.startTime) / 60000),
+                lt: ltReport.ok
+                    ? { ok: true, matchCount: (ltReport.matches || []).length, preview: ltPreview }
+                    : { ok: false, error: ltReport.error }
+            };
+
+            state.essays.push(essay);
+
+            // Mark prompt as used once an essay is submitted
+            if (Number.isFinite(Number(state.currentPromptIndex))) {
+                const idx = Number(state.currentPromptIndex);
+                if (!Array.isArray(state.stats.usedPromptIndices)) state.stats.usedPromptIndices = [];
+                if (!state.stats.usedPromptIndices.includes(idx)) state.stats.usedPromptIndices.push(idx);
+            }
+
+            saveState();
+            // best-effort cloud sync
+            setTimeout(() => pushCloudState(), 0);
+            clearDraft();
+            updateStats();
+
+            // Show results
+            showResults(essay);
+        }
+
+        function classifyLtMatch(m) {
+            const it = String(m.issueType || '').toLowerCase();
+            const cid = String(m.categoryId || '').toUpperCase();
+            if (it === 'misspelling' || cid.includes('TYPO')) return 'typo';
+            if (it === 'grammar' || cid === 'GRAMMAR') return 'grammar';
+            if (it === 'style' || cid.includes('STYLE')) return 'style';
+            if (it === 'inconsistency' || cid.includes('REDUNDANCY')) return 'style';
+            return 'other';
+        }
+
+        function applyLanguageToolToRawCriteria(raw, matches, wordCount) {
+            if (!Array.isArray(matches)) return raw;
+            const w = Math.max(wordCount, 1);
+            if (matches.length === 0) {
+                raw.spelling = Math.round(Math.min(100, raw.spelling * 0.35 + 97 * 0.65));
+                return raw;
+            }
+            let typo = 0, grammar = 0, style = 0, other = 0;
+            for (const m of matches) {
+                const c = classifyLtMatch(m);
+                if (c === 'typo') typo++;
+                else if (c === 'grammar') grammar++;
+                else if (c === 'style') style++;
+                else other++;
+            }
+            const ltSpell = Math.max(0, Math.min(100, 100 - typo * 8 - style * 2.2 - other * 2.8));
+            raw.spelling = Math.round(Math.min(100, raw.spelling * 0.28 + ltSpell * 0.72));
+
+            const cohesionDrain = grammar * 5 + style * 2.2 + other * 2.8 + typo * 1.2;
+            raw.cohesion = Math.max(0, Math.round(raw.cohesion - cohesionDrain));
+
+            const sentenceDrain = grammar * 3.5 + style * 1.2 + other * 1.8;
+            raw.sentences = Math.max(0, Math.round(raw.sentences - sentenceDrain));
+
+            const density = (typo + grammar) / w * 100;
+            if (density > 2) {
+                raw.ideas = Math.max(0, Math.round(raw.ideas - Math.min(22, density * 1.1)));
+            }
+            return raw;
+        }
+
+        function calculateCriteria(text, wordCount, paragraphCount, hasDialogue, ltReport = null) {
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+            const avgSentenceLength = wordCount / Math.max(sentences.length, 1);
+            const lowerWords = text.toLowerCase().split(/\s+/).filter(Boolean);
+            const uniqueWords = new Set(lowerWords).size;
+            const ttr = uniqueWords / Math.max(wordCount, 1);
+
+            // Heuristic “readable English” ratio — keyboard mash / random tokens often fail vowel
+            // patterns or repeat characters; honest essays mostly pass.
+            const stripToken = (w) => w.replace(/^[^a-z0-9']+|[^a-z0-9']+$/gi, '').toLowerCase();
+            const alphaTokens = lowerWords.map(stripToken).filter(t => t.length > 0 && /[a-z]/.test(t));
+            const looksEnglishish = (w) => {
+                const core = w.replace(/'/g, '');
+                if (core.length <= 2) return true;
+                if (!/^[a-z']+$/i.test(w)) return false;
+                if (/^(.)\1{2,}$/.test(core)) return false;
+                if (core.length >= 4 && !/[aeiouy]/.test(core)) return false;
+                return true;
+            };
+            const englishLikeRatio = alphaTokens.length === 0
+                ? 1
+                : alphaTokens.filter(looksEnglishish).length / alphaTokens.length;
+
+            // Natural prose usually stays well below ~0.95 TTR for longer pieces; ratio near 1.0
+            // with many tokens is typical of unique gibberish “words”, which used to max out scores.
+            const ttrSoftCap = wordCount < 55 ? 0.93 : wordCount < 100 ? 0.86 : 0.78;
+            const ttrExcessNorm = Math.max(0, Math.min(1, (ttr - ttrSoftCap) / Math.max(0.04, 1 - ttrSoftCap)));
+            const lexicalDiversity = Math.max(0, Math.min(1, ttr * (1 - 0.72 * ttrExcessNorm)));
+            const vocabularyScore = Math.min(
+                100,
+                lexicalDiversity * 100 * (0.38 + 0.62 * englishLikeRatio)
+            );
+
+            // Overall credibility: combine unlikely token shapes with unnaturally high TTR.
+            const nonsense = Math.min(1, 0.58 * (1 - englishLikeRatio) + 0.42 * ttrExcessNorm);
+            const integrity = Math.max(0.3, 1 - 0.9 * nonsense);
+
+            // Check for sensory words
+            const sensoryWords = ['saw', 'heard', 'smelled', 'tasted', 'felt', 'touched', 'watched', 'noticed', 'glanced'];
+            const sensoryCount = sensoryWords.filter(w => text.toLowerCase().includes(w)).length;
+
+            // Tension analysis
+            const tensions = analyzeTension(text);
+            const tensionVariety = tensions.length > 1 ? tensions.filter((t, i) => i > 0 && Math.abs(t - tensions[i-1]) > 1).length : 0;
+
+            // Transition words
+            const transitions = ['however', 'therefore', 'meanwhile', 'suddenly', 'finally', 'then', 'after', 'before', 'because', 'although'];
+            const transitionCount = transitions.filter(t => text.toLowerCase().includes(t)).length;
+
+            // Check punctuation
+            const commas = (text.match(/,/g) || []).length;
+            const quotes = (text.match(/[""]/g) || []).length;
+
+            // Spelling approximation (check for common errors - simplified)
+            const words = lowerWords;
+            const spellingIssues = words.filter(w => w.includes('teh') || w.includes('recieve') || w.includes('definately')).length;
+            const spellingBase = Math.max(0, 100 - (spellingIssues * 20));
+
+            const raw = {
+                audience: Math.min(100, 70 + (hasDialogue ? 15 : 0) + (sensoryCount * 3)),
+                structure: Math.min(100, 50 + (paragraphCount * 8) + (tensionVariety * 10)),
+                ideas: Math.min(100, 60 + (vocabularyScore * 0.3) + (sensoryCount * 5)),
+                character: Math.min(100, 60 + (hasDialogue ? 20 : 0) + (state.character.name ? 10 : 0)),
+                vocabulary: Math.min(100, 40 + vocabularyScore + (transitionCount * 3)),
+                cohesion: Math.min(100, 50 + (transitionCount * 8) + (paragraphCount * 5)),
+                paragraphing: Math.min(100, Math.min(100, paragraphCount * 15)),
+                sentences: Math.min(100, avgSentenceLength > 5 && avgSentenceLength < 25 ? 80 : avgSentenceLength <= 5 ? 60 : 70),
+                punctuation: Math.min(100, 50 + (commas > wordCount * 0.05 ? 30 : 0) + (quotes > 0 ? 10 : 0) + (commas + quotes > 5 ? 10 : 0)),
+                spelling: Math.min(spellingBase, Math.max(0, 100 * (0.25 + 0.75 * englishLikeRatio) - (spellingIssues * 20)))
+            };
+
+            if (ltReport && ltReport.ok) {
+                applyLanguageToolToRawCriteria(raw, ltReport.matches || [], wordCount);
+            }
+
+            const scaled = {};
+            for (const [key, v] of Object.entries(raw)) {
+                scaled[key] = Math.round(Math.min(100, v * integrity));
+            }
+            return scaled;
+        }
+
+        // Need to define sensoryCount for the results function
+        let sensoryCount = 0;
+        function showResults(essay) {
+            const text = essay.text;
+            const sensoryWords = ['saw', 'heard', 'smelled', 'tasted', 'felt', 'touched', 'watched', 'noticed', 'glanced'];
+            sensoryCount = sensoryWords.filter(w => text.toLowerCase().includes(w)).length;
+
+            showPage('results');
+
+            // Animate score
+            const scoreCircle = document.getElementById('score-circle-fill');
+            const circumference = 534;
+            const offset = circumference - (essay.score / 500) * circumference;
+
+            setTimeout(() => {
+                scoreCircle.style.strokeDashoffset = offset;
+            }, 100);
+
+            document.getElementById('final-score').textContent = essay.score;
+
+            // Score message
+            let message = 'Keep practicing!';
+            if (essay.score >= 450) message = '🌟 Outstanding!';
+            else if (essay.score >= 400) message = '✨ Great work!';
+            else if (essay.score >= 350) message = '👍 Good effort!';
+            else if (essay.score >= 300) message = '💪 Getting there!';
+
+            document.getElementById('score-message').textContent = message;
+
+            // Criteria breakdown
+            const criteriaList = document.getElementById('criteria-list');
+            const criteriaNames = {
+                audience: 'Audience Awareness',
+                structure: 'Story Structure',
+                ideas: 'Ideas & Content',
+                character: 'Character Development',
+                vocabulary: 'Vocabulary',
+                cohesion: 'Flow & Transitions',
+                paragraphing: 'Paragraphing',
+                sentences: 'Sentence Variety',
+                punctuation: 'Punctuation',
+                spelling: 'Spelling'
+            };
+
+            criteriaList.innerHTML = Object.entries(essay.criteria).map(([key, score]) => {
+                let level = 'poor';
+                if (score >= 80) level = 'excellent';
+                else if (score >= 65) level = 'good';
+                else if (score >= 50) level = 'average';
+
+                return `
+                    <div class="criteria-item">
+                        <span class="criteria-name">${criteriaNames[key]}</span>
+                        <div class="criteria-bar">
+                            <div class="criteria-fill ${level}" style="width: ${score}%"></div>
+                        </div>
+                        <span class="criteria-score">${Math.round(score)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Strengths
+            const strengths = [];
+            if (essay.criteria.vocabulary >= 70) strengths.push('Good variety of words');
+            if (essay.criteria.sentences >= 70) strengths.push('Varied sentence lengths');
+            if (essay.criteria.punctuation >= 70) strengths.push('Good use of punctuation');
+            if (essay.criteria.structure >= 70) strengths.push('Clear story structure');
+            if (text.includes('"') || text.includes('"')) strengths.push('Effective use of dialogue');
+            if (sensoryCount > 0) strengths.push('Included sensory details');
+
+            document.getElementById('strengths-list').innerHTML = strengths.length > 0
+                ? strengths.map(s => `<li>✓ ${s}</li>`).join('')
+                : '<li>Keep writing to build your strengths!</li>';
+
+            // Improvements
+            const improvements = [];
+            if (essay.criteria.vocabulary < 60) improvements.push('Try using more varied and interesting words');
+            if (essay.criteria.sentences < 60) improvements.push('Mix up your sentence lengths');
+            if (essay.criteria.cohesion < 60) improvements.push('Use transition words to connect ideas');
+            if (essay.criteria.character < 60) improvements.push('Develop your characters more');
+            if (state.challengesUsed === 0) improvements.push('Try adding challenge cards for twists');
+            if (state.flatWordsFound.length > 0) improvements.push('Replace flat words with sensory details');
+
+            document.getElementById('improvements-list').innerHTML = improvements.length > 0
+                ? improvements.map(s => `<li>→ ${s}</li>`).join('')
+                : '<li>You\'re doing great! Keep it up!</li>';
+
+            // Story Outline
+            generateStoryOutline(text);
+
+            // Confetti!
+            if (essay.score >= 400) {
+                launchConfetti();
+            }
+
+            // Online check: reuse LanguageTool results from submit when present (same API data as score).
+            const statusEl = document.getElementById('online-check-status');
+            const listEl = document.getElementById('online-issues-list');
+            if (essay.lt && essay.lt.ok && Array.isArray(essay.lt.preview)) {
+                if (statusEl) statusEl.textContent = `Submission used online check (${essay.lt.matchCount || essay.lt.preview.length} issue${(essay.lt.matchCount || 0) !== 1 ? 's' : ''}).`;
+                renderOnlineCheckResults(text, essay.lt.preview, essay.lt.matchCount);
+            } else if (essay.lt && !essay.lt.ok && statusEl && listEl) {
+                statusEl.textContent = 'Submitted while offline check failed — tap “Run Online Check” to retry.';
+                listEl.innerHTML = '<li style="color: var(--text-muted);">No cached online results. Use the button below to run a fresh check.</li>';
+            } else {
+                setTimeout(() => runOnlineCheck(text), 50);
+            }
+        }
+
+        function generateStoryOutline(text) {
+            const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+            const tensions = analyzeTension(text);
+
+            let outlineHtml = '';
+
+            paragraphs.forEach((para, i) => {
+                const firstSentence = para.split(/[.!?]+/)[0].trim().substring(0, 80);
+                let label = 'Development';
+
+                if (i === 0) label = 'Opening';
+                else if (i === paragraphs.length - 1 && tensions[i] < 5) label = 'Resolution';
+                else if (tensions[i] >= 8 || (i === paragraphs.length - 1 && tensions[i] > tensions[i-1])) label = 'Climax';
+
+                const isClimax = label === 'Climax';
+                const isResolution = label === 'Resolution';
+
+                outlineHtml += `
+                    <div class="outline-item ${isClimax ? 'climax' : ''} ${isResolution ? 'resolution' : ''}">
+                        <div class="outline-label">${label}</div>
+                        <div class="outline-sentence">"${firstSentence}..."</div>
+                    </div>
+                `;
+            });
+
+            // Check structure
+            const hasClimax = tensions.some(t => t >= 8);
+            const hasResolution = tensions.length > 0 && tensions[tensions.length - 1] < tensions[Math.max(0, ...tensions.keys())];
+
+            if (!hasClimax && paragraphs.length >= 3) {
+                outlineHtml += `
+                    <div class="outline-suggestion">
+                        💡 <strong>Structure Tip:</strong> Your story seems flat. Try adding a big problem or climax in the middle, and a resolution at the end.
+                    </div>
+                `;
+            }
+
+            document.getElementById('story-outline').innerHTML = outlineHtml;
+        }
+
+        // ============ CONFETTI ============
+        function launchConfetti() {
+            const container = document.getElementById('confetti');
+            const colors = ['#4F46E5', '#F59E0B', '#10B981', '#EF4444', '#EC4899', '#8B5CF6'];
+
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(piece);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // ============ TOAST ============
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============ DATA EXPORT / IMPORT ============
+        function exportData() {
+            try {
+                const data = localStorage.getItem('writeboost-v2');
+                if (!data || data === '{}') {
+                    showToast('No data to export yet!');
+                    return;
+                }
+
+                const timestamp = new Date().toISOString().slice(0, 10);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'writeboost-backup-' + timestamp + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast('Backup exported successfully!');
+            } catch (e) {
+                showToast('Export failed: ' + e.message);
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.json')) {
+                showToast('Please select a .json backup file');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    // Validate data structure
+                    if (typeof data !== 'object') {
+                        showToast('Invalid backup file format');
+                        return;
+                    }
+
+                    // Merge with existing data
+                    const currentData = localStorage.getItem('writeboost-v2');
+                    let merged = {};
+                    if (currentData) {
+                        merged = JSON.parse(currentData);
+                    }
+
+                    // Merge essays (append new ones, avoid duplicates by date)
+                    if (data.essays && Array.isArray(data.essays)) {
+                        const essayKey = (e) => {
+                            const d = e?.date || '';
+                            const p = e?.prompt || e?.promptTitle || '';
+                            const w = e?.wordCount || '';
+                            const s = e?.score || '';
+                            // small prefix of text to reduce collisions without storing full text
+                            const t = (e?.text || '').slice(0, 40);
+                            return [d, p, w, s, t].join('|');
+                        };
+                        const existingKeys = new Set((merged.essays || []).map(essayKey));
+                        const newEssays = data.essays.filter(e => !existingKeys.has(essayKey(e)));
+                        merged.essays = (merged.essays || []).concat(newEssays);
+                    }
+
+                    // Merge stats (take the better values)
+                    if (data.stats) {
+                        merged.stats = { ...merged.stats, ...data.stats };
+                    }
+
+                    // Merge character
+                    if (data.character) {
+                        merged.character = { ...merged.character, ...data.character };
+                    }
+
+                    localStorage.setItem('writeboost-v2', JSON.stringify(merged));
+                    loadState();
+                    updateStats();
+                    renderHistory();
+                    renderAchievements();
+                    loadCharacter();
+
+                    showToast('Backup imported! Merged ' + (data.essays || []).length + ' essays.');
+                } catch (err) {
+                    showToast('Import failed: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Are you sure you want to delete ALL data?\n\nThis will erase all essays, scores, achievements, and character data.\n\nTip: Export a backup first!')) {
+                if (confirm('This action cannot be undone. Really delete everything?')) {
+                    localStorage.removeItem('writeboost-v2');
+                    location.reload();
+                }
+            }
+        }
+
+        // ============ GUIDE OVERLAY (iPad) ============
+        function toggleGuideOverlay() {
+            const overlay = document.getElementById('guide-overlay');
+            const backdrop = document.getElementById('guide-overlay-backdrop');
+            const isOpen = overlay.classList.contains('open');
+
+            if (isOpen) {
+                overlay.classList.remove('open');
+                backdrop.classList.remove('open');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            } else {
+                overlay.style.display = 'block';
+                requestAnimationFrame(() => {
+                    overlay.classList.add('open');
+                    backdrop.classList.add('open');
+                });
+            }
+        }
+
+        // ============ AUTO-SAVE DRAFT ============
+        let autoSaveTimer = null;
+
+        function setupAutoSave() {
+            const textarea = document.getElementById('essay-input');
+            if (!textarea) return;
+
+            textarea.addEventListener('input', () => {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    if (textarea.value.trim().length > 0) {
+                        const draft = {
+                            text: textarea.value,
+                            promptTitle: document.getElementById('current-prompt-title').textContent,
+                            savedAt: new Date().toISOString()
+                        };
+                        localStorage.setItem('writeboost-draft', JSON.stringify(draft));
+                    } else {
+                        localStorage.removeItem('writeboost-draft');
+                    }
+                }, 2000);
+            });
+        }
+
+        function loadDraft() {
+            const draftData = localStorage.getItem('writeboost-draft');
+            if (draftData) {
+                try {
+                    const draft = JSON.parse(draftData);
+                    const savedAt = new Date(draft.savedAt);
+                    const now = new Date();
+                    const hoursDiff = (now - savedAt) / (1000 * 60 * 60);
+
+                    // Only restore draft if less than 24 hours old
+                    if (hoursDiff < 24 && draft.text.trim().length > 20) {
+                        if (confirm('Found an unsaved draft from ' + savedAt.toLocaleString() + '.\n\nRestore it?')) {
+                            document.getElementById('essay-input').value = draft.text;
+                            if (draft.promptTitle) {
+                                document.getElementById('current-prompt-title').textContent = draft.promptTitle;
+                            }
+                            updateWordCount();
+                            drawStoryCoaster();
+                        } else {
+                            localStorage.removeItem('writeboost-draft');
+                        }
+                    } else {
+                        localStorage.removeItem('writeboost-draft');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('writeboost-draft');
+                }
+            }
+        }
+
+        // Clear draft when essay is submitted
+        function clearDraft() {
+            localStorage.removeItem('writeboost-draft');
+        }
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            setupAutoSave();
+            loadDraft();
+        });
+    </script>
+</body>
+</html>
