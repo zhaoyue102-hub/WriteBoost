@@ -25,7 +25,7 @@ function makeLocalStorage() {
 }
 
 async function run() {
-  const htmlPath = path.join(__dirname, 'writeboost.html');
+  const htmlPath = path.join(__dirname, 'index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
 
   const { window, document } = parseHTML(html);
@@ -88,7 +88,7 @@ async function run() {
   // Run the page script in a VM context backed by linkedom window
   const script = extractInlineScript(html);
   const context = vm.createContext(window);
-  vm.runInContext(script, context, { filename: 'writeboost.html', displayErrors: true });
+  vm.runInContext(script, context, { filename: 'index.html', displayErrors: true });
 
   // Initialize like DOMContentLoaded
   assert(typeof window.init === 'function', 'init() not found');

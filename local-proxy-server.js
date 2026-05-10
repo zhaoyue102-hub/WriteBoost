@@ -9,7 +9,7 @@
  * Usage:
  *   node ./local-proxy-server.js
  *
- * Then on iPad (same Wi‑Fi), set in writeboost.html:
+ * Then on iPad (same Wi‑Fi), set in index.html:
  *   ONLINE_CONFIG.proxyBase = 'http://<your-mac-lan-ip>:8787'
  */
 

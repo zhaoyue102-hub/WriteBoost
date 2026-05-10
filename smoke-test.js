@@ -10,7 +10,7 @@ function sleep(ms) {
 function makeServer(htmlPath) {
   const html = fs.readFileSync(htmlPath);
   const server = http.createServer((req, res) => {
-    if (req.url === '/' || req.url === '/writeboost.html') {
+    if (req.url === '/' || req.url === '/index.html') {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(html);
       return;
@@ -22,7 +22,7 @@ function makeServer(htmlPath) {
 }
 
 async function run() {
-  const htmlPath = path.join(__dirname, 'writeboost.html');
+  const htmlPath = path.join(__dirname, 'index.html');
   if (!fs.existsSync(htmlPath)) {
     throw new Error(`Missing file: ${htmlPath}`);
   }
@@ -30,7 +30,7 @@ async function run() {
   const server = makeServer(htmlPath);
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const { port } = server.address();
-  const baseURL = `http://127.0.0.1:${port}/writeboost.html`;
+  const baseURL = `http://127.0.0.1:${port}/`;
 
   const browser = await chromium.launch({
     channel: 'chrome',

@@ -41,7 +41,7 @@ Wrangler will print a URL like:
 
 ## Connect the webpage to your Worker
 
-Open `writeboost.html`, find `ONLINE_CONFIG.proxyBase`, and set it to your Worker URL:
+Open `index.html`, find `ONLINE_CONFIG.proxyBase`, and set it to your Worker URL:
 
 Example:
 
