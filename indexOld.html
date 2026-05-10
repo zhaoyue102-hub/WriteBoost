@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="WriteBoost">
     <meta name="theme-color" content="#045490">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2304590'/%3E%3Cstop offset='1' stop-color='%23273462'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url(%23g)'/%3E%3Ctext x='64' y='82' font-size='64' text-anchor='middle'%3E%E2%9C%8D%EF%B8%8F%3C/text%3E%3C/svg%3E">
-    <title>WriteBoost v4.0.1 - Narrative Writing Trainer</title>
+    <title>WriteBoost v3.1.0 - Narrative Writing Trainer</title>
     <style>
         :root {
             /* Two Pinterest palettes merged: Mediterranean blues + lemon / air surfaces */
@@ -651,115 +651,9 @@
 
         .prompts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1rem;
         }
-
-        @media (min-width: 900px) {
-            .prompts-grid,
-            .learn-panel .skills-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* In-page section switcher (Learn) — high-visibility vs small pills */
-        .page-section-nav {
-            background: var(--bg-sidebar);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem 1.1rem 1.15rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow);
-        }
-
-        .page-section-nav-heading {
-            font-size: 0.74rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            color: var(--text-muted);
-            margin: 0 0 0.75rem;
-        }
-
-        .page-section-nav-hint {
-            font-size: 0.8rem;
-            color: var(--text-light);
-            margin: 0 0 0.85rem;
-            line-height: 1.4;
-        }
-
-        .segmented-control {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 0;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 2px solid var(--color-smore);
-        }
-
-        .segment-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            margin: 0;
-            padding: 0.8rem 0.45rem;
-            min-height: 3.1rem;
-            border: none;
-            border-right: 1px solid rgba(4, 84, 144, 0.25);
-            background: var(--bg-card);
-            color: var(--text);
-            font-size: 0.88rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-        }
-
-        .segment-btn:last-child {
-            border-right: none;
-        }
-
-        .segment-btn:hover:not(.active) {
-            background: #E8F4F8;
-        }
-
-        .segment-btn.active {
-            background: linear-gradient(135deg, var(--header-start) 0%, var(--header-end) 100%);
-            color: #fff;
-        }
-
-        .segment-btn .nav-btn-inner {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .segment-btn .nav-btn-inner svg {
-            width: 1.1rem;
-            height: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 520px) {
-            .segmented-control {
-                grid-template-columns: 1fr;
-            }
-
-            .segment-btn {
-                border-right: none;
-                border-bottom: 1px solid rgba(4, 84, 144, 0.2);
-                justify-content: flex-start;
-                padding-left: 1rem;
-            }
-
-            .segment-btn:last-child {
-                border-bottom: none;
-            }
-        }
-
 
         .prompt-card {
             background: var(--bg-card);
@@ -2353,70 +2247,19 @@
         }
 
         /* ===== Library Page ===== */
-        .library-section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.75rem 1rem;
-            margin-bottom: 0.35rem;
-        }
-
-        .library-section-header h2 {
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-            margin: 0;
-            font-size: 1.35rem;
-        }
-
-        .library-section-header h2 svg {
-            width: 1.2rem;
-            height: 1.2rem;
-        }
-
         .library-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-            gap: 1.25rem;
-            align-items: stretch;
-        }
-
-        @media (min-width: 640px) {
-            .library-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.3rem;
-            }
-        }
-
-        @media (min-width: 1000px) {
-            .library-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1.35rem;
-            }
-        }
-
-        .library-empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2.5rem 1rem;
-            color: var(--text-muted);
-            background: var(--bg-sidebar);
-            border-radius: var(--radius);
-            border: 1px dashed var(--border);
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .library-card {
             background: var(--bg-card);
             border-radius: var(--radius);
-            padding: 1.35rem 1.4rem;
+            padding: 1.5rem;
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: all 0.2s;
-            border: 1px solid rgba(181, 212, 223, 0.55);
-            display: flex;
-            flex-direction: column;
-            min-height: 8.5rem;
         }
 
         .library-card:hover {
@@ -2440,7 +2283,6 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.35rem;
-            margin-top: auto;
         }
 
         .library-tag {
@@ -2464,140 +2306,9 @@
         .library-tag.dialogue { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
         .library-tag.strong-verbs { background: #F3E8FF; color: #6B21A8; border-color: #DDD6FE; }
         .library-tag.tension { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
-        .library-tag.emotions { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
 
         /* ===== Sentence Practice ===== */
         .sp-boring-label { }
-
-        .sp-feedback {
-            margin-top: 1rem;
-        }
-
-        .sp-feedback-inner {
-            padding: 0.9rem 1.05rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            border: 1px solid var(--border);
-        }
-
-        .sp-feedback-inner.sp-feedback-success {
-            background: #ECFDF5;
-            border-color: #6EE7B7;
-            color: #065F46;
-        }
-
-        .sp-feedback-inner.sp-feedback-warn {
-            background: #FFFBEB;
-            border-color: #FCD34D;
-            color: #92400E;
-        }
-
-        .sp-feedback-inner.sp-feedback-error {
-            background: #FEF2F2;
-            border-color: #FECACA;
-            color: #991B1B;
-        }
-
-        .sp-feedback-lead {
-            margin: 0 0 0.65rem;
-        }
-
-        .sp-feedback-list {
-            margin: 0 0 0.85rem 1.1rem;
-            padding: 0;
-            line-height: 1.55;
-        }
-
-        .sp-feedback-sub {
-            margin: 0.75rem 0 0.35rem;
-            font-size: 0.88rem;
-            color: var(--text-light);
-        }
-
-        .sp-feedback-quote {
-            margin: 0 0 0.85rem;
-            padding: 0.65rem 0.85rem;
-            border-left: 4px solid var(--primary);
-            background: rgba(129, 183, 206, 0.15);
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            font-size: 0.92rem;
-            color: var(--text);
-        }
-
-        .sp-feedback-next-hint {
-            margin: 0 0 0.65rem;
-            font-size: 0.88rem;
-            color: var(--text-light);
-        }
-
-        .sp-next-challenge-btn {
-            margin-top: 0.25rem;
-        }
-
-        .sp-score-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 0.35rem 0.75rem;
-            margin: 0 0 0.85rem;
-            padding: 0.65rem 0.85rem;
-            background: rgba(255, 255, 255, 0.55);
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(4, 84, 144, 0.12);
-        }
-
-        .sp-feedback-inner.sp-feedback-success .sp-score-row {
-            background: rgba(255, 255, 255, 0.7);
-        }
-
-        .sp-feedback-inner.sp-feedback-warn .sp-score-row {
-            background: rgba(255, 255, 255, 0.65);
-        }
-
-        .sp-score-label {
-            font-size: 0.72rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-        }
-
-        .sp-score-value {
-            font-weight: 800;
-            font-size: 1.15rem;
-            color: var(--text);
-        }
-
-        .sp-score-stars {
-            letter-spacing: 0.08em;
-            color: var(--warning);
-            font-size: 1.05rem;
-        }
-
-        .sp-score-note {
-            font-size: 0.88rem;
-            color: var(--text-light);
-            flex-basis: 100%;
-        }
-
-        .sp-reference-label {
-            margin: 0.5rem 0 0.35rem;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text-light);
-        }
-
-        .sp-reference-quote {
-            margin: 0 0 0.85rem;
-            padding: 0.65rem 0.85rem;
-            background: rgba(129, 183, 206, 0.12);
-            border-radius: var(--radius-sm);
-            font-size: 0.92rem;
-            line-height: 1.55;
-            color: var(--text);
-            border: 1px dashed var(--border);
-        }
 
         /* ===== Self-Review Modal ===== */
         .selfreview-checklist {
@@ -3329,7 +3040,7 @@
         <div class="logo">
             <i data-lucide="pen-line" aria-hidden="true"></i>
             <span>WriteBoost</span>
-            <span class="version-badge" id="app-version">v4.0.1</span>
+            <span class="version-badge" id="app-version">v3.1.0</span>
         </div>
         <div class="header-stats">
             <div class="stat-item">
@@ -3357,13 +3068,16 @@
 
     <!-- Navigation -->
     <nav class="nav">
-        <button type="button" class="nav-btn active" data-page="dashboard"><span class="nav-btn-inner"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Home</span></span></button>
-        <button type="button" class="nav-btn" data-page="templates"><span class="nav-btn-inner"><i data-lucide="layout-list" aria-hidden="true"></i><span>Plan</span></span></button>
-        <button type="button" class="nav-btn" data-page="sentence-practice"><span class="nav-btn-inner"><i data-lucide="sparkles" aria-hidden="true"></i><span>Drills</span></span></button>
-        <button type="button" class="nav-btn" data-page="practice"><span class="nav-btn-inner"><i data-lucide="pen-line" aria-hidden="true"></i><span>Write</span></span></button>
-        <button type="button" class="nav-btn" data-page="learn"><span class="nav-btn-inner"><i data-lucide="book-open" aria-hidden="true"></i><span>Learn</span></span></button>
-        <button type="button" class="nav-btn" data-page="progress"><span class="nav-btn-inner"><i data-lucide="trending-up" aria-hidden="true"></i><span>Progress and Data</span></span></button>
+        <button type="button" class="nav-btn active" data-page="dashboard"><span class="nav-btn-inner"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>Dashboard</span></span></button>
+        <button type="button" class="nav-btn" data-page="practice"><span class="nav-btn-inner"><i data-lucide="pen-line" aria-hidden="true"></i><span>Practice</span></span></button>
+        <button type="button" class="nav-btn" data-page="power-words"><span class="nav-btn-inner"><i data-lucide="dumbbell" aria-hidden="true"></i><span>Power Words</span></span></button>
         <button type="button" class="nav-btn" data-page="achievements"><span class="nav-btn-inner"><i data-lucide="trophy" aria-hidden="true"></i><span>Achievements</span></span></button>
+        <button type="button" class="nav-btn" data-page="skills"><span class="nav-btn-inner"><i data-lucide="book-open" aria-hidden="true"></i><span>Skills</span></span></button>
+        <button type="button" class="nav-btn" data-page="history"><span class="nav-btn-inner"><i data-lucide="history" aria-hidden="true"></i><span>History</span></span></button>
+        <button type="button" class="nav-btn" data-page="templates"><span class="nav-btn-inner"><i data-lucide="layout-list" aria-hidden="true"></i><span>Templates</span></span></button>
+        <button type="button" class="nav-btn" data-page="library"><span class="nav-btn-inner"><i data-lucide="library" aria-hidden="true"></i><span>Library</span></span></button>
+        <button type="button" class="nav-btn" data-page="sentence-practice"><span class="nav-btn-inner"><i data-lucide="sparkles" aria-hidden="true"></i><span>Sentence Drills</span></span></button>
+        <button type="button" class="nav-btn" data-page="skills-progress"><span class="nav-btn-inner"><i data-lucide="trending-up" aria-hidden="true"></i><span>My Progress</span></span></button>
     </nav>
 
     <!-- Main Content -->
@@ -3374,7 +3088,7 @@
                 <strong>Welcome!</strong> Your stats stay at 0 until you finish your first piece — that’s normal.
                 Pick a prompt below (or plant the Daily Story Seed), write at least 50 words in Practice, then submit to unlock achievements like <strong><span class="icon-btn" style="vertical-align:middle"><i data-lucide="trophy" aria-hidden="true"></i><span>First Draft</span></span></strong>. In Practice you can set an optional word goal and see when your draft auto-saves; detailed feedback waits until after you submit.
                 <div class="hint-actions">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="showPage('practice')"><span class="icon-btn"><i data-lucide="pen-line" aria-hidden="true"></i><span>Go to Write</span></span></button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="showPage('practice')"><span class="icon-btn"><i data-lucide="pen-line" aria-hidden="true"></i><span>Go to Practice</span></span></button>
                     <button type="button" class="btn btn-outline btn-sm" onclick="openHelpModal()"><span class="icon-btn"><i data-lucide="circle-help" aria-hidden="true"></i><span>Quick Start</span></span></button>
                 </div>
             </div>
@@ -3707,6 +3421,122 @@ Remember to:
             </div>
         </div>
 
+        <!-- Power Words Page -->
+        <div id="power-words" class="page">
+            <h1 style="margin-bottom: 2rem;"><i data-lucide="dumbbell" aria-hidden="true"></i> Vocabulary Power-Up</h1>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">Type any word below to find stronger alternatives at different levels!</p>
+
+            <div class="card" style="max-width: 600px;">
+                <div class="power-word-input-group">
+                    <input type="text" id="power-word-search" placeholder="Type a word (e.g., walk, run, said, happy)...">
+                    <button class="btn btn-primary" onclick="searchPowerWord()">Search</button>
+                </div>
+                <div id="power-word-results" class="power-levels">
+                    <p style="color: var(--text-muted); text-align: center;">Enter a word to see power word alternatives</p>
+                </div>
+            </div>
+
+            <h2 style="margin: 2rem 0 1rem;"><i data-lucide="library" aria-hidden="true"></i> Common Words to Upgrade</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('walk')">walk</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('run')">run</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('said')">said</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('look')">look</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('think')">think</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('good')">good</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('bad')">bad</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('big')">big</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('small')">small</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('fast')">fast</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('slow')">slow</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('eat')">eat</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('see')">see</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('happy')">happy</button>
+                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('sad')">sad</button>
+            </div>
+        </div>
+
+        <!-- Achievements Page -->
+        <div id="achievements" class="page">
+            <h1 style="margin-bottom: 2rem;"><i data-lucide="trophy" aria-hidden="true"></i> Achievements</h1>
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- Skills Page -->
+        <div id="skills" class="page">
+            <h1 style="margin-bottom: 2rem;"><i data-lucide="book-open" aria-hidden="true"></i> Writing Skills</h1>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="eye" aria-hidden="true"></i></span>
+                        <span class="skill-title">Show, Don't Tell</span>
+                    </div>
+                    <p class="skill-desc">Instead of saying "She was scared," show it: "Her hands trembled as she backed toward the door."</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> He was angry.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> His face turned red, and he slammed his fist on the table.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
+                        <span class="skill-title">Build Tension</span>
+                    </div>
+                    <p class="skill-desc">Use short sentences and sensory details to create suspense and keep readers engaged.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> Then the door opened.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> The door handle turned. Slowly. She held her breath.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="message-square" aria-hidden="true"></i></span>
+                        <span class="skill-title">Dialogue</span>
+                    </div>
+                    <p class="skill-desc">Use quotes for speaking characters. Add action beats to show who's speaking.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> He said he was leaving and went.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> "I'm leaving," he said, grabbing his coat from the chair.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
+                        <span class="skill-title">Strong Verbs</span>
+                    </div>
+                    <p class="skill-desc">Replace weak verbs with powerful ones. "Walked" becomes "stomped," "crept," or "marched."</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> She walked into the room.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> She stormed into the room, her eyes blazing.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="link-2" aria-hidden="true"></i></span>
+                        <span class="skill-title">Transition Words</span>
+                    </div>
+                    <p class="skill-desc">Use words like "however," "meanwhile," "suddenly" to connect ideas smoothly.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> The sun set. The stars appeared.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> As the sun set, the stars began to appear one by one.</div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon"><i data-lucide="map-pin" aria-hidden="true"></i></span>
+                        <span class="skill-title">Sensory Details</span>
+                    </div>
+                    <p class="skill-desc">Engage all 5 senses: sight, sound, smell, taste, and touch to bring scenes to life.</p>
+                    <div class="skill-example">
+                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> The kitchen smelled.</div>
+                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> The kitchen smelled of fresh bread and brewing coffee.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Templates Page -->
         <div id="templates" class="page">
             <h1 style="margin-bottom: 1rem;"><i data-lucide="layout-list" aria-hidden="true"></i> Story Templates</h1>
@@ -3781,140 +3611,19 @@ Remember to:
             </div>
         </div>
 
-        <!-- Learn: vocabulary + tips + models -->
-        <div id="learn" class="page">
-            <h1 style="margin-bottom: 0.75rem;"><i data-lucide="book-open" aria-hidden="true"></i> Learn</h1>
-            <p style="color: var(--text-light); margin-bottom: 1.25rem;">Look up stronger words, browse craft tips, or study annotated model essays.</p>
-            <nav class="page-section-nav" aria-label="Learn sections">
-                <p class="page-section-nav-heading">Switch area on this page</p>
-                <p class="page-section-nav-hint">Tap a row below to change what you’re viewing — same as three mini-pages inside Learn.</p>
-                <div class="segmented-control learn-segments" role="tablist">
-                    <button type="button" role="tab" class="segment-btn active" data-learn-tab="power" aria-selected="true" onclick="switchLearnTabFromUi('power')"><span class="nav-btn-inner"><i data-lucide="dumbbell" aria-hidden="true"></i><span>Power Words</span></span></button>
-                    <button type="button" role="tab" class="segment-btn" data-learn-tab="tips" aria-selected="false" onclick="switchLearnTabFromUi('tips')"><span class="nav-btn-inner"><i data-lucide="lightbulb" aria-hidden="true"></i><span>Writing Tips</span></span></button>
-                    <button type="button" role="tab" class="segment-btn" data-learn-tab="models" aria-selected="false" onclick="switchLearnTabFromUi('models')"><span class="nav-btn-inner"><i data-lucide="library" aria-hidden="true"></i><span>Model Essays</span></span></button>
-                </div>
-            </nav>
-            <div id="learn-panel-power" class="learn-panel">
-<h2 style="margin-bottom: 1rem;"><i data-lucide="dumbbell" aria-hidden="true"></i> Vocabulary Power-Up</h2>
-            <p style="color: var(--text-light); margin-bottom: 2rem;">Type any word below to find stronger alternatives at different levels!</p>
-
-            <div class="card" style="max-width: 600px;">
-                <div class="power-word-input-group">
-                    <input type="text" id="power-word-search" placeholder="Type a word (e.g., walk, run, said, happy)...">
-                    <button class="btn btn-primary" onclick="searchPowerWord()">Search</button>
-                </div>
-                <div id="power-word-results" class="power-levels">
-                    <p style="color: var(--text-muted); text-align: center;">Enter a word to see power word alternatives</p>
-                </div>
+        <!-- Library Page -->
+        <div id="library" class="page">
+            <h1 style="margin-bottom: 1rem;"><i data-lucide="library" aria-hidden="true"></i> Model Essays</h1>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">Read these example narratives and notice how the authors use different writing techniques. Click a tag to highlight where that technique appears.</p>
+            <div class="library-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <button class="btn btn-sm btn-outline active" onclick="filterLibrary('all', this)">All</button>
+                <button class="btn btn-sm btn-outline" onclick="filterLibrary('show-not-tell', this)">Show Don't Tell</button>
+                <button class="btn btn-sm btn-outline" onclick="filterLibrary('sensory', this)">Sensory Details</button>
+                <button class="btn btn-sm btn-outline" onclick="filterLibrary('dialogue', this)">Dialogue</button>
+                <button class="btn btn-sm btn-outline" onclick="filterLibrary('strong-verbs', this)">Strong Verbs</button>
+                <button class="btn btn-sm btn-outline" onclick="filterLibrary('tension', this)">Tension</button>
             </div>
-
-            <h2 style="margin: 2rem 0 1rem;"><i data-lucide="library" aria-hidden="true"></i> Common Words to Upgrade</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('walk')">walk</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('run')">run</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('said')">said</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('look')">look</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('think')">think</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('good')">good</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('bad')">bad</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('big')">big</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('small')">small</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('fast')">fast</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('slow')">slow</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('eat')">eat</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('see')">see</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('happy')">happy</button>
-                <button class="btn btn-ghost btn-sm" onclick="quickPowerWord('sad')">sad</button>
-            </div>
-            </div>
-            <div id="learn-panel-tips" class="learn-panel" hidden>
-                <h2 style="margin-bottom: 1rem;"><i data-lucide="book-open" aria-hidden="true"></i> Writing Skills</h2>
-<div class="skills-grid">
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="eye" aria-hidden="true"></i></span>
-                        <span class="skill-title">Show, Don't Tell</span>
-                    </div>
-                    <p class="skill-desc">Instead of saying "She was scared," show it: "Her hands trembled as she backed toward the door."</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> He was angry.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> His face turned red, and he slammed his fist on the table.</div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
-                        <span class="skill-title">Build Tension</span>
-                    </div>
-                    <p class="skill-desc">Use short sentences and sensory details to create suspense and keep readers engaged.</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> Then the door opened.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> The door handle turned. Slowly. She held her breath.</div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="message-square" aria-hidden="true"></i></span>
-                        <span class="skill-title">Dialogue</span>
-                    </div>
-                    <p class="skill-desc">Use quotes for speaking characters. Add action beats to show who's speaking.</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> He said he was leaving and went.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> "I'm leaving," he said, grabbing his coat from the chair.</div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="sparkles" aria-hidden="true"></i></span>
-                        <span class="skill-title">Strong Verbs</span>
-                    </div>
-                    <p class="skill-desc">Replace weak verbs with powerful ones. "Walked" becomes "stomped," "crept," or "marched."</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> She walked into the room.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> She stormed into the room, her eyes blazing.</div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="link-2" aria-hidden="true"></i></span>
-                        <span class="skill-title">Transition Words</span>
-                    </div>
-                    <p class="skill-desc">Use words like "however," "meanwhile," "suddenly" to connect ideas smoothly.</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> The sun set. The stars appeared.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> As the sun set, the stars began to appear one by one.</div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon"><i data-lucide="map-pin" aria-hidden="true"></i></span>
-                        <span class="skill-title">Sensory Details</span>
-                    </div>
-                    <p class="skill-desc">Engage all 5 senses: sight, sound, smell, taste, and touch to bring scenes to life.</p>
-                    <div class="skill-example">
-                        <div class="skill-example-bad"><i data-lucide="x-circle" aria-hidden="true"></i> The kitchen smelled.</div>
-                        <div class="skill-example-good"><i data-lucide="check" aria-hidden="true"></i> The kitchen smelled of fresh bread and brewing coffee.</div>
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div id="learn-panel-models" class="learn-panel" hidden>
-                <div class="library-section-header">
-                    <h2><i data-lucide="library" aria-hidden="true"></i> Model Essays</h2>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="refreshModelEssayDeck()" title="Shuffle which essays appear (eight at a time when the pool is larger)"><span class="icon-btn"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Refresh</span></span></button>
-                </div>
-                <p class="help-tip" style="margin-bottom: 1rem;">Tap a card to read with highlights. Use filters by craft focus, then <strong>Refresh</strong> to see a different mix. Up to eight essays show at once.</p>
-                <div class="library-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
-                    <button type="button" class="btn btn-sm btn-outline active" data-lib-filter="all" onclick="filterLibrary('all', this)">All</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="show-not-tell" onclick="filterLibrary('show-not-tell', this)">Show Don't Tell</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="sensory" onclick="filterLibrary('sensory', this)">Sensory Details</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="dialogue" onclick="filterLibrary('dialogue', this)">Dialogue</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="strong-verbs" onclick="filterLibrary('strong-verbs', this)">Strong Verbs</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="tension" onclick="filterLibrary('tension', this)">Tension</button>
-                    <button type="button" class="btn btn-sm btn-outline" data-lib-filter="emotions" onclick="filterLibrary('emotions', this)">Emotions</button>
-                </div>
-                <div class="library-grid" id="library-grid"></div>
-            </div>
+            <div class="library-grid" id="library-grid"></div>
         </div>
 
         <!-- Sentence Practice Page -->
@@ -3926,12 +3635,11 @@ Remember to:
                 <div class="sp-boring" id="sp-boring" style="font-size: 1.15rem; color: var(--danger); font-weight: 600; margin-bottom: 1rem;">He was nervous.</div>
                 <div class="sp-hint" style="display: flex; align-items: flex-start; gap: 0.5rem; background: #FEF3C7; padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem; color: #92400E; font-size: 0.9rem;"><span style="font-size: 1rem;"><i data-lucide="lightbulb" aria-hidden="true"></i></span> <span id="sp-hint-text">Show his body. Does he fidget? Sweat? What does his voice do?</span></div>
                 <textarea id="sp-input" placeholder="Rewrite the sentence here using SHOW, not tell..." style="width: 100%; min-height: 100px; padding: 0.75rem; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
-                <div class="sp-actions" style="display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap;">
-                    <button type="button" class="btn btn-primary" id="sp-check-btn" onclick="checkSentenceRewrite()"><span class="icon-btn"><i data-lucide="check" aria-hidden="true"></i><span>Check My Answer</span></span></button>
-                    <button type="button" class="btn btn-ghost" id="sp-skip-btn" onclick="skipSentenceChallenge()"><span class="icon-btn"><i data-lucide="skip-forward" aria-hidden="true"></i><span>Skip</span></span></button>
+                <div class="sp-actions" style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="checkSentenceRewrite()"><span class="icon-btn"><i data-lucide="check" aria-hidden="true"></i><span>Check My Answer</span></span></button>
+                    <button class="btn btn-ghost" onclick="skipSentenceChallenge()"><span class="icon-btn"><i data-lucide="skip-forward" aria-hidden="true"></i><span>Skip</span></span></button>
                 </div>
-                <p class="help-tip" style="margin-top: 0.75rem; margin-bottom: 0;">After you check, your <strong>results</strong> stay in the green or yellow box below until you go to the next challenge.</p>
-                <div class="sp-feedback" id="sp-feedback" role="region" aria-label="Drill results"></div>
+                <div class="sp-feedback" id="sp-feedback" style="margin-top: 1rem;"></div>
             </div>
             <div class="sp-stats" style="display: flex; gap: 2rem; justify-content: center; font-size: 0.9rem; color: var(--text-light);">
                 <span>Streak: <strong id="sp-streak" style="color: var(--text);">0</strong></span>
@@ -3940,12 +3648,11 @@ Remember to:
             </div>
         </div>
 
-        <!-- Progress and Data: skill trends + essay history & backup (single page) -->
-        <div id="progress" class="page">
-            <h1 style="margin-bottom: 0.75rem;"><i data-lucide="trending-up" aria-hidden="true"></i> Progress and Data</h1>
-            <p style="color: var(--text-light); margin-bottom: 1.25rem;">Skill trends and your essay library — including sync &amp; backup. Badges live on the <strong>Achievements</strong> tab.</p>
-            <div id="progress-panel-trends" class="progress-panel">
-<div id="skills-progress-empty" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        <!-- Skills Progress Page -->
+        <div id="skills-progress" class="page">
+            <h1 style="margin-bottom: 1rem;"><i data-lucide="trending-up" aria-hidden="true"></i> My Progress</h1>
+            <p style="color: var(--text-light); margin-bottom: 2rem;">Track your improvement across each writing skill. Write more essays to see your trends!</p>
+            <div id="skills-progress-empty" style="text-align: center; padding: 3rem; color: var(--text-muted);">
                 <div style="font-size: 3rem; margin-bottom: 1rem;"><i data-lucide="bar-chart-2" aria-hidden="true"></i></div>
                 <p>Write and submit at least 3 essays to see your skill progress!</p>
                 <button class="btn btn-primary" onclick="showPage('practice')" style="margin-top: 1rem;"><span class="icon-btn"><i data-lucide="pen-line" aria-hidden="true"></i><span>Write an Essay</span></span></button>
@@ -3958,10 +3665,12 @@ Remember to:
                 <h2 style="margin: 2rem 0 1rem;">Recent Essays</h2>
                 <div id="skills-essay-history"></div>
             </div>
-            </div>
-            <div id="progress-panel-essays" class="progress-panel" style="margin-top: 2.5rem;">
-<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
-                <h2 style="margin: 0; font-size: 1.35rem;"><i data-lucide="scroll-text" aria-hidden="true"></i> Essay History</h2>
+        </div>
+
+        <!-- History Page -->
+        <div id="history" class="page">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                <h1 style="margin: 0;"><i data-lucide="scroll-text" aria-hidden="true"></i> Essay History</h1>
                 <div class="data-bar">
                     <span class="data-bar-label"><i data-lucide="hard-drive" aria-hidden="true"></i> Data:</span>
                     <span class="data-bar-label"><i data-lucide="cloud" aria-hidden="true"></i> Sync:</span>
@@ -3978,17 +3687,7 @@ Remember to:
             <div class="history-list" id="history-list">
                 <!-- Generated by JS -->
             </div>
-            </div>
         </div>
-
-        <!-- Achievements (top-level tab) -->
-        <div id="achievements" class="page">
-            <h1 style="margin-bottom: 0.75rem;"><i data-lucide="trophy" aria-hidden="true"></i> Achievements</h1>
-            <p style="color: var(--text-light); margin-bottom: 1.25rem;">Unlock badges as you write, revise, and build habits.</p>
-            <div class="achievements-grid" id="achievements-grid">
-            </div>
-        </div>
-
 
         <!-- Results Page (hidden by default, shown after submission) -->
         <div id="results" class="page">
@@ -4127,37 +3826,33 @@ Remember to:
             <div class="modal-body">
                 <div class="help-list">
                     <div class="help-item">
-                        <strong>Top tabs (this build)</strong>
-                        Left to right: <strong>Home</strong> (prompts &amp; seed) → <strong>Plan</strong> (story template) → <strong>Drills</strong> → <strong>Write</strong> → <strong>Learn</strong> → <strong>Progress and Data</strong> → <strong>Achievements</strong>. On <strong>Learn</strong>, use the large <em>section switcher</em> under the title (three stacked rows on narrow phones, three columns on wider screens).
+                        <strong>1) Pick a prompt (Dashboard)</strong>
+                        Choose one of the 6 prompts, or use the Daily Story Seed and press “Plant this seed”.
                     </div>
                     <div class="help-item">
-                        <strong>1) Start on Home</strong>
-                        Pick one of six prompts (Refresh for new choices) or plant the Daily Story Seed, then go to Write.
-                    </div>
-                    <div class="help-item">
-                        <strong>2) Write</strong>
-                        Optional timer and word goal. Aim for at least 50 <em>story</em> words, then Submit. Challenge cards don’t count toward that minimum.
+                        <strong>2) Write (Practice)</strong>
+                        Use the Timer if you want. Aim for at least 50 words, then press “Submit”.
                     </div>
                     <div class="help-item">
                         <strong>3) Get unstuck</strong>
-                        Use Challenge in the editor, open the Power Words modal, or visit <strong>Learn → Power Words</strong>.
+                        Press “Challenge” to add a twist card into your story, or open “Power Words” to upgrade vocabulary.
                     </div>
                     <div class="help-item">
-                        <strong>4) Results</strong>
-                        Score breakdown, coaching, outline, optional online grammar check. <strong>Revise this draft</strong> returns you to Write; submit again to see the revision comparison on Results.
+                        <strong>4) Read feedback (Results)</strong>
+                        You’ll see a score breakdown, strengths, improvements, a story outline, and an online grammar/spelling check.
                     </div>
                     <div class="help-item">
-                        <strong>5) Progress and Data</strong>
-                        Skill charts and recent-essay trends are at the top; essay history, export/import, sync code, and clear-all are below on the same page. Open <strong>Achievements</strong> for badges.
+                        <strong>5) See your past essays (History)</strong>
+                        Essays are saved automatically. If you use Cloud Sync, enter the same Sync code on iPad + computer.
                     </div>
                     <div class="help-item">
-                        <strong>6) Shortcuts</strong>
-                        <strong>Ctrl+Enter</strong> / <strong>⌘+Enter</strong> submits from Write. <strong>Esc</strong> closes dialogs.
+                        <strong>6) Revise &amp; shortcuts</strong>
+                        On Results, use “Revise this draft” to keep your text and edit with sensory tools on; submit again to compare scores. In Practice, press <strong>Ctrl+Enter</strong> (Windows) or <strong>⌘+Enter</strong> (Mac) to submit. Press <strong>Esc</strong> to close a dialog.
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeHelpModal(); showPage('practice');"><span class="icon-btn"><i data-lucide="pen-line" aria-hidden="true"></i><span>Go to Write</span></span></button>
+                <button type="button" class="btn btn-outline" onclick="closeHelpModal(); showPage('practice');"><span class="icon-btn"><i data-lucide="pen-line" aria-hidden="true"></i><span>Go to Practice</span></span></button>
                 <button type="button" class="btn btn-primary" onclick="closeHelpModal()">Got it</button>
             </div>
         </div>
@@ -4208,7 +3903,7 @@ Remember to:
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.0.1';
+        const APP_VERSION = 'v3.1.0';
 
         function refreshIcons() {
             if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
@@ -4710,24 +4405,24 @@ Remember to:
         ];
 
         const SENTENCE_CHALLENGES = [
-            { boring: "He was nervous.", hint: "Show his body. Does he fidget? Sweat? What does his voice do?", reference: "His fingers drummed the desk, and each breath came shallow, as if the air had thinned without warning." },
-            { boring: "The food was delicious.", hint: "Use smell, taste, texture. What sounds might be heard while eating?", reference: "Steam carried garlic and butter; the crust cracked softly, and heat bloomed on my tongue with every bite." },
-            { boring: "She was angry.", hint: "Show her face, hands, posture. What did she do?", reference: "Her jaw locked; she slammed the drawer so hard the spoons jumped, and her voice dropped to a flat, dangerous whisper." },
-            { boring: "It was a dark night.", hint: "Use all 5 senses. What do you hear? Smell? Feel?", reference: "The moon hid; wind scraped the eaves, and the road smelled of wet asphalt and distant rain I could taste on my lips." },
-            { boring: "He was brave.", hint: "Show his action, not his label. What specific thing did he do?", reference: "He stepped between them anyway, chin lifted, hands steady at his sides while everyone else leaned backward." },
-            { boring: "The house was old.", hint: "Use sight, sound, smell. What details tell us it's old?", reference: "Floorboards groaned under my shoes; paint curled like paper, and the hallway smelled of dust and something faintly sour, like forgotten fruit." },
-            { boring: "She was excited.", hint: "Show her energy. Is she bouncing? Talking fast? What do her eyes do?", reference: "Words tumbled out too fast; she bounced on her toes, eyes bright as if someone had flipped on a light inside her." },
-            { boring: "The dog was big.", hint: "Give specific details — how big? Compare to something. What does it look like up close?", reference: "Its shoulders cleared the table edge; each paw left a damp print the size of my hand on the tiles." },
-            { boring: "He was tired.", hint: "Show his body. Are his eyes drooping? Does he yawn? Can he keep his head up?", reference: "His eyelids dragged downward; a yawn split his jaw, and he caught himself before his forehead hit the textbook." },
-            { boring: "The water was cold.", hint: "How does cold feel on the skin? Does it steal breath? Make fingers numb?", reference: "The first wave stole my breath; my skin tightened, and my fingers went numb before I’d swum three strokes." },
-            { boring: "She smiled.", hint: "What kind of smile? A small one? A big one? What does it do to her eyes?", reference: "The corners of her eyes crinkled; the smile started small, then spread until her whole face softened into it." },
-            { boring: "It smelled bad.", hint: "What specifically did it smell like? Rotting? Sour? Fishy? Describe the exact smell.", reference: "Sour milk and something rotting curled in my nose, sharp enough to make me swallow and step back." },
-            { boring: "He ran fast.", hint: "How fast? Faster than what? What does his body look like when he runs?", reference: "He blurred past the cones; his elbows drove back, lungs burning, sneakers slapping the track in a steady hammer rhythm." },
-            { boring: "The music was loud.", hint: "How does loud feel? Does it vibrate? Hurt ears? Make the floor shake?", reference: "The bass thumped through my ribs; my ears rang after the chorus, and the floor trembled under my sneakers." },
-            { boring: "She loved him.", hint: "Show her actions. What does she do for him? What does she think about?", reference: "She saved him the last seat and the last dumpling, and when he laughed she memorized the sound like a favorite song." },
-            { boring: "The cat jumped.", hint: "How did it jump? Was it a high leap? A quick pounce? Did it land silently?", reference: "It coiled, then launched — a clean arc — and landed on the fence with a soft thud, tail high, fur barely ruffled." },
-            { boring: "He was scared.", hint: "Show his body responding. Goosebumps? Trembling? What does he do with his hands?", reference: "Goosebumps raced up his arms; he froze, palms slick on the doorframe, eyes fixed on the dark hallway." },
-            { boring: "The crowd was quiet.", hint: "How quiet? So quiet you could hear a pin drop? Was it an expectant quiet?", reference: "You could hear fabric rustle and someone swallow; even the kids stopped fidgeting, every face aimed at the stage." },
+            { boring: "He was nervous.", hint: "Show his body. Does he fidget? Sweat? What does his voice do?" },
+            { boring: "The food was delicious.", hint: "Use smell, taste, texture. What sounds might be heard while eating?" },
+            { boring: "She was angry.", hint: "Show her face, hands, posture. What did she do?" },
+            { boring: "It was a dark night.", hint: "Use all 5 senses. What do you hear? Smell? Feel?" },
+            { boring: "He was brave.", hint: "Show his action, not his label. What specific thing did he do?" },
+            { boring: "The house was old.", hint: "Use sight, sound, smell. What details tell us it's old?" },
+            { boring: "She was excited.", hint: "Show her energy. Is she bouncing? Talking fast? What do her eyes do?" },
+            { boring: "The dog was big.", hint: "Give specific details — how big? Compare to something. What does it look like up close?" },
+            { boring: "He was tired.", hint: "Show his body. Are his eyes drooping? Does he yawn? Can he keep his head up?" },
+            { boring: "The water was cold.", hint: "How does cold feel on the skin? Does it steal breath? Make fingers numb?" },
+            { boring: "She smiled.", hint: "What kind of smile? A small one? A big one? What does it do to her eyes?" },
+            { boring: "It smelled bad.", hint: "What specifically did it smell like? Rotting? Sour? Fishy? Describe the exact smell." },
+            { boring: "He ran fast.", hint: "How fast? Faster than what? What does his body look like when he runs?" },
+            { boring: "The music was loud.", hint: "How does loud feel? Does it vibrate? Hurt ears? Make the floor shake?" },
+            { boring: "She loved him.", hint: "Show her actions. What does she do for him? What does she think about?" },
+            { boring: "The cat jumped.", hint: "How did it jump? Was it a high leap? A quick pounce? Did it land silently?" },
+            { boring: "He was scared.", hint: "Show his body responding. Goosebumps? Trembling? What does he do with his hands?" },
+            { boring: "The crowd was quiet.", hint: "How quiet? So quiet you could hear a pin drop? Was it an expectant quiet?" },
         ];
 
         const MODEL_ESSAYS = [
@@ -4871,138 +4566,6 @@ Two more stops.`,
                     'strong-verbs': "groaned, slid, clutched, burst, plunged",
                     'dialogue': "Unknown number, I let it ring"
                 }
-            },
-            {
-                id: 'model-7',
-                title: "The Lighthouse Stair",
-                difficulty: 'medium',
-                wordCount: 312,
-                tags: ['sensory', 'tension', 'strong-verbs'],
-                text: `Salt crusted the iron railing until it felt like sandpaper under my palm. Three hundred steps, the sign said, and the wind tried to push me back down every one.
-
-The lamp room smelled of oil and hot glass. Below, the sea had turned the color of slate.
-
-I climbed because Dad's note only said, "If I'm not back by high tide." No joke in his handwriting. No smile in the word tide.
-
-Somewhere above, a chain clanked once — then silence. I stopped, breathing in the cold, and listened until my own heartbeat was too loud to hear anything else.`,
-                annotations: {
-                    'sensory': "Salt crusted the iron railing, smelled of oil and hot glass, sea had turned the color of slate",
-                    'tension': "wind tried to push me back, If I'm not back by high tide, listened until my own heartbeat was too loud",
-                    'strong-verbs': "crusted, climbed, clanked"
-                }
-            },
-            {
-                id: 'model-8',
-                title: "Saturday Market",
-                difficulty: 'easy',
-                wordCount: 268,
-                tags: ['dialogue', 'sensory', 'show-not-tell'],
-                text: `"Two for one if you smile," the tomato vendor said, winking at my empty basket.
-
-Steam from the dumpling cart wrapped around us like a scarf. Somewhere a radio played a song my grandmother used to hum.
-
-I held up one mango, heavy and golden, and didn't have to say I was deciding — he watched my thumb trace its skin.
-
-"That one's sweet," he said. "The sour ones look confident. This one looks shy."
-
-I laughed, and the sound surprised me. The morning had started gray in my kitchen window. Here, everything looked edible and loud and possible.`,
-                annotations: {
-                    'dialogue': '"Two for one if you smile," "That one\'s sweet," "The sour ones look confident"',
-                    'sensory': "Steam from the dumpling cart, heavy and golden, morning had started gray",
-                    'show-not-tell': "didn't have to say I was deciding — he watched my thumb trace its skin"
-                }
-            },
-            {
-                id: 'model-9',
-                title: "Paper Boats in the Gutter",
-                difficulty: 'easy',
-                wordCount: 295,
-                tags: ['emotions', 'sensory', 'show-not-tell'],
-                text: `Rain filled the curb until it became a narrow river. Leo folded a boat from his math homework — the page he'd failed anyway — and set it down.
-
-The little craft spun, caught on a leaf, spun again. He ran alongside it, sneakers splashing, not caring.
-
-When the boat wedged against a grate and tipped, he stood very still. Water sheeted over the metal bars.
-
-"It's okay," he whispered, though no one had asked. He folded another, slower this time, creases sharp as promises.
-
-The second boat sailed farther. Leo exhaled, and only then noticed his hands had stopped shaking.`,
-                annotations: {
-                    'emotions': "stood very still, hands had stopped shaking, only then noticed",
-                    'sensory': "Rain filled the curb, sneakers splashing, Water sheeted over the metal bars",
-                    'show-not-tell': "whispered, though no one had asked — comfort directed at himself"
-                }
-            },
-            {
-                id: 'model-10',
-                title: "Thunder Without Rain",
-                difficulty: 'hard',
-                wordCount: 378,
-                tags: ['tension', 'dialogue', 'strong-verbs'],
-                text: `The sky bruised itself in broad purple strokes, but the ground stayed dry. Aunt Rosa tapped her phone against the porch rail — tap, tap, tap — like a second clock.
-
-"They said it would break by noon," Mom muttered.
-
-"Noon was an hour ago," I said.
-
-Lightning forked somewhere we couldn't see. The air tasted metallic, as if the storm were already in our mouths. Rosa stopped tapping. The silence that followed felt heavier than the thunder had.
-
-When the first drops finally hit — fat, deliberate splats on the dust — we all flinched, then laughed, embarrassed by our own bodies.
-
-"See?" Rosa said, but her voice shook. "Patience."
-
-The rain didn't ask permission. It simply took the yard back.`,
-                annotations: {
-                    'tension': "sky bruised itself, air tasted metallic, silence that followed felt heavier",
-                    'dialogue': '"They said it would break by noon," "Noon was an hour ago," "See?"',
-                    'strong-verbs': "bruised, forked, flinched"
-                }
-            },
-            {
-                id: 'model-11',
-                title: "The Key Under the Mat",
-                difficulty: 'medium',
-                wordCount: 301,
-                tags: ['show-not-tell', 'strong-verbs', 'sensory'],
-                text: `The spare key still lived where it always had — a corner of the mat, worn smooth by a thousand shoes. I didn't pick it up right away.
-
-The house looked the same from the driveway: chipped paint on the shutters, wind chime missing two tubes. Inside would be different. Emptier.
-
-My fingers closed on cold metal. The lock resisted, then surrendered with a click that echoed down the hallway.
-
-Dust motes floated in the afternoon light, slow as thoughts I'd been avoiding. Dad's mug sat in the dish rack, upside down, waiting for a hand that wasn't coming back.
-
-I set the key on the counter instead of hiding it again. Some doors you only open once.`,
-                annotations: {
-                    'show-not-tell': "Inside would be different. Emptier — grief without saying the word",
-                    'strong-verbs': "resisted, surrendered, floated",
-                    'sensory': "cold metal, Dust motes floated in the afternoon light, wind chime missing two tubes"
-                }
-            },
-            {
-                id: 'model-12',
-                title: "Coffee With Aunt Mei",
-                difficulty: 'easy',
-                wordCount: 329,
-                tags: ['dialogue', 'emotions', 'sensory'],
-                text: `"You stir too fast," Aunt Mei said, sliding the spoon from my fingers. "Coffee likes a slow circle. Like you're calming it down."
-
-The café smelled of roasted beans and someone's cinnamon pastry. I watched the tiny whirlpool she made — patient, even — and felt my shoulders drop a fraction.
-
-"I messed up the interview," I admitted to the foam.
-
-She hummed, noncommittal. "Did you speak?"
-
-"Yes."
-
-"Then you practiced courage." She pushed the cup toward me. "Courage is not a grade."
-
-Heat seeped through the ceramic into my palms. Outside, rain began to stitch itself across the window. I took a sip, bitter then sweet, and let the warmth stay where it landed.`,
-                annotations: {
-                    'dialogue': '"You stir too fast," "Did you speak?" "Courage is not a grade"',
-                    'emotions': "shoulders drop a fraction, let the warmth stay where it landed",
-                    'sensory': "smelled of roasted beans, Heat seeped through the ceramic, bitter then sweet"
-                }
             }
         ];
 
@@ -5139,7 +4702,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         // ============ STATE ============
         let state = {
             currentPage: 'dashboard',
-            learnTab: 'power',
             currentPrompt: null,
             currentPromptIndex: null,
             timerMinutes: 25,
@@ -5261,7 +4823,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             updateTimerDisplay();
 
             // New feature init
-            refreshModelEssayDeck();
+            renderLibrary();
             initSentencePractice();
             loadTemplateDraft();
             renderSkillsProgress();
@@ -5514,29 +5076,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             }
         }
 
-        function applyLearnTabUi(tab) {
-            const t = tab || 'power';
-            document.querySelectorAll('.learn-segments .segment-btn').forEach(b => {
-                const on = b.dataset.learnTab === t;
-                b.classList.toggle('active', on);
-                b.setAttribute('aria-selected', on ? 'true' : 'false');
-            });
-            ['power', 'tips', 'models'].forEach(name => {
-                const el = document.getElementById('learn-panel-' + name);
-                if (el) el.hidden = name !== t;
-            });
-        }
-
-        function switchLearnTabFromUi(tab) {
-            state.learnTab = tab;
-            if (state.currentPage !== 'learn') {
-                showPage('learn');
-            } else {
-                applyLearnTabUi(tab);
-                refreshIcons();
-            }
-        }
-
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -5554,16 +5093,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             state.currentPage = pageId;
             if (pageId === 'dashboard') {
                 renderPrompts();
-            }
-            if (pageId === 'learn') {
-                applyLearnTabUi(state.learnTab || 'power');
-            }
-            if (pageId === 'progress') {
-                renderSkillsProgress();
-                renderHistory();
-            }
-            if (pageId === 'achievements') {
-                renderAchievements();
             }
             refreshIcons();
         }
@@ -7603,69 +7132,21 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         // ============ LIBRARY ============
-        const LIBRARY_DECK_SIZE = 8;
         let currentLibraryFilter = 'all';
-        let libraryDeckIds = [];
-
-        function shuffleArray(arr) {
-            const a = arr.slice();
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        function getLibraryFilteredList() {
-            return currentLibraryFilter === 'all'
-                ? MODEL_ESSAYS.slice()
-                : MODEL_ESSAYS.filter(e => e.tags.includes(currentLibraryFilter));
-        }
-
-        function refreshModelEssayDeck() {
-            const filtered = getLibraryFilteredList();
-            if (!filtered.length) {
-                libraryDeckIds = [];
-                renderLibrary();
-                return;
-            }
-            const take = Math.min(LIBRARY_DECK_SIZE, filtered.length);
-            libraryDeckIds = shuffleArray(filtered.map(e => e.id)).slice(0, take);
-            renderLibrary();
-        }
 
         function renderLibrary() {
             const grid = document.getElementById('library-grid');
             if (!grid) return;
-            const filtered = getLibraryFilteredList();
-            if (!filtered.length) {
-                grid.innerHTML = '<p class="library-empty">No model essays match this filter yet. Try <strong>All</strong> or another tag.</p>';
-                refreshIcons();
-                return;
-            }
-            const fset = new Set(filtered.map(e => e.id));
-            let ids = (libraryDeckIds || []).filter(id => fset.has(id));
-            const target = Math.min(LIBRARY_DECK_SIZE, filtered.length);
-            if (ids.length < target) {
-                const pool = shuffleArray(filtered.map(e => e.id).filter(id => !ids.includes(id)));
-                ids = ids.concat(pool.slice(0, target - ids.length));
-                libraryDeckIds = ids;
-            } else if (ids.length > target) {
-                libraryDeckIds = ids.slice(0, target);
-                ids = libraryDeckIds;
-            }
-            const essays = ids.map(id => MODEL_ESSAYS.find(e => e.id === id)).filter(Boolean);
-            grid.innerHTML = essays.map(essay => {
-                const diffLabel = essay.difficulty.charAt(0).toUpperCase() + essay.difficulty.slice(1);
-                return `
+            const filtered = currentLibraryFilter === 'all' ? MODEL_ESSAYS : MODEL_ESSAYS.filter(e => e.tags.includes(currentLibraryFilter));
+            grid.innerHTML = filtered.map(essay => `
                 <div class="library-card" onclick="openModelEssay('${essay.id}')">
                     <div class="library-card-title">${essay.title}</div>
-                    <div class="library-card-meta">${essay.wordCount} words · ${diffLabel}</div>
+                    <div class="library-card-meta">${essay.wordCount} words · ${essay.difficulty}</div>
                     <div class="library-card-tags">
                         ${essay.tags.map(tag => `<span class="library-tag ${tag}" onclick="event.stopPropagation(); filterLibrary('${tag}', this);">${tagLabel(tag)}</span>`).join('')}
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            `).join('');
             refreshIcons();
         }
 
@@ -7673,12 +7154,16 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             return { 'show-not-tell': 'Show Don\'t Tell', 'sensory': 'Sensory', 'dialogue': 'Dialogue', 'strong-verbs': 'Strong Verbs', 'tension': 'Tension', 'emotions': 'Emotions' }[tag] || tag;
         }
 
-        function filterLibrary(tag, el) {
+        function filterLibrary(tag, btn) {
             currentLibraryFilter = tag;
             document.querySelectorAll('.library-filters .btn').forEach(b => b.classList.remove('active'));
-            const filterBtn = document.querySelector(`.library-filters .btn[data-lib-filter="${tag}"]`);
-            if (filterBtn) filterBtn.classList.add('active');
-            refreshModelEssayDeck();
+            if (btn) btn.classList.add('active');
+            else {
+                const btnMap = { 'all': 0, 'show-not-tell': 1, 'sensory': 2, 'dialogue': 3, 'strong-verbs': 4, 'tension': 5 };
+                const btns = document.querySelectorAll('.library-filters .btn');
+                if (btns[btnMap[tag] || 0]) btns[btnMap[tag] || 0].classList.add('active');
+            }
+            renderLibrary();
         }
 
         function openModelEssay(id) {
@@ -7688,8 +7173,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             let textHtml = essay.text.split('\n\n').map(p => `<p style="margin-bottom:1rem;line-height:1.8">${p}</p>`).join('');
             const modal = document.getElementById('model-essay-modal') || createModelEssayModal();
             document.getElementById('model-essay-title').textContent = essay.title;
-            const diffLabel = essay.difficulty.charAt(0).toUpperCase() + essay.difficulty.slice(1);
-            document.getElementById('model-essay-meta').textContent = `${essay.wordCount} words · ${diffLabel} level`;
+            document.getElementById('model-essay-meta').textContent = `${essay.wordCount} words · ${essay.difficulty} level`;
             document.getElementById('model-essay-tags').innerHTML = tagsHtml;
             document.getElementById('model-essay-content').innerHTML = textHtml;
             modal.classList.add('active');
@@ -7734,81 +7218,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
         // ============ SENTENCE PRACTICE ============
         let sentencePracticeState = { streak: 0, completed: 0, bestStreak: 0, currentIndex: 0 };
-        let sentencePracticeAwaitingNext = false;
-
-        function escapeHtmlSp(text) {
-            if (!text) return '';
-            const d = document.createElement('div');
-            d.textContent = text;
-            return d.innerHTML;
-        }
-
-        function computeDrillScore(input, origLen, isLonger, hasSensory, hasAction, isGood) {
-            const len = input.length;
-            if (!isGood) {
-                let n = 0;
-                if (isLonger) n++;
-                if (hasSensory) n++;
-                if (hasAction) n++;
-                if (n <= 0) return 1;
-                if (n === 1) return 2;
-                return 3;
-            }
-            if (hasSensory && hasAction && isLonger && len >= origLen + 28) return 5;
-            if (isLonger && len >= origLen + 42) return 5;
-            return 4;
-        }
-
-        function drillScoreNote(score) {
-            const m = {
-                1: 'Keep trying — add detail, senses, and something happening.',
-                2: 'Good start — stretch the scene a little further.',
-                3: 'Close — you are almost meeting the bar.',
-                4: 'Nice — you passed this drill.',
-                5: 'Strong showing — rich, specific, and vivid.'
-            };
-            return m[score] || '';
-        }
-
-        function buildDrillScoreBlock(score) {
-            let stars = '';
-            for (let i = 1; i <= 5; i++) stars += (i <= score ? '\u2605' : '\u2606');
-            return '<div class="sp-score-row"><span class="sp-score-label">Score</span><span class="sp-score-value">' + score + ' / 5</span><span class="sp-score-stars" aria-hidden="true">' + stars + '</span><span class="sp-score-note">' + drillScoreNote(score) + '</span></div>';
-        }
-
-        function buildDrillReferenceBlock(reference) {
-            if (!reference) return '';
-            return '<p class="sp-reference-label">Example rewrite (one possible answer)</p><div class="sp-reference-quote">' + escapeHtmlSp(reference) + '</div>';
-        }
-
-        function buildSentencePracticeSuccessHtml(input, origLen, hasSensory, hasAction, score, reference) {
-            const minLen = origLen + 15;
-            return buildDrillScoreBlock(score) +
-                '<p class="sp-feedback-lead"><strong>Nice work — you showed instead of told.</strong></p>' +
-                '<ul class="sp-feedback-list">' +
-                '<li><strong>Length:</strong> ' + input.length + ' characters (this drill wants about ' + minLen + '+ so you add real detail).</li>' +
-                '<li><strong>Sensory / body language:</strong> ' + (hasSensory ? 'Yes — we spotted concrete physical or sense detail.' : '—') + '</li>' +
-                '<li><strong>Action in motion:</strong> ' + (hasAction ? 'Yes — something is happening on the page.' : '—') + '</li>' +
-                '</ul>' +
-                buildDrillReferenceBlock(reference) +
-                '<p class="sp-feedback-sub">Your line</p>' +
-                '<blockquote class="sp-feedback-quote">' + escapeHtmlSp(input) + '</blockquote>' +
-                '<p class="sp-feedback-next-hint">Read the score, checklist, and example, then tap <strong>Next challenge</strong> when you are ready (your streak is already saved).</p>' +
-                '<button type="button" class="btn btn-primary btn-sm sp-next-challenge-btn" onclick="advanceSentenceChallenge()"><span class="icon-btn"><i data-lucide="arrow-right" aria-hidden="true"></i><span>Next challenge</span></span></button>';
-        }
-
-        function buildSentencePracticeFailHtml(input, origLen, isLonger, hasSensory, hasAction, score, reference) {
-            const minLen = origLen + 15;
-            return buildDrillScoreBlock(score) +
-                '<p class="sp-feedback-lead"><strong>Not quite yet.</strong> The app looks for three simple signals so you practice <em>showing</em> instead of labeling the feeling.</p>' +
-                '<ul class="sp-feedback-list">' +
-                '<li><strong>Length:</strong> ' + input.length + ' / ~' + minLen + '+ characters — ' + (isLonger ? '<span style="color:#065F46">OK</span>' : 'add more detail (longer usually means more scene).') + '</li>' +
-                '<li><strong>Sensory / body language:</strong> ' + (hasSensory ? '<span style="color:#065F46">Found</span>' : 'try sweat, trembling, voice, hands, face, breath…') + '</li>' +
-                '<li><strong>Action in motion:</strong> ' + (hasAction ? '<span style="color:#065F46">Found</span>' : 'try clear verbs: <em>grabbed</em>, <em>froze</em>, <em>whispered</em>, <em>staring</em>…') + '</li>' +
-                '</ul>' +
-                buildDrillReferenceBlock(reference) +
-                '<p class="sp-feedback-sub">Compare with the example, edit your sentence, and tap <strong>Check My Answer</strong> again.</p>';
-        }
 
         function initSentencePractice() {
             const saved = localStorage.getItem('writeboost-sentence-practice');
@@ -7834,51 +7243,22 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
         function loadSentenceChallenge(idx) {
             if (idx !== undefined) sentencePracticeState.currentIndex = idx;
-            sentencePracticeAwaitingNext = false;
             const idx2 = sentencePracticeState.currentIndex;
             const challenge = SENTENCE_CHALLENGES[idx2 % SENTENCE_CHALLENGES.length];
             const boringEl = document.getElementById('sp-boring');
             const hintEl = document.getElementById('sp-hint-text');
             const inputEl = document.getElementById('sp-input');
             const feedbackEl = document.getElementById('sp-feedback');
-            const checkBtn = document.getElementById('sp-check-btn');
-            const skipBtn = document.getElementById('sp-skip-btn');
             if (boringEl) boringEl.textContent = challenge.boring;
             if (hintEl) hintEl.textContent = challenge.hint;
             if (inputEl) inputEl.value = '';
             if (feedbackEl) feedbackEl.innerHTML = '';
-            if (checkBtn) checkBtn.disabled = false;
-            if (skipBtn) skipBtn.disabled = false;
-            refreshIcons();
-        }
-
-        function showSpFeedback(html, kind) {
-            const feedback = document.getElementById('sp-feedback');
-            if (!feedback) return;
-            const cls = kind === 'success' ? 'sp-feedback-success' : kind === 'warn' ? 'sp-feedback-warn' : 'sp-feedback-error';
-            feedback.innerHTML = '<div class="sp-feedback-inner ' + cls + '">' + html + '</div>';
-            refreshIcons();
-            requestAnimationFrame(() => {
-                feedback.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        }
-
-        function advanceSentenceChallenge() {
-            if (!sentencePracticeAwaitingNext) return;
-            sentencePracticeAwaitingNext = false;
-            sentencePracticeState.currentIndex = (sentencePracticeState.currentIndex + 1) % SENTENCE_CHALLENGES.length;
-            saveSentencePractice();
-            loadSentenceChallenge();
-            updateSentencePracticeUI();
         }
 
         function checkSentenceRewrite() {
-            if (sentencePracticeAwaitingNext) return;
             const input = document.getElementById('sp-input')?.value?.trim() || '';
-            if (!input) {
-                showSpFeedback('<p class="sp-feedback-lead">Write a sentence in the box first, then tap <strong>Check My Answer</strong>.</p>', 'error');
-                return;
-            }
+            const feedback = document.getElementById('sp-feedback');
+            if (!input) { if (feedback) feedback.innerHTML = '<span style="color:var(--danger)">Write a sentence first!</span>'; return; }
             const challenge = SENTENCE_CHALLENGES[sentencePracticeState.currentIndex % SENTENCE_CHALLENGES.length];
             const origLen = challenge.boring.length;
             const isLonger = input.length >= origLen + 15;
@@ -7886,30 +7266,26 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             const hasSensory = sensoryWords.some(w => input.toLowerCase().includes(w));
             const hasAction = /\w+ed\s+\w+/.test(input) || /\w+ing\s+\w+/.test(input);
             const isGood = isLonger && (hasSensory || hasAction);
-            const score = computeDrillScore(input, origLen, isLonger, hasSensory, hasAction, isGood);
-            const reference = challenge.reference || '';
             if (isGood) {
                 sentencePracticeState.streak++;
                 sentencePracticeState.completed++;
                 if (sentencePracticeState.streak > sentencePracticeState.bestStreak) sentencePracticeState.bestStreak = sentencePracticeState.streak;
-                sentencePracticeAwaitingNext = true;
-                const checkBtn = document.getElementById('sp-check-btn');
-                if (checkBtn) checkBtn.disabled = true;
-                showSpFeedback(buildSentencePracticeSuccessHtml(input, origLen, hasSensory, hasAction, score, reference), 'success');
-                updateSentencePracticeUI();
+                if (feedback) feedback.innerHTML = '<span style="color:var(--success);font-weight:700;">Great job! You showed instead of told!</span>';
+                setTimeout(() => {
+                    sentencePracticeState.currentIndex = (sentencePracticeState.currentIndex + 1) % SENTENCE_CHALLENGES.length;
+                    saveSentencePractice();
+                    loadSentenceChallenge();
+                    updateSentencePracticeUI();
+                }, 1500);
             } else {
                 sentencePracticeState.streak = 0;
-                showSpFeedback(buildSentencePracticeFailHtml(input, origLen, isLonger, hasSensory, hasAction, score, reference), 'warn');
+                if (feedback) feedback.innerHTML = '<span style="color:var(--warning);">Try again! Make your sentence longer and include actions or body language. ' + (isLonger ? 'Good length, but add more sensory details!' : 'Make it at least ' + (origLen + 15) + ' characters.') + '</span>';
                 updateSentencePracticeUI();
             }
             saveSentencePractice();
         }
 
         function skipSentenceChallenge() {
-            if (sentencePracticeAwaitingNext) {
-                advanceSentenceChallenge();
-                return;
-            }
             sentencePracticeState.streak = 0;
             sentencePracticeState.currentIndex = (sentencePracticeState.currentIndex + 1) % SENTENCE_CHALLENGES.length;
             saveSentencePractice();
