@@ -9,6 +9,8 @@
     <meta name="description" content="WriteBoost — practice narrative writing: stories, scenes, dialogue, and tension. Creative fiction trainer with prompts and feedback; not for formal argument or research essays.">
     <meta name="theme-color" content="#045490">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2304590'/%3E%3Cstop offset='1' stop-color='%23273462'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url(%23g)'/%3E%3Ctext x='64' y='82' font-size='64' text-anchor='middle'%3E%E2%9C%8D%EF%B8%8F%3C/text%3E%3C/svg%3E">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <title>WriteBoost — Narrative writing practice</title>
     <style>
         :root {
@@ -5551,6 +5553,24 @@
         };
 
         // ============ ONLINE (OPTIONAL) ============
+        // Firebase Realtime Database config — replace these values with your own from Firebase Console
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyBLhfduTZHro5ZPYmW7vBAhiXJawXDQAHM",
+            authDomain: "writeboost-a1e09.firebaseapp.com",
+            databaseURL: "https://writeboost-a1e09-default-rtdb.firebaseio.com",
+            projectId: "writeboost-a1e09",
+            storageBucket: "writeboost-a1e09.firebasestorage.app",
+            messagingSenderId: "202389962323",
+            appId: "1:202389962323:web:4efa42f74dc7ac4bee90a6",
+            measurementId: "G-585HP5NNHB"
+        };
+
+        // Initialize Firebase (only once)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+        }
+        const db = firebase.database();
+
         const ONLINE_CONFIG = {
             // Datamuse is a free word-finding API that supports CORS and does not require keys.
             // Docs: https://www.datamuse.com/api/
@@ -5558,13 +5578,10 @@
             // LanguageTool public endpoint (may rate-limit). If CORS blocks in some environments,
             // you can later switch to a tiny proxy server.
             languageTool: 'https://api.languagetool.org/v2/check',
-            // Recommended: set this to your Cloudflare Worker URL to avoid CORS/rate-limit issues.
-            // Example: 'https://writeboost-proxy.yourname.workers.dev'
-            proxyBase: 'https://writeboost-proxy.rabito.workers.dev',
             enabled: true,
             timeoutMs: 12000,
-            // Cloud sync (cross-device). Stored via Worker + KV.
-            // Set a short "sync code" on both iPad + computer to share the same cloud data.
+            // Cloud sync (cross-device). Stored via Firebase Realtime Database.
+            // Set the same access code on all devices to share cloud data.
             syncEnabled: true
         };
 
@@ -6800,7 +6817,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             }
         }
 
-        // ============ CLOUD SYNC (KV via Worker) ============
+        // ============ CLOUD SYNC (Firebase Realtime Database) ============
         function getSyncCode() {
             return (localStorage.getItem('writeboost-sync-code') || '').trim();
         }
@@ -6898,30 +6915,30 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         async function pullCloudState() {
-            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.proxyBase || !ONLINE_CONFIG.syncEnabled) return null;
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return null;
             const code = getSyncCode();
             if (!code) return null;
 
-            const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/state?code=${encodeURIComponent(code)}`;
-            const res = await fetchWithTimeout(url, { method: 'GET' });
-            if (!res.ok) throw new Error(`Sync pull failed: ${res.status}`);
-            const data = await res.json();
-            return (data && typeof data === 'object') ? data : null;
+            try {
+                const snapshot = await db.ref(code).once('value');
+                return snapshot.val();
+            } catch (e) {
+                console.warn('Firebase pull failed:', e);
+                return null;
+            }
         }
 
         async function pushCloudState() {
-            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.proxyBase || !ONLINE_CONFIG.syncEnabled) return;
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return;
             const code = getSyncCode();
             if (!code) return;
 
-            const url = `${ONLINE_CONFIG.proxyBase.replace(/\/$/, '')}/api/state?code=${encodeURIComponent(code)}`;
-            const payload = normalizeStateForSync();
-            const res = await fetchWithTimeout(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!res.ok) throw new Error(`Sync push failed: ${res.status}`);
+            try {
+                const payload = normalizeStateForSync();
+                await db.ref(code).set(payload);
+            } catch (e) {
+                console.warn('Firebase push failed:', e);
+            }
         }
 
         async function syncNow() {
