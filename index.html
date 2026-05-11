@@ -441,6 +441,90 @@
             margin-left: 0;
         }
 
+        .header-sync-profile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 600;
+        }
+
+        .header-passcode-display {
+            font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            max-width: min(11rem, 36vw);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .header-sync-profile-btn .header-sync-chevron {
+            font-size: 0.65rem;
+            opacity: 0.75;
+            margin-left: -0.05rem;
+        }
+
+        body.profile-locked .header-sync-profile-btn {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .sync-profile-modal .sync-profile-status {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin: 0 0 1rem;
+        }
+
+        .sync-profile-modal .sync-section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            margin: 0 0 0.4rem;
+        }
+
+        .sync-profile-modal .sync-profile-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: stretch;
+            margin-bottom: 0.35rem;
+        }
+
+        .sync-profile-modal .sync-profile-row input[type="text"] {
+            flex: 1 1 12rem;
+            min-width: 0;
+            padding: 0.5rem 0.65rem;
+            font-size: 0.95rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--text);
+            font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+            box-sizing: border-box;
+        }
+
+        .sync-profile-modal .sync-profile-row .btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .sync-profile-modal .sync-profile-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.25rem 0 0.85rem;
+        }
+
+        .sync-profile-modal .sync-help {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin: 0.25rem 0 0;
+        }
+
         .header-stats {
             display: flex;
             flex-wrap: wrap;
@@ -2093,24 +2177,71 @@
             align-items: center;
         }
 
-        #passcode-input {
-            padding: 0.75rem 1rem;
+        #passcode-input,
+        #passcode-new-input,
+        .sync-profile-modal #sync-modal-switch-input,
+        .sync-profile-modal #sync-modal-new-code {
+            padding: 0.85rem 1.25rem;
             border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius);
             font-size: 1.1rem;
-            width: 240px;
+            width: 100%;
+            max-width: 280px;
             text-align: center;
+            box-sizing: border-box;
+            font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
         }
 
-        #passcode-input:focus {
+        #passcode-input,
+        #passcode-new-input {
+            text-align: left;
+        }
+
+        .sync-profile-modal #sync-modal-switch-input,
+        .sync-profile-modal #sync-modal-new-code {
+            max-width: none;
+            text-align: left;
+        }
+
+        #passcode-input:focus,
+        #passcode-new-input:focus,
+        .sync-profile-modal #sync-modal-switch-input:focus,
+        .sync-profile-modal #sync-modal-new-code:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(4, 84, 144, 0.15);
         }
 
         .passcode-error {
             color: var(--danger);
             font-size: 0.875rem;
             min-height: 1.2rem;
+            font-weight: 500;
+        }
+
+        .passcode-gate-dismiss-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 12000;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem 0.75rem;
+            padding: 0.45rem 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.35;
+            color: var(--text);
+            background: #fef9c3;
+            border-bottom: 1px solid #eab308;
+            box-shadow: var(--shadow);
+        }
+
+        .passcode-gate-dismiss-banner .btn {
+            font-size: 0.75rem;
+            padding: 0.22rem 0.5rem;
         }
 
         .modal {
@@ -4402,7 +4533,7 @@
                 <span class="logo-title">WriteBoost</span>
                 <span class="logo-tagline">Narrative writing</span>
             </div>
-            <span class="version-badge" id="app-version">v4.4.0</span>
+            <span class="version-badge" id="app-version">v4.5.0</span>
         </div>
         <div class="header-stats" role="toolbar" aria-label="Your writing stats — tap a number to open Progress and Data">
             <div class="stat-item header-stat-clickable" role="button" tabindex="0" title="Essays — open essay library"
@@ -4431,9 +4562,13 @@
                 <div class="stat-label">Best</div>
             </div>
         </div>
-        <div class="header-actions" role="toolbar" aria-label="Help and backup">
+        <div class="header-actions" role="toolbar" aria-label="Help and passcode">
+            <button type="button" class="btn btn-outline btn-sm header-sync-profile-btn" id="header-sync-profile-btn" onclick="openSyncProfileModal()" title="Passcode — switch to another or create a new one" aria-label="Passcode — switch or create new">
+                <i data-lucide="key-round" aria-hidden="true"></i>
+                <span id="header-passcode-display" class="header-passcode-display">Set passcode</span>
+                <span class="header-sync-chevron" aria-hidden="true">▾</span>
+            </button>
             <button class="btn btn-secondary btn-sm header-icon-btn" type="button" onclick="openHelpModal()" title="How to use — Quick Start" aria-label="How to use — Quick Start"><i data-lucide="circle-help" aria-hidden="true"></i></button>
-            <button class="btn btn-secondary btn-sm header-icon-btn" type="button" onclick="exportData()" title="Export data backup" aria-label="Export data backup"><i data-lucide="download" aria-hidden="true"></i></button>
         </div>
     </header>
 
@@ -5053,14 +5188,14 @@
         <!-- Progress and Data: skill trends + essay history & backup (single page) -->
         <div id="progress" class="page">
             <h1 style="margin-bottom: 0.75rem;"><i data-lucide="trending-up" aria-hidden="true"></i> Progress and Data</h1>
-            <p style="color: var(--text-light); margin-bottom: 1rem;">Skill trends and your essay library — including sync &amp; backup. Badges live on the <strong>Achievements</strong> tab.</p>
+            <p style="color: var(--text-light); margin-bottom: 1rem;">Skill trends and your essay library. Badges live on the <strong>Achievements</strong> tab.</p>
             <nav class="progress-page-nav" id="progress-page-nav" aria-label="On this page">
                 <span class="progress-page-nav-label">On this page</span>
                 <div class="progress-page-nav-buttons">
                     <button type="button" class="btn btn-outline btn-sm progress-nav-btn" onclick="scrollToProgressSection('progress-panel-trends')"><span class="icon-btn"><i data-lucide="bar-chart-2" aria-hidden="true"></i><span>Skills &amp; trends</span></span></button>
                     <button type="button" class="btn btn-outline btn-sm progress-nav-btn" onclick="openProgressToSkillBreakdown()"><span class="icon-btn"><i data-lucide="layout-list" aria-hidden="true"></i><span>Skill breakdown</span></span></button>
                     <button type="button" class="btn btn-outline btn-sm progress-nav-btn" onclick="scrollToProgressSection('progress-section-lines')"><span class="icon-btn"><i data-lucide="notebook-pen" aria-hidden="true"></i><span>Good lines</span></span></button>
-                    <button type="button" class="btn btn-outline btn-sm progress-nav-btn" onclick="scrollToProgressSection('progress-section-essays')"><span class="icon-btn"><i data-lucide="scroll-text" aria-hidden="true"></i><span>Essays &amp; backup</span></span></button>
+                    <button type="button" class="btn btn-outline btn-sm progress-nav-btn" onclick="scrollToProgressSection('progress-section-essays')"><span class="icon-btn"><i data-lucide="scroll-text" aria-hidden="true"></i><span>Essays</span></span></button>
                     <button type="button" class="btn btn-ghost btn-sm progress-nav-btn" onclick="scrollToProgressSection('progress-page-top')" title="Back to top of this page"><span class="icon-btn"><i data-lucide="arrow-up" aria-hidden="true"></i><span>Top</span></span></button>
                 </div>
             </nav>
@@ -5091,11 +5226,6 @@
 <div id="progress-section-essays" class="progress-anchor-target" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
                 <h2 style="margin: 0; font-size: 1.35rem;"><i data-lucide="scroll-text" aria-hidden="true"></i> Essay History</h2>
                 <div class="data-bar">
-                    <span class="data-bar-label"><i data-lucide="cloud" aria-hidden="true"></i> Sync:</span>
-                    <input id="sync-code-input" type="text" inputmode="numeric" placeholder="Access code"
-                           style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); width: 180px;">
-                    <button class="btn btn-outline btn-sm" onclick="saveSyncCode()">Save</button>
-                    <button class="btn btn-ghost btn-sm" onclick="syncNow()">Sync Now</button>
                     <button class="btn btn-outline btn-sm" onclick="state.selectMode ? exitSelectMode() : enterSelectMode()"><span class="icon-btn"><i data-lucide="check-square" aria-hidden="true"></i><span id="select-mode-btn-label">Select</span></span></button>
                     <button class="btn btn-outline btn-sm" id="delete-selected-btn" onclick="deleteSelectedEssays()" style="display:none; color: var(--danger);"><span class="icon-btn"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete Selected</span></span></button>
                     <button class="btn btn-outline btn-sm" id="push-selected-btn" onclick="syncSelectedToCloud()" style="display:none;"><span class="icon-btn"><i data-lucide="cloud-upload" aria-hidden="true"></i><span>Push Selected</span></span></button>
@@ -5329,7 +5459,7 @@
                     </div>
                     <div class="help-item">
                         <strong>5) Progress and Data</strong>
-                        Skill charts and recent-essay trends are at the top; essay history, export&nbsp;/&nbsp;import, sync code, and clear-all are below on the same page. Tap header <strong>Avg</strong> or <strong>Best</strong> to jump to skill breakdown;&nbsp;<strong>Essays</strong>&nbsp;/&nbsp;<strong>Words</strong> for the library. Open <strong>Achievements</strong> for badges&#x2060;.
+                        Skill charts and recent-essay trends are at the top; essay history, export&nbsp;/&nbsp;import, and clear-all are below on the same page. Use the header <strong>Passcode</strong> control to switch writers or create a new passcode. Tap header <strong>Avg</strong> or <strong>Best</strong> for skill breakdown;&nbsp;<strong>Essays</strong>&nbsp;/&nbsp;<strong>Words</strong> for the library. Open <strong>Achievements</strong> for badges&#x2060;.
                     </div>
                     <div class="help-item">
                         <strong>6) Shortcuts</strong>
@@ -5389,7 +5519,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.4.0';
+        const APP_VERSION = 'v4.5.0';
 
         let suggestionPopupHideTimer = null;
 
@@ -6660,6 +6790,83 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         /** Prompt indices hidden on the dashboard after picking (session-only; not saved). */
         const sessionHiddenPromptIndices = new Set();
 
+        // ============ PROFILE / SYNC CODE (per device user, cross-device via same code) ============
+        const PROFILE_CODE_STORAGE_KEY = 'writeboost-user-passcode';
+        const PROFILE_SESSION_VERIFIED_KEY = 'writeboost-user-verified';
+        const LEGACY_APP_STATE_KEY = 'writeboost-v2';
+        const PROFILE_STATE_PREFIX = 'writeboost-v2::';
+        const DRAFT_LEGACY_KEY = 'writeboost-draft';
+        const DRAFT_PREFIX = 'writeboost-draft::';
+        const FIREBASE_PROFILE_ROOT = 'writeboostProfiles';
+        /** User closed the sync gate without verifying; allow this tab to bootstrap (local-only until they set a code). */
+        const PROFILE_GATE_BROWSE_KEY = 'writeboost-browse-without-profile';
+
+        function getStoredProfileCode() {
+            try {
+                return (localStorage.getItem(PROFILE_CODE_STORAGE_KEY) || '').trim();
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function setStoredProfileCode(code) {
+            try {
+                localStorage.setItem(PROFILE_CODE_STORAGE_KEY, String(code || '').trim());
+            } catch (e) { /* ignore */ }
+        }
+
+        /** Stable id for localStorage + Firebase path segment (never include raw passphrase in URL). */
+        function profileBucketIdFromCode(raw) {
+            const t = String(raw || '').trim();
+            if (t.length < 4) return '';
+            try {
+                return btoa(unescape(encodeURIComponent(t)))
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=+$/g, '');
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function getProfileStateStorageKeyFor(code) {
+            const id = profileBucketIdFromCode(code);
+            return id ? (PROFILE_STATE_PREFIX + id) : LEGACY_APP_STATE_KEY;
+        }
+
+        function getProfileStateStorageKey() {
+            const code = getStoredProfileCode();
+            return code ? getProfileStateStorageKeyFor(code) : LEGACY_APP_STATE_KEY;
+        }
+
+        function getDraftStorageKeyFor(code) {
+            const id = profileBucketIdFromCode(code);
+            return id ? (DRAFT_PREFIX + id) : DRAFT_LEGACY_KEY;
+        }
+
+        function getDraftStorageKey() {
+            return getDraftStorageKeyFor(getStoredProfileCode());
+        }
+
+        function firebaseProfileRefPath(code) {
+            const id = profileBucketIdFromCode(code);
+            return id ? (FIREBASE_PROFILE_ROOT + '/' + id) : null;
+        }
+
+        function isProfileSessionUnlocked() {
+            try {
+                if (sessionStorage.getItem(PROFILE_SESSION_VERIFIED_KEY) === 'true' && getStoredProfileCode()) return true;
+                if (sessionStorage.getItem(PROFILE_GATE_BROWSE_KEY) === '1') return true;
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function removePasscodeGateDismissBanner() {
+            document.getElementById('passcode-gate-dismiss-banner')?.remove();
+        }
+
         const QUICK_START_NEVER_KEY = 'writeboost-quick-start-never';
         const ONBOARDING_DISMISSED_KEY = 'writeboost-onboarding-dismissed';
 
@@ -6721,7 +6928,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         // ============ INITIALIZATION ============
-        function init() {
+        function runWriteBoostAppInit() {
             loadState();
             updateStats();
             renderPrompts();
@@ -6741,13 +6948,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
             const versionEl = document.getElementById('app-version');
             if (versionEl) versionEl.textContent = APP_VERSION;
-
-            // Sync code UI
-            const syncInput = document.getElementById('sync-code-input');
-            if (syncInput) syncInput.value = getSyncCode();
-
-            // Check passcode before allowing access
-            checkPasscode();
 
             migrateQuickStartPreference();
             maybeAutoOpenQuickStart();
@@ -6769,10 +6969,140 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
             requestAnimationFrame(() => adjustEssayTextareaHeight());
             refreshIcons();
+            refreshHeaderProfileInput();
+
+            setTimeout(() => syncNow(), 500);
+        }
+
+        function refreshHeaderProfileInput() {
+            const btn = document.getElementById('header-sync-profile-btn');
+            const display = document.getElementById('header-passcode-display');
+            if (!btn) return;
+            const c = getStoredProfileCode();
+            if (c) {
+                btn.title = 'Passcode on this browser: ' + c + '. Click to switch to another passcode or create a new one.';
+                if (display) display.textContent = c;
+            } else {
+                btn.title = 'No passcode saved yet. Click to enter one you use on another device, or set a new passcode.';
+                if (display) display.textContent = 'Set passcode';
+            }
+        }
+
+        function closeSyncProfileModal() {
+            const o = document.getElementById('sync-profile-overlay');
+            if (!o) return;
+            o.classList.remove('active');
+            setTimeout(() => { try { o.remove(); } catch (e) { /* ignore */ } }, 220);
+        }
+
+        function openSyncProfileModal() {
+            closeSyncProfileModal();
+            setTimeout(() => _buildSyncProfileModal(), 30);
+        }
+
+        function _buildSyncProfileModal() {
+            const hasCode = !!getStoredProfileCode();
+            const cur = getStoredProfileCode();
+            const statusLine = hasCode
+                ? ('Your passcode on this browser is <strong>' + escapeHtml(cur) + '</strong>. <em>Switch</em> loads another writer’s data (full page reload). <em>Create new</em> keeps this draft but starts saving it under a new passcode.')
+                : 'No passcode saved here yet. Type one you already use on another device, or pick a new passcode (at least 4 characters), then <strong>Apply & reload</strong>.';
+
+            const overlay = document.createElement('div');
+            overlay.id = 'sync-profile-overlay';
+            overlay.className = 'modal-overlay active';
+            const modal = document.createElement('div');
+            modal.id = 'sync-profile-modal';
+            modal.className = 'modal passcode-modal sync-profile-modal';
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title"><i data-lucide="key-round" aria-hidden="true"></i> <span>Passcode</span></div>
+                    <button type="button" class="modal-close" onclick="closeSyncProfileModal()" aria-label="Close">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="sync-profile-status">${statusLine}</p>
+
+                    <div class="sync-section-title">Switch passcode</div>
+                    <p class="sync-help">Use the same passcode as on your other devices, or enter one you want to use for the first time on this browser.</p>
+                    <div class="sync-profile-row">
+                        <input type="text" id="sync-modal-switch-input" maxlength="200" autocomplete="off" spellcheck="false" placeholder="Passcode">
+                        <button type="button" class="btn btn-primary" onclick="applySyncModalSwitch()">Apply & reload</button>
+                    </div>
+
+                    ${hasCode ? `
+                    <hr class="sync-profile-divider" />
+                    <div class="sync-section-title">Create a new passcode</div>
+                    <p class="sync-help">After saving, use this new passcode everywhere. Cloud data under the old passcode is not merged automatically.</p>
+                    <div class="sync-profile-row">
+                        <input type="text" id="sync-modal-new-code" maxlength="200" autocomplete="off" spellcheck="false" placeholder="New passcode">
+                    </div>
+                    <div class="passcode-error" id="sync-modal-new-error" style="text-align:left;width:100%;max-width:none;"></div>
+                    <button type="button" class="btn btn-outline" style="margin-top:0.5rem;" onclick="applyNewPasscode()">Save new passcode</button>
+                    ` : '<p class="sync-help" style="margin-top:0.75rem;">Once a passcode is saved on this browser, you can also <strong>create a new one</strong> here while keeping your current draft.</p>'}
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.appendChild(modal);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeSyncProfileModal();
+            });
+            refreshIcons();
+            const inp = document.getElementById('sync-modal-switch-input');
+            if (inp) {
+                inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') applySyncModalSwitch(); });
+                inp.focus();
+            }
+            const nw = document.getElementById('sync-modal-new-code');
+            if (nw) nw.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyNewPasscode(); });
+        }
+
+        function applySyncModalSwitch() {
+            const el = document.getElementById('sync-modal-switch-input');
+            if (!el) return;
+            const next = el.value.trim();
+            if (next.length < 4) {
+                showToast('Use at least 4 characters.');
+                return;
+            }
+            if (next === getStoredProfileCode()) {
+                showToast('That is already this browser’s passcode.');
+                return;
+            }
+            if (!confirm('Switch to this passcode and reload the page? You will load data stored under that passcode on this device and from the cloud.')) {
+                return;
+            }
+            setStoredProfileCode(next);
+            try {
+                sessionStorage.setItem(PROFILE_SESSION_VERIFIED_KEY, 'true');
+                sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+            } catch (e) { /* ignore */ }
+            removePasscodeGateDismissBanner();
+            closeSyncProfileModal();
+            location.reload();
+        }
+
+        function init() {
+            if (!isProfileSessionUnlocked()) {
+                checkPasscode();
+                return;
+            }
+            if (!window.__writeboostAppBootstrapped) {
+                window.__writeboostAppBootstrapped = true;
+                runWriteBoostAppInit();
+            }
         }
 
         function loadState() {
-            const saved = localStorage.getItem('writeboost-v2');
+            const key = getProfileStateStorageKey();
+            let saved = localStorage.getItem(key);
+            if (!saved && key !== LEGACY_APP_STATE_KEY) {
+                const legacy = localStorage.getItem(LEGACY_APP_STATE_KEY);
+                if (legacy) {
+                    saved = legacy;
+                    try {
+                        localStorage.setItem(key, legacy);
+                    } catch (e) { /* quota */ }
+                }
+            }
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -6788,7 +7118,9 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     if (!Number.isFinite(state.stats.examEssaysCount)) state.stats.examEssaysCount = 0;
                 } catch (e) {
                     console.warn('Failed to load saved state, starting fresh:', e);
-                    localStorage.removeItem('writeboost-v2');
+                    try {
+                        localStorage.removeItem(key);
+                    } catch (err) { /* ignore */ }
                 }
             }
             migrateLegacyEssayScoresTo100Scale();
@@ -6871,7 +7203,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
         function saveState() {
             try {
-                localStorage.setItem('writeboost-v2', JSON.stringify({
+                const key = getProfileStateStorageKey();
+                localStorage.setItem(key, JSON.stringify({
                     stats: state.stats,
                     essays: state.essays,
                     character: state.character
@@ -6882,16 +7215,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         // ============ CLOUD SYNC (Firebase Realtime Database) ============
-        function getSyncCode() {
-            return (localStorage.getItem('writeboost-sync-code') || '').trim();
-        }
-
-        function setSyncCode(code) {
-            const cleaned = String(code || '').trim();
-            if (cleaned) localStorage.setItem('writeboost-sync-code', cleaned);
-            else localStorage.removeItem('writeboost-sync-code');
-        }
-
         function normalizeStateForSync() {
             return {
                 stats: state.stats,
@@ -6980,12 +7303,19 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
         async function pullCloudState() {
             if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return null;
-            const code = getSyncCode();
+            const code = getStoredProfileCode();
             if (!code) return null;
+            const path = firebaseProfileRefPath(code);
+            if (!path) return null;
 
             try {
-                const snapshot = await db.ref(code).once('value');
-                return snapshot.val();
+                const snapshot = await db.ref(path).once('value');
+                let val = snapshot.val();
+                if (val == null && !/[.#$\[\]\/]/.test(code)) {
+                    const legacy = await db.ref(code).once('value');
+                    val = legacy.val();
+                }
+                return val;
             } catch (e) {
                 console.warn('Firebase pull failed:', e);
                 return null;
@@ -6994,12 +7324,13 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
         async function pushCloudState() {
             if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return;
-            const code = getSyncCode();
-            if (!code) return;
+            const code = getStoredProfileCode();
+            const path = firebaseProfileRefPath(code);
+            if (!path) return;
 
             try {
                 const payload = normalizeStateForSync();
-                await db.ref(code).set(payload);
+                await db.ref(path).set(payload);
             } catch (e) {
                 console.warn('Firebase push failed:', e);
             }
@@ -7028,15 +7359,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             } catch (e) {
                 showToast('Sync failed (try again later).');
             }
-        }
-
-        function saveSyncCode() {
-            const input = document.getElementById('sync-code-input');
-            if (!input) return;
-            setSyncCode(input.value);
-            showToast(getSyncCode() ? 'Sync code saved' : 'Sync code cleared');
-            // Try a sync right away
-            syncNow();
         }
 
         // ============ NAVIGATION ============
@@ -7614,6 +7936,12 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 const h = document.getElementById('help-modal');
                 const c = document.getElementById('challenge-modal');
                 const p = document.getElementById('power-words-modal');
+                const syncOv = document.getElementById('sync-profile-overlay');
+                if (syncOv?.classList.contains('active')) {
+                    closeSyncProfileModal();
+                    e.preventDefault();
+                    return;
+                }
                 if (qs?.classList.contains('active')) {
                     closeQuickStartModal(false);
                     e.preventDefault();
@@ -8497,12 +8825,13 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 essays: selectedEssays,
                 character: localData.character
             };
-            const code = getSyncCode();
-            if (!code) {
-                showToast('Enter an access code first');
+            const code = getStoredProfileCode();
+            const path = firebaseProfileRefPath(code);
+            if (!path) {
+                showToast('Set your passcode first (top right or unlock screen).');
                 return;
             }
-            db.ref(code).set(cloudData).then(() => {
+            db.ref(path).set(cloudData).then(() => {
                 showToast(`Pushed ${selected.length} essay${selected.length > 1 ? 's' : ''} to cloud`);
             }).catch(() => {
                 showToast('Push failed');
@@ -9170,7 +9499,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         // ============ DATA EXPORT / IMPORT ============
         function exportData() {
             try {
-                const data = localStorage.getItem('writeboost-v2');
+                const data = localStorage.getItem(getProfileStateStorageKey());
                 if (!data || data === '{}') {
                     showToast('No data to export yet!');
                     return;
@@ -9215,7 +9544,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     }
 
                     // Merge with existing data
-                    const currentData = localStorage.getItem('writeboost-v2');
+                    const currentData = localStorage.getItem(getProfileStateStorageKey());
                     let merged = {};
                     if (currentData) {
                         merged = JSON.parse(currentData);
@@ -9250,7 +9579,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                         merged.character = { ...merged.character, ...data.character };
                     }
 
-                    localStorage.setItem('writeboost-v2', JSON.stringify(merged));
+                    localStorage.setItem(getProfileStateStorageKey(), JSON.stringify(merged));
                     loadState();
                     updateStats();
                     renderHistory();
@@ -9269,9 +9598,25 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         function clearAllData() {
             if (confirm('Are you sure you want to delete ALL data?\n\nThis will erase all essays, scores, achievements, and character data.\n\nTip: Export a backup first!')) {
                 if (confirm('This action cannot be undone. Really delete everything?')) {
-                    localStorage.removeItem('writeboost-v2');
+                    try {
+                        const wipe = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const k = localStorage.key(i);
+                            if (!k) continue;
+                            if (k === LEGACY_APP_STATE_KEY || k.startsWith(PROFILE_STATE_PREFIX)
+                                || k === DRAFT_LEGACY_KEY || k.startsWith(DRAFT_PREFIX)
+                                || k === PROFILE_CODE_STORAGE_KEY) {
+                                wipe.push(k);
+                            }
+                        }
+                        wipe.forEach((k) => localStorage.removeItem(k));
+                    } catch (e) { /* ignore */ }
                     localStorage.removeItem(QUICK_START_NEVER_KEY);
                     localStorage.removeItem(ONBOARDING_DISMISSED_KEY);
+                    try {
+                        sessionStorage.removeItem(PROFILE_SESSION_VERIFIED_KEY);
+                        sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+                    } catch (e2) { /* ignore */ }
                     location.reload();
                 }
             }
@@ -9461,12 +9806,12 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     savedAt: new Date().toISOString()
                 };
                 try {
-                    localStorage.setItem('writeboost-draft', JSON.stringify(draft));
+                    localStorage.setItem(getDraftStorageKey(), JSON.stringify(draft));
                     updateDraftSavedTime(new Date());
                 } catch (e) { /* quota / private mode */ }
             } else {
                 try {
-                    localStorage.removeItem('writeboost-draft');
+                    localStorage.removeItem(getDraftStorageKey());
                 } catch (e) {}
                 const ds = document.getElementById('draft-save-status');
                 if (ds) ds.textContent = 'Draft saves automatically after you pause typing (~' + (DRAFT_AUTOSAVE_MS / 1000) + 's).';
@@ -9500,7 +9845,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         function loadDraft() {
-            const draftData = localStorage.getItem('writeboost-draft');
+            const dk = getDraftStorageKey();
+            const draftData = localStorage.getItem(dk);
             if (!draftData) return;
             try {
                 const draft = JSON.parse(draftData);
@@ -9509,11 +9855,11 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 const hoursDiff = (now - savedAt) / (1000 * 60 * 60);
                 const ta = document.getElementById('essay-input');
                 if (!ta || typeof draft.text !== 'string') {
-                    localStorage.removeItem('writeboost-draft');
+                    localStorage.removeItem(dk);
                     return;
                 }
                 if (hoursDiff >= 24 || draft.text.trim().length === 0) {
-                    localStorage.removeItem('writeboost-draft');
+                    localStorage.removeItem(dk);
                     return;
                 }
                 ta.value = draft.text;
@@ -9528,13 +9874,15 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 updateDraftSavedTime(savedAt);
                 showToast('Draft restored from this device.');
             } catch (e) {
-                localStorage.removeItem('writeboost-draft');
+                localStorage.removeItem(dk);
             }
         }
 
         // Clear draft when essay is submitted
         function clearDraft() {
-            localStorage.removeItem('writeboost-draft');
+            try {
+                localStorage.removeItem(getDraftStorageKey());
+            } catch (e) { /* ignore */ }
         }
 
         // --- Dictionary / translate: selection → floating actions ---
@@ -10317,83 +10665,200 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             });
         }
 
-        // ============ INIT ============
         document.addEventListener('DOMContentLoaded', function() {
             init();
-            setupAutoSave();
-            loadDraft();
+            if (window.__writeboostAppBootstrapped) {
+                setupAutoSave();
+                loadDraft();
+            }
         });
 
-        // ============ PASSCODE GATE ============
-        let PASSCODE = 'Abcd1234'; // Change this to your desired access code
-
+        // ============ PROFILE UNLOCK (sync code = cloud + this browser bucket) ============
         function checkPasscode() {
-            const verified = sessionStorage.getItem('writeboost-verified');
-            if (verified === 'true') return;
+            if (isProfileSessionUnlocked()) return;
             showPasscodeModal();
         }
 
         function showPasscodeModal() {
-            // Block all pages
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector('.nav').style.display = 'none';
+            try {
+                sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+            } catch (e) { /* ignore */ }
+            removePasscodeGateDismissBanner();
+            closePasscodeModal();
+            setTimeout(() => _buildPasscodeModal(), 50);
+        }
 
-            let overlay = document.getElementById('passcode-overlay');
-            let modal = document.getElementById('passcode-modal');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'passcode-overlay';
-                overlay.className = 'modal-overlay active';
-                modal = document.createElement('div');
-                modal.id = 'passcode-modal';
-                modal.className = 'modal passcode-modal';
-                modal.innerHTML = `
-                    <div class="modal-header">
-                        <div class="modal-title"><i data-lucide="lock" aria-hidden="true"></i> <span>Access Required</span></div>
-                    </div>
-                    <div class="modal-body">
-                        <p>Enter the access code to use WriteBoost.</p>
-                        <div class="passcode-input-wrap">
-                            <input type="password" id="passcode-input" placeholder="Access code" autocomplete="off">
-                            <div class="passcode-error" id="passcode-error"></div>
-                            <button class="btn btn-primary" onclick="verifyPasscode()">Unlock</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-                overlay.appendChild(modal);
-                refreshIcons();
-
-                const input = document.getElementById('passcode-input');
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') verifyPasscode();
-                });
-            } else {
-                overlay.classList.add('active');
+        function dismissPasscodeGateForNow() {
+            try {
+                sessionStorage.setItem(PROFILE_GATE_BROWSE_KEY, '1');
+            } catch (e) { /* ignore */ }
+            closePasscodeModal();
+            if (!document.getElementById('passcode-gate-dismiss-banner')) {
+                const bar = document.createElement('div');
+                bar.id = 'passcode-gate-dismiss-banner';
+                bar.className = 'passcode-gate-dismiss-banner';
+                bar.innerHTML = '<span>No passcode set or confirmed yet. Use <strong>Passcode</strong> in the header later, or reopen this window below.</span>' +
+                    '<button type="button" class="btn btn-outline btn-sm" onclick="showPasscodeModal()">Open passcode</button>' +
+                    '<button type="button" class="btn btn-ghost btn-sm" onclick="removePasscodeGateDismissBanner()">Dismiss</button>';
+                document.body.appendChild(bar);
             }
+            if (!window.__writeboostAppBootstrapped) {
+                window.__writeboostAppBootstrapped = true;
+                runWriteBoostAppInit();
+                setupAutoSave();
+                loadDraft();
+            }
+            refreshHeaderProfileInput();
+            showToast('Browsing without a passcode — your work stays on this device only until you set one in the header.');
+            refreshIcons();
+        }
+
+        function closePasscodeModal() {
+            document.body.classList.remove('profile-locked');
+            const overlay = document.getElementById('passcode-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.remove(), 300);
+            }
+        }
+
+        function completeProfileUnlockFromModal(wasCreatingNew) {
+            try {
+                sessionStorage.setItem(PROFILE_SESSION_VERIFIED_KEY, 'true');
+                sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+            } catch (e) { /* ignore */ }
+            removePasscodeGateDismissBanner();
+            closePasscodeModal();
+            refreshHeaderProfileInput();
+            const nav = document.querySelector('.nav');
+            if (nav) nav.style.display = '';
+            showPage('dashboard');
+            if (!window.__writeboostAppBootstrapped) {
+                window.__writeboostAppBootstrapped = true;
+                runWriteBoostAppInit();
+                setupAutoSave();
+                loadDraft();
+            }
+            showToast(wasCreatingNew ? 'Passcode saved. Loading your workspace…' : 'Welcome back.');
+        }
+
+        function _buildPasscodeModal() {
+            document.body.classList.add('profile-locked');
+            const existing = getStoredProfileCode();
+            const isFirstTime = !existing;
+
+            const overlay = document.createElement('div');
+            overlay.id = 'passcode-overlay';
+            overlay.className = 'modal-overlay active';
+            const modal = document.createElement('div');
+            modal.id = 'passcode-modal';
+            modal.className = 'modal passcode-modal';
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title"><i data-lucide="${isFirstTime ? 'user-plus' : 'key-round'}" aria-hidden="true"></i> <span>${isFirstTime ? 'Choose your passcode' : 'Enter your passcode'}</span></div>
+                    <button type="button" class="modal-close" onclick="dismissPasscodeGateForNow()" aria-label="Close">×</button>
+                </div>
+                <div class="modal-body">
+                    ${isFirstTime
+                        ? `<p>Pick a passcode (at least 4 characters). Use the <strong>same passcode</strong> on every phone, tablet, or computer so your stories stay together in the cloud.</p>`
+                        : `<p>Enter the same passcode you use on your other devices to load your stories.</p>`
+                    }
+                    <div class="passcode-input-wrap">
+                        <input type="text" id="passcode-input" placeholder="${isFirstTime ? 'Choose a passcode' : 'Your passcode'}" autocomplete="off" maxlength="200" spellcheck="false">
+                        <div class="passcode-error" id="passcode-error"></div>
+                        <button type="button" class="btn btn-primary" onclick="verifyPasscode()">${isFirstTime ? 'Save & continue' : 'Unlock'}</button>
+                        ${!isFirstTime ? `<button type="button" class="btn btn-ghost btn-sm" onclick="forgotPasscode()" style="margin-top:0.25rem;font-size:0.8rem;">Forgot passcode — start over on this browser</button>` : ''}
+                    </div>
+                    ${isFirstTime ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">Your passcode appears in the header. Any time, open <strong>Passcode</strong> there to switch to another writer or create a new passcode.</p>` : ''}
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.appendChild(modal);
+            refreshIcons();
+
+            const input = document.getElementById('passcode-input');
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyPasscode(); });
+            input.focus();
         }
 
         function verifyPasscode() {
             const input = document.getElementById('passcode-input');
             const errorEl = document.getElementById('passcode-error');
             if (!input || !errorEl) return;
-            if (input.value === PASSCODE) {
-                sessionStorage.setItem('writeboost-verified', 'true');
-                const overlay = document.getElementById('passcode-overlay');
-                if (overlay) {
-                    overlay.classList.remove('active');
-                    setTimeout(() => overlay.remove(), 300);
+
+            const existing = getStoredProfileCode();
+            const isFirstTime = !existing;
+            const entered = input.value.trim();
+
+            if (!entered) {
+                errorEl.textContent = 'Please enter your passcode.';
+                return;
+            }
+
+            if (isFirstTime) {
+                if (entered.length < 4) {
+                    errorEl.textContent = 'Use at least 4 characters.';
+                    input.value = '';
+                    input.focus();
+                    return;
                 }
-                document.querySelector('.nav').style.display = '';
-                showPage('dashboard');
-                // Now do first sync
-                setTimeout(() => syncNow(), 300);
+                setStoredProfileCode(entered);
+                completeProfileUnlockFromModal(true);
+            } else if (entered === existing) {
+                completeProfileUnlockFromModal(false);
             } else {
-                errorEl.textContent = 'Incorrect access code. Please try again.';
+                errorEl.textContent = 'That does not match this browser’s saved passcode. Try again, or use Passcode in the header if you meant a different writer.';
                 input.value = '';
                 input.focus();
             }
+        }
+
+        function forgotPasscode() {
+            if (!confirm('Clear the saved passcode on this browser? Your stories are still stored under each passcode (and in the cloud) until you delete them — you can enter a passcode again next time.')) return;
+            try {
+                localStorage.removeItem(PROFILE_CODE_STORAGE_KEY);
+            } catch (e) { /* ignore */ }
+            try {
+                sessionStorage.removeItem(PROFILE_SESSION_VERIFIED_KEY);
+                sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+            } catch (e2) { /* ignore */ }
+            window.__writeboostAppBootstrapped = false;
+            closePasscodeModal();
+            location.reload();
+        }
+
+        function openChangePasscodeModal() {
+            openSyncProfileModal();
+        }
+
+        function applyNewPasscode() {
+            const newInput = document.getElementById('sync-modal-new-code') || document.getElementById('passcode-new-input');
+            const errorEl = document.getElementById('sync-modal-new-error') || document.getElementById('passcode-error');
+            if (!newInput || !errorEl) return;
+            errorEl.textContent = '';
+            const newCode = newInput.value.trim();
+            if (newCode.length < 4) {
+                errorEl.textContent = 'Use at least 4 characters.';
+                newInput.value = '';
+                newInput.focus();
+                return;
+            }
+            if (newCode === getStoredProfileCode()) {
+                errorEl.textContent = 'That is already your current passcode.';
+                return;
+            }
+            setStoredProfileCode(newCode);
+            try {
+                sessionStorage.setItem(PROFILE_SESSION_VERIFIED_KEY, 'true');
+                sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
+            } catch (e) { /* ignore */ }
+            removePasscodeGateDismissBanner();
+            saveState();
+            refreshHeaderProfileInput();
+            closeSyncProfileModal();
+            closePasscodeModal();
+            showToast('Passcode updated — syncing to the cloud…');
+            setTimeout(() => syncNow(), 200);
         }
     </script>
 </body>
