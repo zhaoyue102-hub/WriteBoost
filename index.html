@@ -2076,6 +2076,43 @@
             visibility: visible;
         }
 
+        .passcode-modal .modal-body {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .passcode-modal .modal-body p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .passcode-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        #passcode-input {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            width: 240px;
+            text-align: center;
+        }
+
+        #passcode-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .passcode-error {
+            color: var(--danger);
+            font-size: 0.875rem;
+            min-height: 1.2rem;
+        }
+
         .modal {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -3671,7 +3708,37 @@
             color: var(--text-light);
         }
 
-        /* Confetti */
+        .history-item.selected {
+            background: var(--color-light-blue);
+            border: 2px solid var(--primary);
+        }
+
+        .history-item.select-mode {
+            cursor: default;
+        }
+
+        .history-item.select-mode:hover {
+            transform: none;
+        }
+
+        .history-select-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            cursor: pointer;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .history-item-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .history-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
         .confetti {
             position: fixed;
             top: 0;
@@ -5024,16 +5091,14 @@
 <div id="progress-section-essays" class="progress-anchor-target" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
                 <h2 style="margin: 0; font-size: 1.35rem;"><i data-lucide="scroll-text" aria-hidden="true"></i> Essay History</h2>
                 <div class="data-bar">
-                    <span class="data-bar-label"><i data-lucide="hard-drive" aria-hidden="true"></i> Data:</span>
                     <span class="data-bar-label"><i data-lucide="cloud" aria-hidden="true"></i> Sync:</span>
-                    <input id="sync-code-input" type="text" inputmode="numeric" placeholder="Sync code (e.g. 123456)"
+                    <input id="sync-code-input" type="text" inputmode="numeric" placeholder="Access code"
                            style="padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); width: 180px;">
                     <button class="btn btn-outline btn-sm" onclick="saveSyncCode()">Save</button>
                     <button class="btn btn-ghost btn-sm" onclick="syncNow()">Sync Now</button>
-                    <button type="button" class="btn btn-primary btn-sm" onclick="exportData()"><span class="icon-btn"><i data-lucide="download" aria-hidden="true"></i><span>Export Backup</span></span></button>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('import-file').click()"><span class="icon-btn"><i data-lucide="upload" aria-hidden="true"></i><span>Import Backup</span></span></button>
-                    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-                    <button type="button" class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color: var(--danger);"><span class="icon-btn"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear All</span></span></button>
+                    <button class="btn btn-outline btn-sm" onclick="state.selectMode ? exitSelectMode() : enterSelectMode()"><span class="icon-btn"><i data-lucide="check-square" aria-hidden="true"></i><span id="select-mode-btn-label">Select</span></span></button>
+                    <button class="btn btn-outline btn-sm" id="delete-selected-btn" onclick="deleteSelectedEssays()" style="display:none; color: var(--danger);"><span class="icon-btn"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete Selected</span></span></button>
+                    <button class="btn btn-outline btn-sm" id="push-selected-btn" onclick="syncSelectedToCloud()" style="display:none;"><span class="icon-btn"><i data-lucide="cloud-upload" aria-hidden="true"></i><span>Push Selected</span></span></button>
                 </div>
             </div>
             <div class="history-list" id="history-list">
@@ -6540,6 +6605,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             timerInterval: null,
             startTime: null,
             essays: [],
+            selectMode: false,
             stats: {
                 totalEssays: 0,
                 totalWords: 0,
@@ -6680,10 +6746,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             const syncInput = document.getElementById('sync-code-input');
             if (syncInput) syncInput.value = getSyncCode();
 
-            // Best-effort background sync on startup
-            setTimeout(() => {
-                syncNow();
-            }, 300);
+            // Check passcode before allowing access
+            checkPasscode();
 
             migrateQuickStartPreference();
             maybeAutoOpenQuickStart();
@@ -8343,16 +8407,23 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 return;
             }
 
+            const selectMode = state.selectMode;
+            const selModeClass = selectMode ? ' select-mode' : '';
+
             list.innerHTML = state.essays.slice().reverse().map((essay, i) => {
                 const idx = state.essays.length - 1 - i;
                 const favCls = essay.favorite ? 'history-fav-btn' : 'history-fav-btn is-off';
                 const favLabel = essay.favorite ? 'Remove favorite' : 'Mark favorite';
+                const clickHandler = selectMode ? '' : `onclick="viewEssay(${idx})"`;
                 return `
-                <div class="history-item" onclick="viewEssay(${idx})">
-                    <div class="history-info">
-                        <h4><button type="button" class="${favCls}" title="${favLabel}" aria-label="${favLabel}" aria-pressed="${essay.favorite ? 'true' : 'false'}" onclick="toggleFavoriteEssayAtIndex(${idx}, event)"><i data-lucide="star" aria-hidden="true"></i></button>${essay.prompt ? essay.prompt.substring(0, 50) + '...' : 'Free Write'}</h4>
-                        <div class="history-meta">
-                            ${essay.wordCount} words | ${essay.date} | Score: ${essay.score}
+                <div class="history-item${selModeClass}" ${clickHandler}>
+                    <div class="history-item-left">
+                        ${selectMode ? `<input type="checkbox" class="history-select-checkbox" data-idx="${idx}" ${essay._selected ? 'checked' : ''} onclick="toggleEssaySelection(${idx}, event)">` : ''}
+                        <div class="history-info">
+                            <h4><button type="button" class="${favCls}" title="${favLabel}" aria-label="${favLabel}" aria-pressed="${essay.favorite ? 'true' : 'false'}" onclick="toggleFavoriteEssayAtIndex(${idx}, event)"><i data-lucide="star" aria-hidden="true"></i></button>${essay.prompt ? essay.prompt.substring(0, 50) + '...' : 'Free Write'}</h4>
+                            <div class="history-meta">
+                                ${essay.wordCount} words | ${essay.date} | Score: ${essay.score}
+                            </div>
                         </div>
                     </div>
                     <div class="history-score">
@@ -8362,6 +8433,80 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 </div>`;
             }).join('');
             refreshIcons();
+        }
+
+        function toggleEssaySelection(idx, ev) {
+            if (ev) ev.stopPropagation();
+            const e = state.essays[idx];
+            if (!e) return;
+            e._selected = !e._selected;
+            renderHistory();
+        }
+
+        function enterSelectMode() {
+            state.selectMode = true;
+            renderHistory();
+            updateSelectModeButtons();
+        }
+
+        function exitSelectMode() {
+            state.selectMode = false;
+            state.essays.forEach(e => { e._selected = false; });
+            renderHistory();
+            updateSelectModeButtons();
+        }
+
+        function updateSelectModeButtons() {
+            const deleteBtn = document.getElementById('delete-selected-btn');
+            const pushBtn = document.getElementById('push-selected-btn');
+            const label = document.getElementById('select-mode-btn-label');
+            if (deleteBtn) deleteBtn.style.display = state.selectMode ? 'inline-flex' : 'none';
+            if (pushBtn) pushBtn.style.display = state.selectMode ? 'inline-flex' : 'none';
+            if (label) label.textContent = state.selectMode ? 'Cancel' : 'Select';
+        }
+
+        function deleteSelectedEssays() {
+            const selected = state.essays.filter(e => e._selected);
+            if (selected.length === 0) {
+                showToast('No essays selected');
+                return;
+            }
+            if (!confirm(`Delete ${selected.length} selected essay${selected.length > 1 ? 's' : ''}? This cannot be undone.`)) return;
+            state.essays = state.essays.filter(e => !e._selected);
+            state.essays.forEach(e => { e._selected = false; });
+            state.selectMode = false;
+            reconcileEssayAggregatesWithList();
+            saveState();
+            updateStats();
+            renderHistory();
+            renderAchievements();
+            showToast(`Deleted ${selected.length} essay${selected.length > 1 ? 's' : ''}`);
+        }
+
+        function syncSelectedToCloud() {
+            const selected = state.essays.filter(e => e._selected);
+            if (selected.length === 0) {
+                showToast('No essays selected');
+                return;
+            }
+            // Build a partial state with only selected essays + full stats/character
+            const localData = normalizeStateForSync();
+            const selectedEssays = state.essays.filter(e => e._selected);
+            const cloudData = {
+                stats: localData.stats,
+                essays: selectedEssays,
+                character: localData.character
+            };
+            const code = getSyncCode();
+            if (!code) {
+                showToast('Enter an access code first');
+                return;
+            }
+            db.ref(code).set(cloudData).then(() => {
+                showToast(`Pushed ${selected.length} essay${selected.length > 1 ? 's' : ''} to cloud`);
+            }).catch(() => {
+                showToast('Push failed');
+            });
         }
 
         function viewEssay(index) {
@@ -10178,6 +10323,78 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             setupAutoSave();
             loadDraft();
         });
+
+        // ============ PASSCODE GATE ============
+        let PASSCODE = 'Abcd1234'; // Change this to your desired access code
+
+        function checkPasscode() {
+            const verified = sessionStorage.getItem('writeboost-verified');
+            if (verified === 'true') return;
+            showPasscodeModal();
+        }
+
+        function showPasscodeModal() {
+            // Block all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.nav').style.display = 'none';
+
+            let overlay = document.getElementById('passcode-overlay');
+            let modal = document.getElementById('passcode-modal');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'passcode-overlay';
+                overlay.className = 'modal-overlay active';
+                modal = document.createElement('div');
+                modal.id = 'passcode-modal';
+                modal.className = 'modal passcode-modal';
+                modal.innerHTML = `
+                    <div class="modal-header">
+                        <div class="modal-title"><i data-lucide="lock" aria-hidden="true"></i> <span>Access Required</span></div>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter the access code to use WriteBoost.</p>
+                        <div class="passcode-input-wrap">
+                            <input type="password" id="passcode-input" placeholder="Access code" autocomplete="off">
+                            <div class="passcode-error" id="passcode-error"></div>
+                            <button class="btn btn-primary" onclick="verifyPasscode()">Unlock</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                overlay.appendChild(modal);
+                refreshIcons();
+
+                const input = document.getElementById('passcode-input');
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') verifyPasscode();
+                });
+            } else {
+                overlay.classList.add('active');
+            }
+        }
+
+        function verifyPasscode() {
+            const input = document.getElementById('passcode-input');
+            const errorEl = document.getElementById('passcode-error');
+            if (!input || !errorEl) return;
+            if (input.value === PASSCODE) {
+                sessionStorage.setItem('writeboost-verified', 'true');
+                const overlay = document.getElementById('passcode-overlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
+                    setTimeout(() => overlay.remove(), 300);
+                }
+                document.querySelector('.nav').style.display = '';
+                showPage('dashboard');
+                // Now do first sync
+                setTimeout(() => syncNow(), 300);
+            } else {
+                errorEl.textContent = 'Incorrect access code. Please try again.';
+                input.value = '';
+                input.focus();
+            }
+        }
     </script>
 </body>
 </html>
