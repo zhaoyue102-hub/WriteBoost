@@ -9453,6 +9453,19 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             if (!ta || !pop || window.__writeboostDictLookupBound) return;
             window.__writeboostDictLookupBound = true;
 
+            /** Selection can end outside the textarea; mouseup/touchend target may not be `ta`. */
+            function pointerEventForPopover(ev) {
+                if (!ev) return ev;
+                if (typeof ev.clientX === 'number') return ev;
+                const t = ev.changedTouches && ev.changedTouches[0];
+                return t || ev;
+            }
+
+            function maybeRefreshDictPopoverFromGlobalPointer(ev) {
+                if (document.activeElement !== ta) return;
+                refreshPopover(pointerEventForPopover(ev));
+            }
+
             function refreshPopover(ev) {
                 const start = ta.selectionStart;
                 const end = ta.selectionEnd;
@@ -9504,11 +9517,13 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 refreshIcons();
             }
 
-            ta.addEventListener('mouseup', refreshPopover);
             ta.addEventListener('select', refreshPopover);
+            document.addEventListener('mouseup', maybeRefreshDictPopoverFromGlobalPointer);
+            document.addEventListener('touchend', maybeRefreshDictPopoverFromGlobalPointer, { passive: true });
             ta.addEventListener('keyup', (e) => {
                 const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Shift'];
-                if (keys.includes(e.key) || e.shiftKey) refreshPopover(e);
+                const selectAll = (e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A');
+                if (keys.includes(e.key) || e.shiftKey || selectAll) refreshPopover(e);
             });
 
             document.addEventListener('mousedown', (ev) => {
