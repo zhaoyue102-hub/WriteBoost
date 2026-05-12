@@ -488,14 +488,16 @@
 
         .sync-profile-modal .sync-profile-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0.65rem;
             align-items: stretch;
             margin-bottom: 0.35rem;
         }
 
         .sync-profile-modal .sync-profile-row input[type="text"] {
-            flex: 1 1 12rem;
+            flex: none;
+            width: 100%;
             min-width: 0;
             padding: 0.5rem 0.65rem;
             font-size: 0.95rem;
@@ -508,7 +510,9 @@
         }
 
         .sync-profile-modal .sync-profile-row .btn {
-            flex: 0 0 auto;
+            flex: none;
+            width: 100%;
+            justify-content: center;
             white-space: nowrap;
         }
 
@@ -2312,6 +2316,157 @@
         .modal-close:hover {
             background: var(--danger);
             color: white;
+        }
+
+        .modal-header .modal-title {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .modal-header .modal-close {
+            flex-shrink: 0;
+        }
+
+        #passcode-overlay.modal-overlay,
+        #sync-profile-overlay.modal-overlay,
+        #passcode-preview-overlay.modal-overlay {
+            z-index: 11000;
+        }
+
+        /* First-time / gate passcode: wide card, large field */
+        #passcode-modal.modal.passcode-modal.passcode-gate-modal,
+        #passcode-preview-overlay .modal.passcode-modal.passcode-gate-modal {
+            max-width: min(46rem, calc(100vw - 1.25rem));
+            width: min(46rem, calc(100vw - 1.25rem));
+        }
+
+        .passcode-gate-modal.passcode-modal .modal-close {
+            width: 2.75rem;
+            height: 2.75rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            font-size: 1.65rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        .passcode-gate-modal.passcode-modal {
+            display: flex;
+            flex-direction: column;
+            max-height: min(94vh, 920px);
+            overflow: hidden;
+        }
+
+        .passcode-gate-modal.passcode-modal .modal-header {
+            flex: 0 0 auto;
+            padding: 1.85rem 2rem 1.35rem;
+        }
+
+        .passcode-gate-modal.passcode-modal .modal-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 2rem 2.25rem 2.5rem;
+        }
+
+        .passcode-gate-modal.passcode-modal .modal-title {
+            font-size: 1.5rem;
+        }
+
+        .passcode-gate-modal.passcode-modal .modal-body > p:not([style*="0.8rem"]) {
+            font-size: 1.05rem;
+            line-height: 1.55;
+            max-width: 40rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .passcode-modal:not(.sync-profile-modal) .passcode-input-wrap {
+            width: 100%;
+            max-width: min(40rem, 100%);
+            align-self: stretch;
+        }
+
+        .passcode-modal:not(.sync-profile-modal) #passcode-input,
+        .passcode-modal:not(.sync-profile-modal) #passcode-preview-input {
+            max-width: none;
+            width: 100%;
+            min-height: 3.6rem;
+            font-size: 1.28rem;
+            padding: 1.1rem 1.35rem;
+        }
+
+        .passcode-gate-modal.passcode-modal .passcode-input-wrap .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: auto;
+            min-width: min(14rem, 100%);
+            max-width: 100%;
+            box-sizing: border-box;
+            min-height: 3rem;
+            padding: 0.9rem 2.25rem;
+            font-size: 1.05rem;
+            line-height: 1.25;
+            align-self: center;
+        }
+
+        /* Passcode (header) modal: keep close control visible; scroll body only */
+        #sync-profile-modal.modal.passcode-modal.sync-profile-modal {
+            max-width: min(42rem, calc(100vw - 1.25rem));
+            width: min(42rem, calc(100vw - 1.25rem));
+            display: flex;
+            flex-direction: column;
+            max-height: min(92vh, 900px);
+            overflow: hidden;
+        }
+
+        #sync-profile-modal.sync-profile-modal .modal-header {
+            flex: 0 0 auto;
+            position: relative;
+            z-index: 2;
+            background: var(--bg-card);
+            padding-right: 0.75rem;
+        }
+
+        #sync-profile-modal.sync-profile-modal .modal-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #sync-profile-modal.sync-profile-modal .modal-footer.sync-profile-footer {
+            flex: 0 0 auto;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+            justify-content: stretch;
+        }
+
+        #sync-profile-modal.sync-profile-modal .modal-footer.sync-profile-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        #sync-profile-modal.sync-profile-modal .modal-close {
+            width: 2.75rem;
+            height: 2.75rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            font-size: 1.65rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--text);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
         }
 
         .modal-body {
@@ -4533,7 +4688,7 @@
                 <span class="logo-title">WriteBoost</span>
                 <span class="logo-tagline">Narrative writing</span>
             </div>
-            <span class="version-badge" id="app-version">v4.5.0</span>
+            <span class="version-badge" id="app-version">v4.5.2</span>
         </div>
         <div class="header-stats" role="toolbar" aria-label="Your writing stats — tap a number to open Progress and Data">
             <div class="stat-item header-stat-clickable" role="button" tabindex="0" title="Essays — open essay library"
@@ -5482,7 +5637,7 @@
                 <button class="modal-close" onclick="closeSelfReviewModal()">×</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 1rem; color: var(--text-light);">Check what you've included in your writing before seeing your score:</p>
+                <p style="margin-bottom: 1rem; color: var(--text-light);">Optional pause before scores: use the checklist for your own reflection. If you enter <strong>My estimated score</strong> (0–100), that guess is saved for the <strong>Self Reviewer</strong> badge — otherwise submitting works the same.</p>
                 <div class="selfreview-checklist">
                     <label><input type="checkbox" id="sr-hook"> Hook/Opening — Did you grab the reader's attention right away?</label>
                     <label><input type="checkbox" id="sr-chars"> Characters — Name, personality, appearance?</label>
@@ -5498,9 +5653,9 @@
                     <span id="sr-estimate-hint" style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.5rem;"></span>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="skipSelfReview()">Skip & Submit</button>
-                <button class="btn btn-primary" onclick="submitSelfReview()"><span class="icon-btn"><i data-lucide="upload" aria-hidden="true"></i><span>Submit My Essay</span></span></button>
+            <div class="modal-footer" style="flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;">
+                <button type="button" class="btn btn-outline" onclick="closeSelfReviewModal()">Back to writing</button>
+                <button type="button" class="btn btn-primary" onclick="submitSelfReview()"><span class="icon-btn"><i data-lucide="upload" aria-hidden="true"></i><span>Submit essay</span></span></button>
             </div>
         </div>
     </div>
@@ -5519,7 +5674,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.0';
+        const APP_VERSION = 'v4.5.2';
 
         let suggestionPopupHideTimer = null;
 
@@ -7004,8 +7159,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             const hasCode = !!getStoredProfileCode();
             const cur = getStoredProfileCode();
             const statusLine = hasCode
-                ? ('Your passcode on this browser is <strong>' + escapeHtml(cur) + '</strong>. <em>Switch</em> loads another writer’s data (full page reload). <em>Create new</em> keeps this draft but starts saving it under a new passcode.')
-                : 'No passcode saved here yet. Type one you already use on another device, or pick a new passcode (at least 4 characters), then <strong>Apply & reload</strong>.';
+                ? ('Your passcode on this browser is <strong>' + escapeHtml(cur) + '</strong> — the key to this device’s synced library.')
+                : ('No passcode saved on this browser yet.<br><br>Enter one you already use elsewhere, or pick a new passcode (at least 4 characters), then <strong>Apply &amp; reload</strong>.');
 
             const overlay = document.createElement('div');
             overlay.id = 'sync-profile-overlay';
@@ -7031,13 +7186,18 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     ${hasCode ? `
                     <hr class="sync-profile-divider" />
                     <div class="sync-section-title">Create a new passcode</div>
-                    <p class="sync-help">After saving, use this new passcode everywhere. Cloud data under the old passcode is not merged automatically.</p>
+                    <p class="sync-help">Think of this as a <strong>new writer profile</strong> for backup and other devices.</p>
                     <div class="sync-profile-row">
                         <input type="text" id="sync-modal-new-code" maxlength="200" autocomplete="off" spellcheck="false" placeholder="New passcode">
                     </div>
                     <div class="passcode-error" id="sync-modal-new-error" style="text-align:left;width:100%;max-width:none;"></div>
-                    <button type="button" class="btn btn-outline" style="margin-top:0.5rem;" onclick="applyNewPasscode()">Save new passcode</button>
+                    <div class="sync-profile-row">
+                        <button type="button" class="btn btn-primary" onclick="applyNewPasscode()">Save new passcode</button>
+                    </div>
                     ` : '<p class="sync-help" style="margin-top:0.75rem;">Once a passcode is saved on this browser, you can also <strong>create a new one</strong> here while keeping your current draft.</p>'}
+                </div>
+                <div class="modal-footer sync-profile-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeSyncProfileModal()">Close</button>
                 </div>
             `;
             document.body.appendChild(overlay);
@@ -7939,6 +8099,18 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 const syncOv = document.getElementById('sync-profile-overlay');
                 if (syncOv?.classList.contains('active')) {
                     closeSyncProfileModal();
+                    e.preventDefault();
+                    return;
+                }
+                const selfReview = document.getElementById('selfreview-modal');
+                if (selfReview?.classList.contains('active')) {
+                    closeSelfReviewModal();
+                    e.preventDefault();
+                    return;
+                }
+                const passPreview = document.getElementById('passcode-preview-overlay');
+                if (passPreview?.classList.contains('active')) {
+                    closePasscodeGatePreview();
                     e.preventDefault();
                     return;
                 }
@@ -9666,15 +9838,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             document.getElementById('selfreview-modal').classList.remove('active');
         }
 
-        function skipSelfReview() {
-            closeSelfReviewModal();
-            if (pendingEssayData) {
-                const d = pendingEssayData;
-                pendingEssayData = null;
-                doSubmitEssayWithData(d.rawText);
-            }
-        }
-
         function submitSelfReview() {
             const estimate = parseInt(document.getElementById('sr-estimate')?.value, 10);
             const checked = ['sr-hook','sr-chars','sr-setting','sr-conflict','sr-sensory','sr-dialogue','sr-emotions','sr-ending'].filter(id => {
@@ -10666,12 +10829,89 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            init();
+            const previewGate = new URLSearchParams(location.search).get('previewPasscodeGate') === '1';
+            if (previewGate && isProfileSessionUnlocked()) {
+                showFirstTimePasscodeGatePreview();
+            } else {
+                init();
+            }
             if (window.__writeboostAppBootstrapped) {
                 setupAutoSave();
                 loadDraft();
             }
         });
+
+        /** First-time passcode gate UI only — does not read or write storage. Use ?previewPasscodeGate=1 when already unlocked. */
+        function showFirstTimePasscodeGatePreview() {
+            const old = document.getElementById('passcode-preview-overlay');
+            if (old) {
+                old.remove();
+            }
+            document.body.classList.add('profile-locked');
+            const overlay = document.createElement('div');
+            overlay.id = 'passcode-preview-overlay';
+            overlay.className = 'modal-overlay active';
+            const modal = document.createElement('div');
+            modal.className = 'modal passcode-modal passcode-gate-modal';
+            modal.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title"><i data-lucide="user-plus" aria-hidden="true"></i> <span>Choose your passcode</span></div>
+                    <button type="button" class="modal-close" onclick="closePasscodeGatePreview()" aria-label="Close preview">×</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 1rem;">Preview — your saved passcode is not changed.</p>
+                    <p>Pick a passcode (at least 4 characters). It’s the key to <strong>one synced library</strong> for your writing — use the <strong>same passcode</strong> on every phone, tablet, or computer so everything stays together in the cloud.</p>
+                    <div class="passcode-input-wrap">
+                        <input type="text" id="passcode-preview-input" placeholder="Choose a passcode" autocomplete="off" maxlength="200" spellcheck="false">
+                        <div class="passcode-error" id="passcode-preview-error"></div>
+                        <button type="button" class="btn btn-primary" onclick="submitPasscodeGatePreview()">Save & continue</button>
+                    </div>
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">It shows in the header. Open <strong>Passcode</strong> there anytime to <strong>switch</strong> to another library or <strong>create a new passcode</strong> (a new library) on this device.</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.appendChild(modal);
+            refreshIcons();
+            const input = document.getElementById('passcode-preview-input');
+            if (input) {
+                input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitPasscodeGatePreview(); });
+                input.focus();
+            }
+        }
+
+        function submitPasscodeGatePreview() {
+            const input = document.getElementById('passcode-preview-input');
+            const errorEl = document.getElementById('passcode-preview-error');
+            if (!input || !errorEl) return;
+            if (!input.value.trim()) {
+                errorEl.textContent = 'Preview — type anything or close with ×.';
+                return;
+            }
+            errorEl.textContent = '';
+            showToast('Preview only. Use a private window or clear site data to set a real passcode.');
+        }
+
+        function closePasscodeGatePreview() {
+            document.body.classList.remove('profile-locked');
+            const overlay = document.getElementById('passcode-preview-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => { try { overlay.remove(); } catch (e) { /* ignore */ } }, 220);
+            }
+            try {
+                const u = new URL(location.href);
+                u.searchParams.delete('previewPasscodeGate');
+                history.replaceState(null, '', u.pathname + u.search + (u.hash || ''));
+            } catch (e2) { /* ignore */ }
+            if (!window.__writeboostAppBootstrapped) {
+                init();
+            }
+            if (window.__writeboostAppBootstrapped) {
+                setupAutoSave();
+                loadDraft();
+            }
+            refreshIcons();
+        }
 
         // ============ PROFILE UNLOCK (sync code = cloud + this browser bucket) ============
         function checkPasscode() {
@@ -10752,7 +10992,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             overlay.className = 'modal-overlay active';
             const modal = document.createElement('div');
             modal.id = 'passcode-modal';
-            modal.className = 'modal passcode-modal';
+            modal.className = 'modal passcode-modal passcode-gate-modal';
             modal.innerHTML = `
                 <div class="modal-header">
                     <div class="modal-title"><i data-lucide="${isFirstTime ? 'user-plus' : 'key-round'}" aria-hidden="true"></i> <span>${isFirstTime ? 'Choose your passcode' : 'Enter your passcode'}</span></div>
@@ -10760,7 +11000,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 </div>
                 <div class="modal-body">
                     ${isFirstTime
-                        ? `<p>Pick a passcode (at least 4 characters). Use the <strong>same passcode</strong> on every phone, tablet, or computer so your stories stay together in the cloud.</p>`
+                        ? `<p>Pick a passcode (at least 4 characters). It’s the key to <strong>one synced library</strong> for your writing — use the <strong>same passcode</strong> on every phone, tablet, or computer so everything stays together in the cloud.</p>`
                         : `<p>Enter the same passcode you use on your other devices to load your stories.</p>`
                     }
                     <div class="passcode-input-wrap">
@@ -10769,7 +11009,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                         <button type="button" class="btn btn-primary" onclick="verifyPasscode()">${isFirstTime ? 'Save & continue' : 'Unlock'}</button>
                         ${!isFirstTime ? `<button type="button" class="btn btn-ghost btn-sm" onclick="forgotPasscode()" style="margin-top:0.25rem;font-size:0.8rem;">Forgot passcode — start over on this browser</button>` : ''}
                     </div>
-                    ${isFirstTime ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">Your passcode appears in the header. Any time, open <strong>Passcode</strong> there to switch to another writer or create a new passcode.</p>` : ''}
+                    ${isFirstTime ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">It shows in the header. Open <strong>Passcode</strong> there anytime to <strong>switch</strong> to another library or <strong>create a new passcode</strong> (a new library) on this device.</p>` : ''}
                 </div>
             `;
             document.body.appendChild(overlay);
