@@ -5679,7 +5679,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.9';
+        const APP_VERSION = 'v4.6.0';
 
         let suggestionPopupHideTimer = null;
 
@@ -5928,22 +5928,6 @@
             firebase.initializeApp(FIREBASE_CONFIG);
         }
         const db = firebase.database();
-
-        /** If RTDB was never created, REST returns {"error":"404 Not Found"} — sync cannot work until Console URL is fixed. */
-        (function warnIfRealtimeDbHostMissing() {
-            const base = (FIREBASE_CONFIG.databaseURL || '').replace(/\/$/, '');
-            if (!base || !/^https:\/\//.test(base)) return;
-            fetch(base + '/.json?shallow=true')
-                .then((r) => r.json())
-                .then((j) => {
-                    if (j && typeof j.error === 'string' && /\b404\b/i.test(j.error)) {
-                        console.warn(
-                            '[WriteBoost] No Realtime Database at databaseURL (404). In Firebase Console open this project → Build → Realtime Database → Create database, then paste the exact database URL into FIREBASE_CONFIG.databaseURL in index.html.'
-                        );
-                    }
-                })
-                .catch(() => { /* CORS/offline — ignore */ });
-        })();
 
         const ONLINE_CONFIG = {
             // Datamuse is a free word-finding API that supports CORS and does not require keys.
@@ -7199,9 +7183,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 </div>
                 <div class="modal-body">
                     <p class="sync-profile-status">${statusLine}</p>
-                    ${hasCode ? `<p class="sync-help" style="margin-top:0.5rem;font-size:0.78rem;">Cloud folder id (must match other devices): <code style="word-break:break-all;">${escapeHtml((profileBucketIdFromCode(cur) || '(too short)').slice(0, 24))}${(profileBucketIdFromCode(cur) || '').length > 24 ? '…' : ''}</code></p>
-                    <p class="sync-help" style="margin-top:0.35rem;font-size:0.78rem;">If iPhone shows 0 essays after sync, tap <strong>Copy sync debug</strong> on both devices and compare <code>profileIdPrefix</code> and <code>localEssayCount</code>.</p>
-                    <button type="button" class="btn btn-outline btn-sm" style="margin-top:0.5rem;" onclick="copySyncDebugInfo()">Copy sync debug</button>` : ''}
 
                     <div class="sync-section-title">Switch passcode</div>
                     <p class="sync-help">Use the same passcode as on your other devices, or enter one you want to use for the first time on this browser.</p>
@@ -7451,41 +7432,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             return val;
         }
 
-        function getSyncDebugSnapshot() {
-            const code = getStoredProfileCode();
-            const id = profileBucketIdFromCode(code);
-            return {
-                version: APP_VERSION,
-                passcodeLength: code.length,
-                profileIdPrefix: id ? id.slice(0, 20) : '',
-                firebasePath: firebaseProfileRefPath(code) || '',
-                localEssayCount: (state.essays || []).length,
-                href: location.href
-            };
-        }
-
-        function copySyncDebugInfo() {
-            const text = JSON.stringify(getSyncDebugSnapshot(), null, 2);
-            const done = () => showToast('Copied sync debug — paste in Notes and compare with your Mac.');
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(done).catch(() => {
-                    try {
-                        prompt('Copy this text:', text);
-                        done();
-                    } catch (e2) {
-                        showToast('Could not copy — try Passcode modal on Mac.');
-                    }
-                });
-            } else {
-                try {
-                    prompt('Copy this text:', text);
-                    done();
-                } catch (e3) {
-                    showToast('Clipboard not available on this browser.');
-                }
-            }
-        }
-
         function mergeSavedDrillLinesArrays(a, b) {
             const out = [];
             const seen = new Set();
@@ -7610,7 +7556,6 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     return;
                 }
                 const remoteNorm = normalizeRemoteProfileVal(remoteData);
-                const remoteEssayCount = essaysArrayFromCloudValue(remoteNorm.essays).length;
                 const merged = mergeState(localData, remoteNorm);
                 state.stats = { ...state.stats, ...(merged.stats || {}) };
                 state.essays = merged.essays || [];
@@ -7631,8 +7576,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     showToast('Cloud upload failed: ' + msg + ' — Open Firebase → Realtime Database → Rules; allow read/write for testing, then Publish.');
                     return;
                 }
-                const finalN = (state.essays || []).length;
-                showToast('Sync complete — cloud had ' + remoteEssayCount + ' essay(s), library now ' + finalN + '.');
+                showToast('Sync complete!');
             } catch (e) {
                 showToast('Sync failed (try again later).');
             }
