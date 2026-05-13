@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WriteBoost">
@@ -5678,7 +5679,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.6';
+        const APP_VERSION = 'v4.5.7';
 
         let suggestionPopupHideTimer = null;
 
@@ -5907,7 +5908,10 @@
         };
 
         // ============ ONLINE (OPTIONAL) ============
-        // Firebase Realtime Database config — replace these values with your own from Firebase Console
+        // Firebase Realtime Database — databaseURL MUST match the URL shown in Firebase Console
+        // after you CREATE the database (Build → Realtime Database → Create database). If you only
+        // use Firestore, RTDB does not exist and sync will warn / fail (404). Regional instances
+        // often look like: https://<project>-default-rtdb.<region>.firebasedatabase.app
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyBLhfduTZHro5ZPYmW7vBAhiXJawXDQAHM",
             authDomain: "writeboost-a1e09.firebaseapp.com",
@@ -5924,6 +5928,22 @@
             firebase.initializeApp(FIREBASE_CONFIG);
         }
         const db = firebase.database();
+
+        /** If RTDB was never created, REST returns {"error":"404 Not Found"} — sync cannot work until Console URL is fixed. */
+        (function warnIfRealtimeDbHostMissing() {
+            const base = (FIREBASE_CONFIG.databaseURL || '').replace(/\/$/, '');
+            if (!base || !/^https:\/\//.test(base)) return;
+            fetch(base + '/.json?shallow=true')
+                .then((r) => r.json())
+                .then((j) => {
+                    if (j && typeof j.error === 'string' && /\b404\b/i.test(j.error)) {
+                        console.warn(
+                            '[WriteBoost] No Realtime Database at databaseURL (404). In Firebase Console open this project → Build → Realtime Database → Create database, then paste the exact database URL into FIREBASE_CONFIG.databaseURL in index.html.'
+                        );
+                    }
+                })
+                .catch(() => { /* CORS/offline — ignore */ });
+        })();
 
         const ONLINE_CONFIG = {
             // Datamuse is a free word-finding API that supports CORS and does not require keys.
