@@ -5678,7 +5678,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.4';
+        const APP_VERSION = 'v4.5.5';
 
         let suggestionPopupHideTimer = null;
 
@@ -7271,7 +7271,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 try {
                     const parsed = JSON.parse(saved);
                     state.stats = { ...state.stats, ...parsed.stats };
-                    state.essays = parsed.essays || [];
+                    state.essays = essaysArrayFromCloudValue(parsed.essays);
                     state.character = { ...state.character, ...parsed.character };
                     // Ensure new stats fields exist even when loading old saves
                     if (!state.stats.skillScores || typeof state.stats.skillScores !== 'object') {
@@ -7382,9 +7382,28 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         function normalizeStateForSync() {
             return {
                 stats: state.stats,
-                essays: state.essays,
+                essays: essaysArrayFromCloudValue(state.essays),
                 character: state.character
             };
+        }
+
+        /** RTDB sometimes deserializes essay lists as objects with numeric keys instead of arrays. */
+        function essaysArrayFromCloudValue(value) {
+            if (value == null) return [];
+            if (Array.isArray(value)) return value.filter(Boolean);
+            if (typeof value === 'object') {
+                const keys = Object.keys(value);
+                if (keys.length === 0) return [];
+                const allNumeric = keys.every((k) => /^\d+$/.test(k));
+                if (allNumeric) {
+                    return keys
+                        .sort((a, b) => Number(a) - Number(b))
+                        .map((k) => value[k])
+                        .filter((e) => e && typeof e === 'object');
+                }
+                return Object.values(value).filter((e) => e && typeof e === 'object');
+            }
+            return [];
         }
 
         function mergeSavedDrillLinesArrays(a, b) {
@@ -7439,8 +7458,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 const t = (e?.text || '').slice(0, 40);
                 return [d, p, w, s, t].join('|');
             };
-            const localEssays = Array.isArray(localData?.essays) ? localData.essays : [];
-            const remoteEssays = Array.isArray(remoteData?.essays) ? remoteData.essays : [];
+            const localEssays = essaysArrayFromCloudValue(localData?.essays);
+            const remoteEssays = essaysArrayFromCloudValue(remoteData?.essays);
             const seen = new Set(localEssays.map(essayKey));
             const appended = remoteEssays.filter(e => {
                 const k = essayKey(e);
@@ -7526,6 +7545,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     renderHistory();
                     renderAchievements();
                     loadCharacter();
+                    renderSkillsProgress();
                 }
                 await pushCloudState();
                 showToast('Sync complete!');
@@ -9736,7 +9756,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     }
 
                     // Merge essays (append new ones, avoid duplicates by date)
-                    if (data.essays && Array.isArray(data.essays)) {
+                    const incomingEssays = essaysArrayFromCloudValue(data.essays);
+                    if (incomingEssays.length > 0) {
                         const essayKey = (e) => {
                             const d = e?.date || '';
                             const p = e?.prompt || e?.promptTitle || '';
@@ -9746,9 +9767,9 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                             const t = (e?.text || '').slice(0, 40);
                             return [d, p, w, s, t].join('|');
                         };
-                        const existingKeys = new Set((merged.essays || []).map(essayKey));
-                        const newEssays = data.essays.filter(e => !existingKeys.has(essayKey(e)));
-                        merged.essays = (merged.essays || []).concat(newEssays);
+                        const existingKeys = new Set(essaysArrayFromCloudValue(merged.essays).map(essayKey));
+                        const newEssays = incomingEssays.filter(e => !existingKeys.has(essayKey(e)));
+                        merged.essays = essaysArrayFromCloudValue(merged.essays).concat(newEssays);
                     }
 
                     // Merge stats (take the better values)
@@ -9771,7 +9792,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     renderAchievements();
                     loadCharacter();
 
-                    showToast('Backup imported! Merged ' + (data.essays || []).length + ' essays.');
+                    showToast('Backup imported! Merged ' + incomingEssays.length + ' essays.');
                     refreshIcons();
                     pushCloudState().catch(() => {});
                 } catch (err) {
