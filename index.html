@@ -5678,7 +5678,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.5';
+        const APP_VERSION = 'v4.5.6';
 
         let suggestionPopupHideTimer = null;
 
@@ -7179,6 +7179,9 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 </div>
                 <div class="modal-body">
                     <p class="sync-profile-status">${statusLine}</p>
+                    ${hasCode ? `<p class="sync-help" style="margin-top:0.5rem;font-size:0.78rem;">Cloud folder id (must match other devices): <code style="word-break:break-all;">${escapeHtml((profileBucketIdFromCode(cur) || '(too short)').slice(0, 24))}${(profileBucketIdFromCode(cur) || '').length > 24 ? '…' : ''}</code></p>
+                    <p class="sync-help" style="margin-top:0.35rem;font-size:0.78rem;">If iPhone shows 0 essays after sync, tap <strong>Copy sync debug</strong> on both devices and compare <code>profileIdPrefix</code> and <code>localEssayCount</code>.</p>
+                    <button type="button" class="btn btn-outline btn-sm" style="margin-top:0.5rem;" onclick="copySyncDebugInfo()">Copy sync debug</button>` : ''}
 
                     <div class="sync-section-title">Switch passcode</div>
                     <p class="sync-help">Use the same passcode as on your other devices, or enter one you want to use for the first time on this browser.</p>
@@ -7406,6 +7409,63 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             return [];
         }
 
+        /**
+         * RTDB occasionally returns odd shapes (e.g. root-level pseudo-array maps). Coerce to { stats, essays, character }.
+         */
+        function normalizeRemoteProfileVal(val) {
+            if (val == null) return {};
+            if (Array.isArray(val)) {
+                return { stats: {}, character: {}, essays: val.filter(Boolean) };
+            }
+            if (typeof val !== 'object') return {};
+            if ('essays' in val || 'stats' in val || 'character' in val) return val;
+            const keys = Object.keys(val);
+            if (keys.length === 0) return {};
+            if (keys.every((k) => /^\d+$/.test(k))) {
+                const essays = keys
+                    .sort((a, b) => Number(a) - Number(b))
+                    .map((k) => val[k])
+                    .filter((e) => e && typeof e === 'object');
+                return { stats: {}, character: {}, essays };
+            }
+            return val;
+        }
+
+        function getSyncDebugSnapshot() {
+            const code = getStoredProfileCode();
+            const id = profileBucketIdFromCode(code);
+            return {
+                version: APP_VERSION,
+                passcodeLength: code.length,
+                profileIdPrefix: id ? id.slice(0, 20) : '',
+                firebasePath: firebaseProfileRefPath(code) || '',
+                localEssayCount: (state.essays || []).length,
+                href: location.href
+            };
+        }
+
+        function copySyncDebugInfo() {
+            const text = JSON.stringify(getSyncDebugSnapshot(), null, 2);
+            const done = () => showToast('Copied sync debug — paste in Notes and compare with your Mac.');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(() => {
+                    try {
+                        prompt('Copy this text:', text);
+                        done();
+                    } catch (e2) {
+                        showToast('Could not copy — try Passcode modal on Mac.');
+                    }
+                });
+            } else {
+                try {
+                    prompt('Copy this text:', text);
+                    done();
+                } catch (e3) {
+                    showToast('Clipboard not available on this browser.');
+                }
+            }
+        }
+
         function mergeSavedDrillLinesArrays(a, b) {
             const out = [];
             const seen = new Set();
@@ -7533,22 +7593,23 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     showToast('Sync failed — could not load cloud data. Nothing was uploaded. Check network and try again.');
                     return;
                 }
-                if (remoteData) {
-                    const merged = mergeState(localData, remoteData);
-                    state.stats = { ...state.stats, ...(merged.stats || {}) };
-                    state.essays = merged.essays || [];
-                    state.character = { ...state.character, ...(merged.character || {}) };
-                    migrateLegacyEssayScoresTo100Scale();
-                    reconcileEssayAggregatesWithList();
-                    saveState();
-                    updateStats();
-                    renderHistory();
-                    renderAchievements();
-                    loadCharacter();
-                    renderSkillsProgress();
-                }
+                const remoteNorm = normalizeRemoteProfileVal(remoteData);
+                const remoteEssayCount = essaysArrayFromCloudValue(remoteNorm.essays).length;
+                const merged = mergeState(localData, remoteNorm);
+                state.stats = { ...state.stats, ...(merged.stats || {}) };
+                state.essays = merged.essays || [];
+                state.character = { ...state.character, ...(merged.character || {}) };
+                migrateLegacyEssayScoresTo100Scale();
+                reconcileEssayAggregatesWithList();
+                saveState();
+                updateStats();
+                renderHistory();
+                renderAchievements();
+                loadCharacter();
+                renderSkillsProgress();
                 await pushCloudState();
-                showToast('Sync complete!');
+                const finalN = (state.essays || []).length;
+                showToast('Sync complete — cloud had ' + remoteEssayCount + ' essay(s), library now ' + finalN + '.');
             } catch (e) {
                 showToast('Sync failed (try again later).');
             }
