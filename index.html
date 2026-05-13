@@ -5679,7 +5679,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.5.8';
+        const APP_VERSION = 'v4.5.9';
 
         let suggestionPopupHideTimer = null;
 
@@ -7595,12 +7595,8 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             const path = firebaseProfileRefPath(code);
             if (!path) return;
 
-            try {
-                const payload = normalizeStateForSync();
-                await db.ref(path).set(payload);
-            } catch (e) {
-                console.warn('Firebase push failed:', e);
-            }
+            const payload = normalizeStateForSync();
+            await db.ref(path).set(payload);
         }
 
         async function syncNow() {
@@ -7627,7 +7623,14 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 renderAchievements();
                 loadCharacter();
                 renderSkillsProgress();
-                await pushCloudState();
+                try {
+                    await pushCloudState();
+                } catch (pushErr) {
+                    console.warn('[WriteBoost] Cloud upload failed:', pushErr);
+                    const msg = (pushErr && pushErr.message) ? pushErr.message : String(pushErr || 'unknown');
+                    showToast('Cloud upload failed: ' + msg + ' — Open Firebase → Realtime Database → Rules; allow read/write for testing, then Publish.');
+                    return;
+                }
                 const finalN = (state.essays || []).length;
                 showToast('Sync complete — cloud had ' + remoteEssayCount + ' essay(s), library now ' + finalN + '.');
             } catch (e) {
@@ -8825,7 +8828,9 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
             saveState();
             // best-effort cloud sync
-            setTimeout(() => pushCloudState(), 0);
+            setTimeout(() => {
+                pushCloudState().catch((e) => console.warn('[WriteBoost] Character cloud sync failed:', e));
+            }, 0);
             showCharacterInfo();
             showToast('Character saved!');
         }
@@ -9875,7 +9880,10 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
 
                     showToast('Backup imported! Merged ' + incomingEssays.length + ' essays.');
                     refreshIcons();
-                    pushCloudState().catch(() => {});
+                    pushCloudState().catch((e) => {
+                        console.warn('[WriteBoost] Push after import failed:', e);
+                        showToast('Saved on device; cloud upload failed — check Firebase Rules.');
+                    });
                 } catch (err) {
                     showToast('Import failed: ' + err.message);
                 }
