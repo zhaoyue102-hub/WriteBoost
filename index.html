@@ -5679,7 +5679,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.6.0';
+        const APP_VERSION = 'v4.6.1';
 
         let suggestionPopupHideTimer = null;
 
@@ -7394,7 +7394,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         /** RTDB sometimes deserializes essay lists as objects with numeric keys instead of arrays. */
         function essaysArrayFromCloudValue(value) {
             if (value == null) return [];
-            if (Array.isArray(value)) return value.filter(Boolean);
+            if (Array.isArray(value)) return value.filter(Boolean).map(stripEssayUiFields);
             if (typeof value === 'object') {
                 const keys = Object.keys(value);
                 if (keys.length === 0) return [];
@@ -7403,11 +7403,18 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                     return keys
                         .sort((a, b) => Number(a) - Number(b))
                         .map((k) => value[k])
-                        .filter((e) => e && typeof e === 'object');
+                        .filter((e) => e && typeof e === 'object')
+                        .map(stripEssayUiFields);
                 }
-                return Object.values(value).filter((e) => e && typeof e === 'object');
+                return Object.values(value).filter((e) => e && typeof e === 'object').map(stripEssayUiFields);
             }
             return [];
+        }
+
+        function stripEssayUiFields(essay) {
+            if (!essay || typeof essay !== 'object') return essay;
+            const { _selected, ...clean } = essay;
+            return clean;
         }
 
         /**
@@ -9046,31 +9053,43 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             showToast(`Deleted ${selected.length} essay${selected.length > 1 ? 's' : ''}`);
         }
 
-        function syncSelectedToCloud() {
+        async function syncSelectedToCloud() {
             const selected = state.essays.filter(e => e._selected);
             if (selected.length === 0) {
                 showToast('No essays selected');
                 return;
             }
-            // Build a partial state with only selected essays + full stats/character
-            const localData = normalizeStateForSync();
-            const selectedEssays = state.essays.filter(e => e._selected);
-            const cloudData = {
-                stats: localData.stats,
-                essays: selectedEssays,
-                character: localData.character
-            };
             const code = getStoredProfileCode();
             const path = firebaseProfileRefPath(code);
             if (!path) {
                 showToast('Set your passcode first (top right or unlock screen).');
                 return;
             }
-            db.ref(path).set(cloudData).then(() => {
-                showToast(`Pushed ${selected.length} essay${selected.length > 1 ? 's' : ''} to cloud`);
-            }).catch(() => {
-                showToast('Push failed');
-            });
+
+            try {
+                showToast('Pushing selected essays...');
+                const { ok: pullOk, val: remoteData } = await pullCloudState();
+                if (!pullOk) {
+                    showToast('Push failed — could not load cloud data first.');
+                    return;
+                }
+                const localData = normalizeStateForSync();
+                const selectedData = {
+                    stats: localData.stats,
+                    essays: selected.map(stripEssayUiFields),
+                    character: localData.character
+                };
+                const merged = mergeState(normalizeRemoteProfileVal(remoteData), selectedData);
+                await db.ref(path).set({
+                    stats: merged.stats || {},
+                    essays: essaysArrayFromCloudValue(merged.essays),
+                    character: merged.character || {}
+                });
+                showToast(`Merged ${selected.length} selected essay${selected.length > 1 ? 's' : ''} into cloud`);
+            } catch (e) {
+                console.warn('[WriteBoost] Push selected failed:', e);
+                showToast('Push failed: ' + ((e && e.message) ? e.message : 'try again later'));
+            }
         }
 
         function viewEssay(index) {
@@ -11156,18 +11175,23 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 errorEl.textContent = 'That is already your current passcode.';
                 return;
             }
+            try {
+                localStorage.setItem(getProfileStateStorageKeyFor(newCode), JSON.stringify({
+                    stats: {},
+                    essays: [],
+                    character: {}
+                }));
+            } catch (e) { /* ignore */ }
             setStoredProfileCode(newCode);
             try {
                 sessionStorage.setItem(PROFILE_SESSION_VERIFIED_KEY, 'true');
                 sessionStorage.removeItem(PROFILE_GATE_BROWSE_KEY);
             } catch (e) { /* ignore */ }
             removePasscodeGateDismissBanner();
-            saveState();
-            refreshHeaderProfileInput();
             closeSyncProfileModal();
             closePasscodeModal();
-            showToast('Passcode updated — syncing to the cloud…');
-            setTimeout(() => syncNow(), 200);
+            showToast('New passcode saved — loading a new workspace…');
+            setTimeout(() => location.reload(), 250);
         }
     </script>
 </body>
