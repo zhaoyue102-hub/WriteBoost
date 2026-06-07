@@ -4689,7 +4689,7 @@
                 <span class="logo-title">WriteBoost</span>
                 <span class="logo-tagline">Narrative writing</span>
             </div>
-            <span class="version-badge" id="app-version">v4.5.2</span>
+            <span class="version-badge" id="app-version">v4.6.2</span>
         </div>
         <div class="header-stats" role="toolbar" aria-label="Your writing stats — tap a number to open Progress and Data">
             <div class="stat-item header-stat-clickable" role="button" tabindex="0" title="Essays — open essay library"
@@ -5679,7 +5679,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.6.1';
+        const APP_VERSION = 'v4.6.2';
 
         let suggestionPopupHideTimer = null;
 
@@ -7552,14 +7552,16 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             await db.ref(path).set(payload);
         }
 
-        async function syncNow() {
+        async function syncProfileState(options = {}) {
+            const silent = !!options.silent;
             try {
-                showToast('Syncing...');
+                if (!silent) showToast('Syncing...');
                 const localData = normalizeStateForSync();
                 const { ok: pullOk, val: remoteData } = await pullCloudState();
                 if (!pullOk) {
                     console.warn('[WriteBoost] Sync: pull failed; skipping upload to avoid wiping cloud with empty local data.');
-                    showToast('Sync failed — could not load cloud data. Nothing was uploaded. Check network and try again.');
+                    if (!silent) showToast('Sync failed — could not load cloud data. Nothing was uploaded. Check network and try again.');
+                    else showToast('Saved on this device; cloud sync failed. Check your network and try Sync again.');
                     return;
                 }
                 const remoteNorm = normalizeRemoteProfileVal(remoteData);
@@ -7580,13 +7582,44 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
                 } catch (pushErr) {
                     console.warn('[WriteBoost] Cloud upload failed:', pushErr);
                     const msg = (pushErr && pushErr.message) ? pushErr.message : String(pushErr || 'unknown');
-                    showToast('Cloud upload failed: ' + msg + ' — Open Firebase → Realtime Database → Rules; allow read/write for testing, then Publish.');
+                    if (!silent) showToast('Cloud upload failed: ' + msg + ' — Open Firebase → Realtime Database → Rules; allow read/write for testing, then Publish.');
+                    else showToast('Saved on this device; cloud upload failed. Check Firebase Rules or try Sync again.');
                     return;
                 }
-                showToast('Sync complete!');
+                if (!silent) showToast('Sync complete!');
+                else if (options.successToast) showToast(options.successToast);
             } catch (e) {
-                showToast('Sync failed (try again later).');
+                if (!silent) showToast('Sync failed (try again later).');
+                else showToast('Saved on this device; cloud sync failed. Try Sync again later.');
             }
+        }
+
+        let pendingCloudSyncTimer = null;
+
+        function scheduleCloudSync(reason = 'change', options = {}) {
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return;
+            const code = getStoredProfileCode();
+            const path = firebaseProfileRefPath(code);
+            if (!path) {
+                if (options.notifyNoPasscode) {
+                    showToast('Saved on this device. Set a passcode to back up essays to the cloud.');
+                }
+                return;
+            }
+
+            const delayMs = Number.isFinite(Number(options.delayMs)) ? Number(options.delayMs) : 750;
+            if (pendingCloudSyncTimer) clearTimeout(pendingCloudSyncTimer);
+            pendingCloudSyncTimer = setTimeout(() => {
+                pendingCloudSyncTimer = null;
+                syncProfileState({
+                    silent: true,
+                    successToast: options.successToast || ''
+                }).catch((e) => console.warn('[WriteBoost] Scheduled cloud sync failed after ' + reason + ':', e));
+            }, Math.max(0, delayMs));
+        }
+
+        async function syncNow() {
+            await syncProfileState({ silent: false });
         }
 
         // ============ NAVIGATION ============
@@ -8938,6 +8971,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             ensureEssayId(e);
             e.favorite = !e.favorite;
             saveState();
+            scheduleCloudSync('favorite essay');
             renderHistory();
             if (state.currentEssay === e) updateResultsFavoriteButton(e);
             showToast(e.favorite ? 'Marked favorite' : 'Removed from favorites');
@@ -9047,6 +9081,10 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             state.selectMode = false;
             reconcileEssayAggregatesWithList();
             saveState();
+            scheduleCloudSync('delete essays', {
+                delayMs: 0,
+                successToast: 'Cloud library updated.'
+            });
             updateStats();
             renderHistory();
             renderAchievements();
@@ -10018,6 +10056,11 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             clearDraft();
             checkAchievements();
             saveState();
+            scheduleCloudSync('essay submit', {
+                delayMs: 0,
+                notifyNoPasscode: true,
+                successToast: 'Essay saved to cloud.'
+            });
             updateStats();
             renderSkillsProgress();
             renderHistory();
@@ -10808,6 +10851,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             });
             if (state.stats.savedDrillLines.length > 200) state.stats.savedDrillLines.length = 200;
             saveState();
+            scheduleCloudSync('save drill line');
             renderSavedDrillLines('sp-saved-lines-list');
             renderSavedDrillLines('progress-saved-lines-list');
             showToast('Saved to My good lines!');
@@ -10819,6 +10863,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             if (index < 0 || index >= state.stats.savedDrillLines.length) return;
             state.stats.savedDrillLines.splice(index, 1);
             saveState();
+            scheduleCloudSync('remove drill line');
             renderSavedDrillLines('sp-saved-lines-list');
             renderSavedDrillLines('progress-saved-lines-list');
             showToast('Removed from notebook');

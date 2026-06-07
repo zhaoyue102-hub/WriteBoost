@@ -37,7 +37,13 @@ async function run() {
     headless: true,
   });
 
-  const page = await browser.newPage();
+  const context = await browser.newContext({ acceptDownloads: true });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.localStorage.setItem('writeboost-user-passcode', 'test-passcode');
+    window.localStorage.setItem('writeboost-quick-start-never', '1');
+    window.sessionStorage.setItem('writeboost-user-verified', 'true');
+  });
 
   const consoleErrors = [];
   const pageErrors = [];
@@ -75,9 +81,9 @@ async function run() {
     }
 
     // Timer start/pause
-    await page.click('#timer-start');
+    await page.click('button.js-timer-start:visible');
     await sleep(1200);
-    await page.click('#timer-start'); // pause
+    await page.click('button.js-timer-start:visible'); // pause
 
     // Challenge modal add
     await page.click('button:has-text("Challenge")');
@@ -89,13 +95,17 @@ async function run() {
     await page.click('button:has-text("Power Words")');
     await page.waitForSelector('#power-words-modal.active', { timeout: 3000 });
     await page.fill('#modal-power-word', 'walk');
-    await page.click('button:has-text("Go")');
+    await page.click('#power-words-modal button:has-text("Go")');
     await page.waitForSelector('#modal-power-results .power-word-item', { timeout: 3000 });
     await page.click('#modal-power-results .power-word-item');
     await page.waitForSelector('#toast.show', { timeout: 3000 });
+    await page.click('#power-words-modal .modal-close');
+    await page.waitForSelector('#power-words-modal:not(.active)', { timeout: 3000 });
 
     // Submit -> results
     await page.click('button:has-text("Submit")');
+    await page.waitForSelector('#selfreview-modal.active', { timeout: 5000 });
+    await page.click('#selfreview-modal button:has-text("Submit essay")');
     await page.waitForSelector('#results.page.active', { timeout: 5000 });
     const finalScore = await page.textContent('#final-score');
     if (!finalScore || !finalScore.trim()) {
@@ -103,8 +113,10 @@ async function run() {
     }
 
     // Export should trigger a download
+    await page.click('.nav-btn[data-page="progress"]');
+    await page.waitForSelector('#progress.page.active', { timeout: 5000 });
     const downloadPromise = page.waitForEvent('download', { timeout: 5000 });
-    await page.click('header button[title="Export data backup"]');
+    await page.click('button[title="Download a JSON backup of this passcode’s library on this device"]');
     const download = await downloadPromise;
     const suggested = download.suggestedFilename();
     if (!suggested.endsWith('.json')) {
@@ -112,6 +124,7 @@ async function run() {
     }
   } finally {
     await page.close().catch(() => {});
+    await context.close().catch(() => {});
     await browser.close().catch(() => {});
     await new Promise((resolve) => server.close(resolve));
   }
@@ -138,4 +151,3 @@ run()
     console.error(err && err.stack ? err.stack : String(err));
     process.exit(1);
   });
-

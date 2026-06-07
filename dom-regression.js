@@ -24,6 +24,15 @@ function makeLocalStorage() {
   };
 }
 
+async function waitFor(cond, msg, timeoutMs = 8000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (cond()) return;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error(msg);
+}
+
 async function run() {
   const htmlPath = path.join(__dirname, 'index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
@@ -32,8 +41,38 @@ async function run() {
 
   // Minimal browser-ish stubs
   window.localStorage = makeLocalStorage();
+  window.sessionStorage = makeLocalStorage();
+  window.localStorage.setItem('writeboost-user-passcode', 'test-passcode');
+  window.sessionStorage.setItem('writeboost-user-verified', 'true');
+  window.firebase = {
+    apps: [],
+    initializeApp(config) {
+      this.apps.push({ config });
+      return this.apps[0];
+    },
+    database() {
+      return {
+        ref() {
+          return {
+            once: async () => ({ val: () => null }),
+            set: async () => undefined,
+          };
+        },
+      };
+    },
+  };
   window.confirm = () => false; // keep tests non-interactive
   window.requestAnimationFrame = (cb) => setTimeout(() => cb(Date.now()), 0);
+  window.matchMedia = window.matchMedia || (() => ({
+    matches: false,
+    media: '',
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }));
   window.scrollY = 0;
   window.innerWidth = 1024;
 
@@ -109,7 +148,8 @@ async function run() {
   textarea.value =
     'I was happy when I found a small door behind the old tree. "Who are you?" I said. ' +
     'It was cold and quiet, then suddenly the ground shook. I ran, scared, but I stayed brave. ' +
-    'Finally, I felt relief as the mystery ended.';
+    'Finally, I felt relief as the mystery ended. I took a slow breath, opened the door wider, ' +
+    'and promised myself I would tell the whole strange story when I got home.';
   window.updateWordCount();
   window.analyzeFlatWords();
   window.drawStoryCoaster();
@@ -133,7 +173,12 @@ async function run() {
 
   // Submit -> results
   window.submitEssay();
-  assert(document.getElementById('results').classList.contains('active'), 'Results page not active after submitEssay');
+  assert(document.getElementById('selfreview-modal').classList.contains('active'), 'Self-review modal not active after submitEssay');
+  window.submitSelfReview();
+  await waitFor(
+    () => document.getElementById('results').classList.contains('active'),
+    'Results page not active after submitEssay'
+  );
   const score = document.getElementById('final-score').textContent;
   assert(score && String(score).trim().length > 0, 'Final score not rendered');
 
@@ -144,6 +189,11 @@ async function run() {
   const streakAfter1 = Number(document.getElementById('current-streak').textContent);
   textarea.value += ' Extra words to resubmit and test streak logic.';
   window.submitEssay();
+  window.submitSelfReview();
+  await waitFor(
+    () => document.getElementById('results').classList.contains('active'),
+    'Results page not active after second submitEssay'
+  );
   const streakAfter2 = Number(document.getElementById('current-streak').textContent);
   assert(streakAfter2 === streakAfter1, `Streak changed within same day (${streakAfter1} -> ${streakAfter2})`);
 
@@ -162,4 +212,3 @@ run().catch((e) => {
   console.error(e && e.stack ? e.stack : String(e));
   process.exit(1);
 });
-

@@ -54,40 +54,38 @@ proxyBase: 'https://writeboost-proxy.yourname.workers.dev',
 - `GET /api/power?word=walk`
 - `POST /api/check` with JSON `{ "text": "...", "language": "en-US" }`
 
-## (New) Cloud Sync for essays (KV)
+## Cloud Sync for essays (Firebase Realtime Database)
 
-To auto-save and sync essay history across iPad + computer, the Worker stores your full app state in **Cloudflare KV** keyed by a short "sync code".
+The current app stores each writer library in **Firebase Realtime Database** under a passcode-derived bucket:
 
-### 1) Create a KV namespace
-
-In the Worker folder:
-
-```bash
-cd "/Users/zhaoyue/WorkBuddy/2026-05-07-task-1/writeboost-worker"
-npx --yes wrangler@latest kv namespace create SYNC_KV
+```text
+writeboostProfiles/<passcodeBucketId>
 ```
 
-Copy the returned `id`.
+The raw passcode is not written to the Firebase path. The same passcode on iPad + computer opens the same cloud-synced essay library.
 
-### 2) Bind KV in `wrangler.toml`
+### 1) Confirm Firebase RTDB exists
 
-Replace the placeholder:
+In Firebase Console:
 
-```toml
-kv_namespaces = [
-  { binding = "SYNC_KV", id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }
-]
+1. Open project `writeboost-a1e09`.
+2. Go to **Build -> Realtime Database**.
+3. Confirm the database URL matches `index.html`:
+
+```text
+https://writeboost-a1e09-default-rtdb.firebaseio.com
 ```
 
-### 3) Redeploy
+If Firebase shows a regional URL instead, update `FIREBASE_CONFIG.databaseURL` in `index.html`.
 
-```bash
-npx --yes wrangler@latest deploy
-```
+### 2) Confirm temporary rules for testing
 
-### 4) Use the Sync Code in the webpage
+For local/private testing, Realtime Database rules must allow reads and writes to the profile path. If writes fail, the app will still save locally and show a cloud sync failure toast.
 
-Go to `History` page → **Sync code**.
+### 3) Use the same passcode
 
-Use the same code on iPad + computer to share the same cloud-synced history.
+Use **Passcode** in the header or the first-run gate. Enter the same passcode on each device to sync the same essay library.
 
+### 4) Save behavior
+
+Submitted essays are saved locally first, then queued for a best-effort Firebase sync. Manual sync still pulls remote data, merges it with local data, and uploads the merged result.
