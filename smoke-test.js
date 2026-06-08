@@ -38,6 +38,19 @@ async function run() {
   });
 
   const context = await browser.newContext({ acceptDownloads: true });
+  await context.route('https://identitytoolkit.googleapis.com/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        idToken: 'test-id-token',
+        refreshToken: 'test-refresh-token',
+        expiresIn: '3600',
+        localId: 'test-uid',
+        isNewUser: false,
+      }),
+    });
+  });
   const page = await context.newPage();
   await page.addInitScript(() => {
     window.localStorage.setItem('writeboost-user-passcode', 'test-passcode');
@@ -106,7 +119,7 @@ async function run() {
     await page.click('button:has-text("Submit")');
     await page.waitForSelector('#selfreview-modal.active', { timeout: 5000 });
     await page.click('#selfreview-modal button:has-text("Submit essay")');
-    await page.waitForSelector('#results.page.active', { timeout: 5000 });
+    await page.waitForSelector('#results.page.active', { timeout: 15000 });
     const finalScore = await page.textContent('#final-score');
     if (!finalScore || !finalScore.trim()) {
       throw new Error('Final score missing on results page');

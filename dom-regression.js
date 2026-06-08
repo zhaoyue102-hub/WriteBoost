@@ -50,6 +50,12 @@ async function run() {
       this.apps.push({ config });
       return this.apps[0];
     },
+    auth() {
+      return {
+        currentUser: { uid: 'test-uid' },
+        signInAnonymously: async () => ({ user: { uid: 'test-uid' } }),
+      };
+    },
     database() {
       return {
         ref() {

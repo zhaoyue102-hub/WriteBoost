@@ -78,14 +78,52 @@ https://writeboost-a1e09-default-rtdb.firebaseio.com
 
 If Firebase shows a regional URL instead, update `FIREBASE_CONFIG.databaseURL` in `index.html`.
 
-### 2) Confirm temporary rules for testing
+### 2) Enable Anonymous Auth
 
-For local/private testing, Realtime Database rules must allow reads and writes to the profile path. If writes fail, the app will still save locally and show a cloud sync failure toast.
+In Firebase Console:
 
-### 3) Use the same passcode
+1. Go to **Build -> Authentication -> Sign-in method**.
+2. Enable **Anonymous**.
+3. Save.
+
+WriteBoost uses anonymous Firebase users only for database rules. It does not ask students for email/password.
+
+### 3) Publish secure Realtime Database rules
+
+Go to **Build -> Realtime Database -> Rules**, replace the testing/open rules with:
+
+```json
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "writeboostProfileMembers": {
+      "$profileId": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && newData.val() === true"
+        }
+      }
+    },
+    "writeboostProfiles": {
+      "$profileId": {
+        ".read": "auth != null && root.child('writeboostProfileMembers').child($profileId).child(auth.uid).val() === true",
+        ".write": "auth != null && root.child('writeboostProfileMembers').child($profileId).child(auth.uid).val() === true",
+        ".validate": "newData.hasChildren(['stats', 'essays', 'character'])"
+      }
+    }
+  }
+}
+```
+
+These rules deny root-level reads/writes. A device must first sign in anonymously and register its uid under the passcode-derived profile before it can read/write that profile.
+
+### 4) Use the same passcode
 
 Use **Passcode** in the header or the first-run gate. Enter the same passcode on each device to sync the same essay library.
 
-### 4) Save behavior
+Important: the passcode is still the sharing key for a writing library. Use a long, hard-to-guess passcode for each writer, not a simple 4-digit code.
+
+### 5) Save behavior
 
 Submitted essays are saved locally first, then queued for a best-effort Firebase sync. Manual sync still pulls remote data, merges it with local data, and uploads the merged result.

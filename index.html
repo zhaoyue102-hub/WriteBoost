@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#045490">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2304590'/%3E%3Cstop offset='1' stop-color='%23273462'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url(%23g)'/%3E%3Ctext x='64' y='82' font-size='64' text-anchor='middle'%3E%E2%9C%8D%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <title>WriteBoost — Narrative writing practice</title>
     <style>
@@ -4689,7 +4690,7 @@
                 <span class="logo-title">WriteBoost</span>
                 <span class="logo-tagline">Narrative writing</span>
             </div>
-            <span class="version-badge" id="app-version">v4.6.2</span>
+            <span class="version-badge" id="app-version">v4.6.3</span>
         </div>
         <div class="header-stats" role="toolbar" aria-label="Your writing stats — tap a number to open Progress and Data">
             <div class="stat-item header-stat-clickable" role="button" tabindex="0" title="Essays — open essay library"
@@ -5679,7 +5680,7 @@
 
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <script>
-        const APP_VERSION = 'v4.6.2';
+        const APP_VERSION = 'v4.6.3';
 
         let suggestionPopupHideTimer = null;
 
@@ -5927,6 +5928,7 @@
         if (!firebase.apps.length) {
             firebase.initializeApp(FIREBASE_CONFIG);
         }
+        const auth = firebase.auth();
         const db = firebase.database();
 
         const ONLINE_CONFIG = {
@@ -6961,6 +6963,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         const DRAFT_LEGACY_KEY = 'writeboost-draft';
         const DRAFT_PREFIX = 'writeboost-draft::';
         const FIREBASE_PROFILE_ROOT = 'writeboostProfiles';
+        const FIREBASE_PROFILE_MEMBER_ROOT = 'writeboostProfileMembers';
         /** User closed the sync gate without verifying; allow this tab to bootstrap (local-only until they set a code). */
         const PROFILE_GATE_BROWSE_KEY = 'writeboost-browse-without-profile';
 
@@ -7014,6 +7017,37 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
         function firebaseProfileRefPath(code) {
             const id = profileBucketIdFromCode(code);
             return id ? (FIREBASE_PROFILE_ROOT + '/' + id) : null;
+        }
+
+        function firebaseProfileMemberRefPath(code, uid) {
+            const id = profileBucketIdFromCode(code);
+            const cleanUid = String(uid || '').trim();
+            return id && cleanUid ? (FIREBASE_PROFILE_MEMBER_ROOT + '/' + id + '/' + cleanUid) : null;
+        }
+
+        let firebaseAuthPromise = null;
+
+        async function ensureFirebaseAuth() {
+            if (!ONLINE_CONFIG.enabled || !ONLINE_CONFIG.syncEnabled) return null;
+            if (auth.currentUser) return auth.currentUser;
+            if (!firebaseAuthPromise) {
+                firebaseAuthPromise = auth.signInAnonymously()
+                    .then((cred) => cred.user || auth.currentUser)
+                    .catch((e) => {
+                        firebaseAuthPromise = null;
+                        throw e;
+                    });
+            }
+            return firebaseAuthPromise;
+        }
+
+        async function ensureFirebaseProfileAccess(code) {
+            const user = await ensureFirebaseAuth();
+            if (!user || !user.uid) throw new Error('Firebase anonymous auth is not available. Enable Authentication -> Anonymous in Firebase Console.');
+            const memberPath = firebaseProfileMemberRefPath(code, user.uid);
+            if (!memberPath) throw new Error('Missing Firebase profile membership path.');
+            await db.ref(memberPath).set(true);
+            return user;
         }
 
         function isProfileSessionUnlocked() {
@@ -7529,11 +7563,16 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             if (!path) return { ok: true, val: null };
 
             try {
+                await ensureFirebaseProfileAccess(code);
                 const snapshot = await db.ref(path).once('value');
                 let val = snapshot.val();
                 if (val == null && !/[.#$\[\]\/]/.test(code)) {
-                    const legacy = await db.ref(code).once('value');
-                    val = legacy.val();
+                    try {
+                        const legacy = await db.ref(code).once('value');
+                        val = legacy.val();
+                    } catch (legacyErr) {
+                        console.warn('[WriteBoost] Legacy Firebase path read skipped:', legacyErr);
+                    }
                 }
                 return { ok: true, val };
             } catch (e) {
@@ -7548,6 +7587,7 @@ Heat seeped through the ceramic into my palms. Outside, rain began to stitch its
             const path = firebaseProfileRefPath(code);
             if (!path) return;
 
+            await ensureFirebaseProfileAccess(code);
             const payload = normalizeStateForSync();
             await db.ref(path).set(payload);
         }
